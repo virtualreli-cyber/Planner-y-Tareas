@@ -125,33 +125,38 @@
 
     /* Zona Marca (Izquierda) */
     .toolbar-brand-zone {
-      flex: 1 1 0;
-      min-width: 140px;
+      flex: 0 0 auto;
       display: flex;
       align-items: center;
       justify-content: flex-start;
-      gap: 6px;
+      gap: 8px;
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      line-height: 1.1;
+      flex-shrink: 0;
+      user-select: none;
     }
 
     .brand-title {
       font-size: 13px;
       font-weight: 800;
       color: #0f172a;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
+      line-height: 1.15;
       white-space: nowrap;
-      flex-shrink: 0;
+      letter-spacing: -0.2px;
     }
 
-    .brand-badge {
-      font-size: 9.5px;
-      background: #e2e8f0;
-      color: #475569;
-      padding: 2px 5px;
-      border-radius: 3px;
-      font-weight: 800;
-      line-height: 1;
+    .brand-subtitle {
+      font-size: 9px;
+      font-weight: 700;
+      color: #64748b;
+      line-height: 1.1;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
     }
 
     /* Enlace de cambio rápido a Tareas / Control */
@@ -245,12 +250,11 @@
 
     /* Zona Herramientas (Derecha) */
     .toolbar-right {
-      flex: 1 1 0;
-      min-width: max-content;
+      flex: 0 0 auto;
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 8px;
+      gap: 6px;
     }
 
     .tools-undo-redo {
@@ -315,7 +319,7 @@
       white-space: nowrap;
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 1100px) {
       .toolbar-row-top {
         padding: 0 10px;
         gap: 6px;
@@ -4393,9 +4397,9 @@
     <!-- FILA 1: COMÚN, FIJA E INVARIABLE (Marca a la izq, Vistas al centro, Herramientas a la dcha) -->
     <div class="toolbar-row-top">
       <div class="toolbar-brand-zone">
-        <div class="brand-title" title="Planner Docente 2026-2027">
-          <span>📚 Planner</span>
-          <span class="brand-badge">26-27</span>
+        <div class="brand-block" title="Planner Docente 2026-2027">
+          <span class="brand-title">📚 Planner</span>
+          <span class="brand-subtitle">Curso 26-27</span>
         </div>
         <a href="control_clases.html" class="btn-app-switcher" title="Ir al Control de Clases y Tareas">
           <span class="switcher-icon">✅</span>
