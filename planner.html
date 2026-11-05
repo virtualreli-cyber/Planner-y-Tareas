@@ -1133,11 +1133,15 @@
     .inline-content {
       font-size: 10.5px;
       color: #334155;
-      line-height: 1.25;
+      line-height: 1.35;
       resize: none;
       flex: 1;
-      overflow-y: auto; /* Scroll sólo dentro de actividades */
+      width: 100%;
+      height: auto;
       min-height: 35px;
+      overflow-y: hidden; /* CERO scroll de actividades: auto-expande */
+      field-sizing: content;
+      box-sizing: border-box;
     }
 
     /* ========================================================
@@ -1292,6 +1296,7 @@
     .slot-note-textarea {
       flex: 1;
       width: 100%;
+      height: auto;
       min-height: 28px;
       box-sizing: border-box;
       resize: none;
@@ -1305,7 +1310,8 @@
       padding: 4px 6px;
       outline: none;
       transition: all 0.15s ease;
-      overflow-y: auto;
+      overflow-y: hidden;
+      field-sizing: content;
     }
 
     .slot-note-textarea:focus {
@@ -5298,13 +5304,62 @@
       const { todayStr, currentMinutes, currentMinutesExact } = getNowInfo();
       const days = getDatesForWeek(state.currentWeekIndex);
       const hasTodayInWeek = days.some(d => d.dateStr === todayStr);
-      const scale = state.timeScale || 2.4;
       const exactMin = (currentMinutesExact !== undefined) ? currentMinutesExact : currentMinutes;
 
       let timeLine = document.getElementById("current-time-indicator");
 
-      // La rejilla abarca de 08:00 (480m) a 17:00 (1020m)
-      if (hasTodayInWeek && currentMinutes >= 480 && currentMinutes <= 1020) {
+      const layout = window._lastWeekFranjaLayout;
+      const isIntensiva = !!(days && days[0] && days[0].isIntensiva);
+      const maxMinutes = isIntensiva ? 860 : 1010; // 14:20 o 16:50
+
+      if (hasTodayInWeek && exactMin >= 480 && exactMin <= maxMinutes && layout && layout.franjaTops && layout.franjaHeights) {
+        if (!timeLine) {
+          timeLine = document.createElement("div");
+          timeLine.id = "current-time-indicator";
+          timeLine.className = "current-time-indicator";
+          bodyGrid.appendChild(timeLine);
+        }
+        timeLine.style.display = "block";
+
+        const franjaRanges = isIntensiva ? [
+          [480, 535], // Franja 0: 08:00 - 08:55
+          [535, 600], // Franja 1: 08:55 - 10:00
+          [600, 645], // Franja 2: 09:50 - 10:45
+          [645, 685], // Franja 3: 10:45 - 11:25
+          [685, 740], // Franja 4: 11:25 - 12:20
+          [740, 795], // Franja 5: 12:20 - 13:15
+          [795, 860], // Franja 6: 13:15 - 14:20
+        ] : [
+          [480, 535],  // Franja 0: 08:00 - 08:55
+          [535, 600],  // Franja 1: 08:55 - 10:00
+          [600, 645],  // Franja 2: 09:50 - 10:45
+          [645, 685],  // Franja 3: 10:45 - 11:25
+          [685, 740],  // Franja 4: 11:25 - 12:20
+          [740, 795],  // Franja 5: 12:20 - 13:15
+          [795, 900],  // Franja 6: 13:15 - 15:00
+          [900, 955],  // Franja 7: 15:00 - 15:55
+          [955, 1010], // Franja 8: 15:55 - 16:50
+        ];
+
+        let targetTop = 0;
+        let matched = false;
+        for (let i = 0; i < franjaRanges.length; i++) {
+          const [s, e] = franjaRanges[i];
+          if (exactMin >= s && exactMin < e) {
+            const prog = (exactMin - s) / (e - s);
+            targetTop = layout.franjaTops[i] + prog * layout.franjaHeights[i];
+            matched = true;
+            break;
+          }
+        }
+        if (!matched && exactMin >= franjaRanges[franjaRanges.length - 1][1]) {
+          const lastIdx = franjaRanges.length - 1;
+          targetTop = layout.franjaTops[lastIdx] + layout.franjaHeights[lastIdx];
+        }
+
+        timeLine.style.top = targetTop + "px";
+      } else if (hasTodayInWeek && exactMin >= 480 && exactMin <= 1020) {
+        const scale = state.timeScale || 4.4;
         if (!timeLine) {
           timeLine = document.createElement("div");
           timeLine.id = "current-time-indicator";
@@ -5385,32 +5440,255 @@
       return days;
     }
 
-    /* AUTO-EXPANSIÓN DE RECUADROS DE AVISOS Y EDUCAMOS (VISTA SEMANAL) */
-    function autoResizeAvisosTextarea(el) {
+    /* AUTO-EXPANSIÓN DE TEXTAREAS (ACTIVIDADES, AVISOS, EDUCAMOS, NOTAS) */
+    function autoResizeTextarea(el, minH = 20) {
       if (!el) return;
       el.style.height = "auto";
-      const targetH = Math.max(el.scrollHeight, 20);
+      const targetH = Math.max(el.scrollHeight, minH);
       el.style.height = targetH + "px";
+    }
+
+    function autoResizeAvisosTextarea(el) {
+      autoResizeTextarea(el, 20);
+    }
+
+    /* MAPEO DE CADA SLOT A SU FRANJA HORARIA HORIZONTAL UNIFICADA (0..8) */
+    function getFranjaForSlot(slotTime) {
+      if (slotTime === "09:00 - 14:00") {
+        return { franja: 1, span: 5, isSpan: true, type: "viernes" };
+      }
+      if (slotTime === "15:00 - 16:50") {
+        return { franja: 7, span: 2, isSpan: true, type: "mie_tarde" };
+      }
+      if (slotTime === "10:45 - 11:00") {
+        return { franja: 3, sub: "lectura" };
+      }
+      if (slotTime === "11:00 - 11:25") {
+        return { franja: 3, sub: "recreo" };
+      }
+
+      const parts = slotTime.split(" - ");
+      const sh = parseInt(parts[0].split(":")[0], 10);
+      const sm = parseInt(parts[0].split(":")[1], 10);
+      const sMin = sh * 60 + sm;
+
+      if (sMin < 515) return { franja: 0 }; // 08:00 - 08:55 / 08:10 - 09:05
+      if (sMin < 575) return { franja: 1 }; // 08:55 - 09:50 / 09:05 - 10:00
+      if (sMin < 620) return { franja: 2 }; // 09:50 - 10:45 / 10:00 - 10:30
+      if (sMin < 680) return { franja: 3 }; // 10:30 - 11:25 / 10:45 - 11:25
+      if (sMin < 730) return { franja: 4 }; // 11:25 - 12:20
+      if (sMin < 785) return { franja: 5 }; // 12:20 - 13:15
+      if (sMin < 880) return { franja: 6 }; // 13:15 - 15:00 / 14:10 / 14:20
+      if (sMin < 940) return { franja: 7 }; // 15:00 - 15:55
+      return { franja: 8 };                 // 15:55 - 16:50
+    }
+
+    /* DEFINICIONES DE FRANJAS HORARIAS UNIFICADAS PARA TODA LA SEMANA */
+    function getFranjaDefinitions(isIntensiva) {
+      if (isIntensiva) {
+        return [
+          { index: 0, label: "08:00", name: "1ª hora", isClassFranja: true },
+          { index: 1, label: "09:00", name: "2ª hora", isClassFranja: true },
+          { index: 2, label: "09:50", name: "3ª hora", isClassFranja: true },
+          { index: 3, label: "10:45", name: "Recreo / Clase", isClassFranja: true },
+          { index: 4, label: "11:25", name: "4ª hora", isClassFranja: true },
+          { index: 5, label: "12:20", name: "5ª hora", isClassFranja: true },
+          { index: 6, label: "13:15", name: "Salida / Reunión", isClassFranja: true }
+        ];
+      }
+      return [
+        { index: 0, label: "08:00", name: "1ª hora", isClassFranja: true },
+        { index: 1, label: "09:00", name: "2ª hora", isClassFranja: true },
+        { index: 2, label: "09:50", name: "3ª hora / Patio", isClassFranja: true },
+        { index: 3, label: "10:45", name: "Lectura / Recreo", isClassFranja: false },
+        { index: 4, label: "11:25", name: "4ª hora", isClassFranja: true },
+        { index: 5, label: "12:20", name: "5ª hora", isClassFranja: true },
+        { index: 6, label: "13:15", name: "Comedor", isClassFranja: false },
+        { index: 7, label: "15:00", name: "6ª hora", isClassFranja: true },
+        { index: 8, label: "15:55", name: "7ª hora", isClassFranja: true }
+      ];
+    }
+
+    /* SINCRONIZADOR DE ALTURAS DE FRANJA: TODAS LAS TARJETAS A LA MISMA ALTURA */
+    function syncWeekFranjaHeights() {
+      const wrap = document.querySelector(".week-view-wrapper");
+      if (!wrap) return;
+
+      // 1. Auto-expandir todos los textareas de texto sin scroll
+      wrap.querySelectorAll(".inline-content").forEach(el => autoResizeTextarea(el, 35));
+      wrap.querySelectorAll(".inline-avisos").forEach(el => autoResizeTextarea(el, 20));
+      wrap.querySelectorAll(".inline-educamos").forEach(el => autoResizeTextarea(el, 20));
+      wrap.querySelectorAll(".slot-note-textarea").forEach(el => autoResizeTextarea(el, 24));
+
+      const weekIndex = state.currentWeekIndex;
+      const days = getDatesForWeek(weekIndex);
+      const isIntensiva = !!(days && days[0] && days[0].isIntensiva);
+      const scale = state.timeScale || 4.4;
+
+      const franjaDefs = getFranjaDefinitions(isIntensiva);
+      const numFranjas = franjaDefs.length;
+
+      // 2. Altura mínima base de cada franja según la escala de zoom
+      const franjaHeights = franjaDefs.map(f => {
+        if (f.isClassFranja) {
+          return Math.max(Math.round(55 * scale * 0.92), 220);
+        } else if (f.index === 6 && !isIntensiva) {
+          // Comedor ordinario
+          return Math.max(Math.round(45 * scale * 0.35), 65);
+        } else {
+          // Recreo / Patio
+          return Math.max(Math.round(35 * scale * 0.35), 45);
+        }
+      });
+
+      // 3. Medir cada tarjeta para determinar la altura máxima necesaria en cada franja
+      const allSlots = Array.from(wrap.querySelectorAll(".session-card, .static-slot-block"));
+
+      // Quitar temporalmente altura fija para medir offsetHeight natural de cada tarjeta
+      allSlots.forEach(el => {
+        el.style.height = "auto";
+      });
+
+      allSlots.forEach(el => {
+        const fIdx = parseInt(el.dataset.franja, 10);
+        if (isNaN(fIdx) || fIdx < 0 || fIdx >= numFranjas) return;
+
+        const isSpan = !!el.dataset.span;
+        const sub = el.dataset.sub;
+
+        if (!isSpan) {
+          if (sub === "lectura") {
+            const needed = el.offsetHeight + 4;
+            if (needed + 32 > franjaHeights[fIdx]) {
+              franjaHeights[fIdx] = needed + 32;
+            }
+          } else if (sub === "recreo") {
+            const needed = el.offsetHeight + 4;
+            if (needed + 30 > franjaHeights[fIdx]) {
+              franjaHeights[fIdx] = needed + 30;
+            }
+          } else {
+            // Tarjeta estándar (clase o bloque)
+            const needed = el.offsetHeight + 4;
+            if (needed > franjaHeights[fIdx]) {
+              franjaHeights[fIdx] = needed;
+            }
+          }
+        } else if (el.dataset.spanType === "mie_tarde") {
+          // Spans franjas 7 y 8
+          const needed = el.offsetHeight + 4;
+          const combined = franjaHeights[7] + (franjaHeights[8] || 0);
+          if (needed > combined) {
+            const diff = needed - combined;
+            franjaHeights[8] = (franjaHeights[8] || 0) + diff;
+          }
+        }
+      });
+
+      // 4. Calcular 'top' acumulado de cada franja
+      const franjaTops = [0];
+      for (let i = 0; i < numFranjas - 1; i++) {
+        franjaTops.push(franjaTops[i] + franjaHeights[i]);
+      }
+      const totalGridHeight = franjaTops[numFranjas - 1] + franjaHeights[numFranjas - 1] + 16;
+
+      // Guardar layout para la línea de hora actual en vivo
+      window._lastWeekFranjaLayout = {
+        franjaTops,
+        franjaHeights,
+        totalGridHeight,
+        isIntensiva
+      };
+
+      // 5. Ajustar altura de columnas de día y columna de eje horario
+      wrap.querySelectorAll(".day-body-column").forEach(col => {
+        col.style.height = totalGridHeight + "px";
+      });
+      const timeAxisCol = wrap.querySelector(".time-axis-column");
+      if (timeAxisCol) {
+        timeAxisCol.style.height = totalGridHeight + "px";
+      }
+
+      // 6. Aplicar top y height exactos a todas las tarjetas de la semana
+      allSlots.forEach(el => {
+        const fIdx = parseInt(el.dataset.franja, 10);
+        if (isNaN(fIdx) || fIdx < 0 || fIdx >= numFranjas) return;
+
+        const isSpan = !!el.dataset.span;
+        const sub = el.dataset.sub;
+        const fTop = franjaTops[fIdx];
+        const fHeight = franjaHeights[fIdx];
+
+        if (!isSpan) {
+          if (sub === "lectura") {
+            el.style.top = fTop + "px";
+            el.style.height = "26px";
+          } else if (sub === "recreo") {
+            el.style.top = (fTop + 28) + "px";
+            el.style.height = Math.max(fHeight - 32, 22) + "px";
+          } else {
+            el.style.top = fTop + "px";
+            el.style.height = (fHeight - 4) + "px";
+          }
+        } else if (el.dataset.spanType === "mie_tarde") {
+          el.style.top = fTop + "px";
+          const h7 = franjaHeights[7] || 0;
+          const h8 = franjaHeights[8] || 0;
+          el.style.height = (h7 + h8 - 4) + "px";
+        } else if (el.dataset.spanType === "viernes") {
+          const top1 = franjaTops[1] || 0;
+          const endFranja = Math.min(6, numFranjas - 1);
+          const bottom = franjaTops[endFranja] || (fTop + fHeight);
+          el.style.top = top1 + "px";
+          el.style.height = Math.max(bottom - top1 - 4, 120) + "px";
+        }
+      });
+
+      // 7. Alinear líneas guía horizontales con cada franja
+      const hourLines = wrap.querySelectorAll(".grid-hour-line");
+      franjaDefs.forEach((f, i) => {
+        if (hourLines[i]) {
+          hourLines[i].style.top = franjaTops[i] + "px";
+        }
+      });
+      if (hourLines[numFranjas]) {
+        hourLines[numFranjas].style.top = (franjaTops[numFranjas - 1] + franjaHeights[numFranjas - 1]) + "px";
+      }
+
+      // 8. Alinear etiquetas horarias del eje izquierdo
+      const timeLabels = wrap.querySelectorAll(".time-axis-hour");
+      franjaDefs.forEach((f, i) => {
+        if (timeLabels[i]) {
+          timeLabels[i].style.top = franjaTops[i] + "px";
+          timeLabels[i].textContent = f.label;
+        }
+      });
+      if (timeLabels[numFranjas]) {
+        timeLabels[numFranjas].style.top = (franjaTops[numFranjas - 1] + franjaHeights[numFranjas - 1]) + "px";
+        timeLabels[numFranjas].textContent = isIntensiva ? "14:20" : "16:50";
+      }
+
+      // 9. Actualizar indicador de hora en vivo
+      updateLiveCurrentTime();
     }
 
     window.addEventListener("resize", () => {
       if (state.currentView === "semana") {
-        document.querySelectorAll(".inline-field.inline-avisos, .inline-field.inline-educamos").forEach(el => {
-          autoResizeAvisosTextarea(el);
-        });
+        syncWeekFranjaHeights();
       }
     });
 
     /* ========================================================
-       RENDERIZADO: VISTA SEMANA PERFECTAMENTE ALINEADA
+       RENDERIZADO: VISTA SEMANA PERFECTAMENTE ALINEADA POR FRANJAS
        ======================================================== */
     function renderWeekView(container) {
       const weekIndex = state.currentWeekIndex;
       const week = state.weeks[weekIndex];
       const days = getDatesForWeek(weekIndex);
-      const scale = state.timeScale;
-      const totalMinutes = 540; // 9 horas (08:00 a 17:00)
-      const gridHeight = totalMinutes * scale;
+      const isIntensiva = !!(days && days[0] && days[0].isIntensiva);
+
+      const franjaDefs = getFranjaDefinitions(isIntensiva);
+      const numFranjas = franjaDefs.length;
 
       const { todayStr, currentMinutes, currentMinutesExact } = getNowInfo();
 
@@ -5479,36 +5757,29 @@
 
       const timeAxisCol = document.createElement("div");
       timeAxisCol.className = "time-axis-column";
-      timeAxisCol.style.height = gridHeight + "px";
 
-      for (let h = 8; h <= 17; h++) {
-        const minOffset = (h - 8) * 60;
-        const topPx = minOffset * scale;
+      for (let i = 0; i <= numFranjas; i++) {
         const label = document.createElement("div");
-        label.className = "time-axis-hour" + (h === 8 ? " hour-08" : "");
-        label.style.top = topPx + "px";
-        label.textContent = String(h).padStart(2, '0') + ":00";
+        label.className = "time-axis-hour" + (i === 0 ? " hour-08" : "");
+        label.dataset.franjaLabelIdx = i;
         timeAxisCol.appendChild(label);
       }
       bodyGrid.appendChild(timeAxisCol);
 
-      // Líneas horizontales de guía horaria perfectamente sincronizadas con escala
-      for (let h = 8; h <= 17; h++) {
-        const minOffset = (h - 8) * 60;
+      // Líneas horizontales de guía horaria por franja
+      for (let i = 0; i <= numFranjas; i++) {
         const line = document.createElement("div");
         line.className = "grid-hour-line major";
-        line.style.top = (minOffset * scale) + "px";
+        line.dataset.franjaLineIdx = i;
         bodyGrid.appendChild(line);
       }
 
       // Línea de hora actual si el día de hoy está en esta semana
       const hasTodayInWeek = days.some(d => d.dateStr === todayStr);
-      if (hasTodayInWeek && currentMinutes >= 480 && currentMinutes <= 1020) {
+      if (hasTodayInWeek) {
         const timeLine = document.createElement("div");
         timeLine.id = "current-time-indicator";
         timeLine.className = "current-time-indicator";
-        const exactMin = (currentMinutesExact !== undefined) ? currentMinutesExact : currentMinutes;
-        timeLine.style.top = ((exactMin - 480) * scale) + "px";
         bodyGrid.appendChild(timeLine);
       }
 
@@ -5520,7 +5791,7 @@
 
         const dayCol = document.createElement("div");
         dayCol.className = "day-body-column" + (isHoliday ? " is-festivo" : "") + (isToday ? " is-today" : "");
-        dayCol.style.height = gridHeight + "px";
+        dayCol.dataset.dayIndex = day.dayIndex;
 
         let school = (day.dayIndex === 0 || day.dayIndex === 2) ? "ribarroja" : ((day.dayIndex === 1 || day.dayIndex === 3) ? "manises" : null);
 
@@ -5534,16 +5805,13 @@
 
         if (slots.length > 0) {
           slots.forEach(slot => {
-            const { sMin, eMin, startOffset, duration } = parseTimeSlot(slot.time);
-            const topPx = startOffset * scale;
-            const heightPx = Math.max(Math.round(duration * scale) - 4, 20);
-
+            const { sMin, eMin } = parseTimeSlot(slot.time);
             const isCurrentlyActive = (isToday && currentMinutes >= sMin && currentMinutes < eMin);
+            const fInfo = getFranjaForSlot(slot.time);
 
             if (slot.type === "class") {
               const session = (week[school] && week[school][slot.course]) ? week[school][slot.course] : { tema: '', actividades: '', avisos: '', educamos: '', sesion: '', preparada: false, avisoDado: false, educamosDado: false };
 
-              // Sesiones pasadas (día anterior a hoy) se marcan automáticamente como listas
               const isPrep = isPast || !!session.preparada;
               const isAvisoDado = !!session.avisoDado;
               const hasAvisoText = !!(session.avisos && session.avisos.trim());
@@ -5552,9 +5820,13 @@
 
               const card = document.createElement("div");
               card.className = "session-card " + school + (isCurrentlyActive ? " is-current-class" : "") + (isPrep ? " is-prepared" : " is-unprepared") + (isHoliday ? " is-holiday-session" : "");
-              card.style.top = topPx + "px";
-              card.style.minHeight = heightPx + "px";
-              card.style.height = "auto";
+              card.dataset.franja = fInfo.franja;
+              card.dataset.dayIndex = day.dayIndex;
+              card.dataset.slotTime = slot.time;
+              if (fInfo.sub) card.dataset.sub = fInfo.sub;
+              if (fInfo.span) card.dataset.span = fInfo.span;
+              if (fInfo.type) card.dataset.spanType = fInfo.type;
+
               card.dataset.smin = sMin;
               card.dataset.emin = eMin;
               card.dataset.isToday = isToday ? "true" : "false";
@@ -5587,16 +5859,18 @@
               const cardBody = document.createElement("div");
               cardBody.className = "card-editable-body";
 
-              // Textarea de Actividades (creada antes para referencia)
+              // Textarea de Actividades
               const contentArea = document.createElement("textarea");
               contentArea.className = "inline-field inline-content";
               contentArea.placeholder = isHoliday ? "Sin actividades previstas..." : "Explicación y actividades...";
               contentArea.value = session.actividades || "";
               contentArea.oninput = (e) => {
                 onInlineEdit(school, slot.course, weekIndex, "actividades", e.target.value);
+                autoResizeTextarea(e.target, 35);
+                syncWeekFranjaHeights();
               };
 
-              // Fila de Título con botón para pasar a la siguiente sesión (a la derecha, debajo de ▶)
+              // Fila de Título con botón para pasar a la siguiente sesión
               const titleRow = document.createElement("div");
               titleRow.className = "card-title-row";
 
@@ -5622,7 +5896,7 @@
               titleRow.appendChild(titleInput);
               titleRow.appendChild(btnPostponeContent);
 
-              // Avisos compactos con solo icono, sin texto redundante
+              // Avisos compactos
               const avisosWrap = document.createElement("div");
               avisosWrap.className = "inline-avisos-wrap" + (isAvisoDado ? " is-given" : (hasAvisoText ? " has-text" : ""));
 
@@ -5644,7 +5918,8 @@
                 onInlineEdit(school, slot.course, weekIndex, "avisos", e.target.value);
                 if (e.target.value && e.target.value.trim()) avisosWrap.classList.add("has-text");
                 else avisosWrap.classList.remove("has-text");
-                autoResizeAvisosTextarea(e.target);
+                autoResizeTextarea(e.target, 20);
+                syncWeekFranjaHeights();
               };
 
               const btnPostpone = document.createElement("button");
@@ -5660,7 +5935,7 @@
               avisosWrap.appendChild(avisosTextarea);
               avisosWrap.appendChild(btnPostpone);
 
-              // Educamos compacto con icono, textarea y botón de copiar portapapeles
+              // Educamos compacto
               const educamosWrap = document.createElement("div");
               educamosWrap.className = "inline-educamos-wrap" + (isEducamosDado ? " is-done" : (hasEducamosText ? " has-text" : ""));
 
@@ -5682,7 +5957,8 @@
                 onInlineEdit(school, slot.course, weekIndex, "educamos", e.target.value);
                 if (e.target.value && e.target.value.trim()) educamosWrap.classList.add("has-text");
                 else educamosWrap.classList.remove("has-text");
-                autoResizeAvisosTextarea(e.target);
+                autoResizeTextarea(e.target, 20);
+                syncWeekFranjaHeights();
               };
 
               const btnCopyEducamos = document.createElement("button");
@@ -5714,15 +5990,17 @@
               const breakClass = slotInfo.className;
               const slotKey = `${day.dayIndex}__${slot.time}`;
               const noteText = (week.slot_notes && week.slot_notes[slotKey]) ? week.slot_notes[slotKey] : "";
-              const hasNote = !!(noteText && noteText.trim());
               const isBeingEdited = (week.slot_notes && week.slot_notes[slotKey] !== undefined);
 
               breakCard.className = `static-slot-block ${breakClass}` + 
-                (heightPx < 36 ? " is-compact" : "") + 
                 (isHoliday ? " is-holiday-slot" : "") + 
                 (isBeingEdited ? " has-note" : "");
-              breakCard.style.top = topPx + "px";
-              breakCard.style.height = heightPx + "px";
+              breakCard.dataset.franja = fInfo.franja;
+              breakCard.dataset.dayIndex = day.dayIndex;
+              breakCard.dataset.slotTime = slot.time;
+              if (fInfo.sub) breakCard.dataset.sub = fInfo.sub;
+              if (fInfo.span) breakCard.dataset.span = fInfo.span;
+              if (fInfo.type) breakCard.dataset.spanType = fInfo.type;
 
               if (isBeingEdited) {
                 breakCard.innerHTML = `
@@ -5740,7 +6018,7 @@
                     </div>
                   </div>
                   <div class="slot-note-inline-wrap">
-                    <textarea class="slot-note-textarea" data-slot-key="${slotKey}" placeholder="Notas, apuntes o tareas pendientes..." oninput="onSlotNoteInlineEdit(${weekIndex}, '${slotKey}', this.value)" onblur="onSlotNoteBlur(${weekIndex}, '${slotKey}', this.value)">${escapeHTML(noteText)}</textarea>
+                    <textarea class="slot-note-textarea" data-slot-key="${slotKey}" placeholder="Notas, apuntes o tareas pendientes..." oninput="onSlotNoteInlineEdit(${weekIndex}, '${slotKey}', this.value); autoResizeTextarea(this, 24); syncWeekFranjaHeights();" onblur="onSlotNoteBlur(${weekIndex}, '${slotKey}', this.value)">${escapeHTML(noteText)}</textarea>
                   </div>
                 `;
               } else {
@@ -5774,17 +6052,13 @@
       wrap.appendChild(bodyGrid);
       container.appendChild(wrap);
 
-      // Auto-expandir recuadros de avisos y educamos para mostrar el texto completo sin scroll
+      // Sincronizar alturas de todas las franjas horarias y auto-expandir textos
       requestAnimationFrame(() => {
-        wrap.querySelectorAll(".inline-field.inline-avisos, .inline-field.inline-educamos").forEach(el => {
-          autoResizeAvisosTextarea(el);
-        });
+        syncWeekFranjaHeights();
       });
       setTimeout(() => {
-        wrap.querySelectorAll(".inline-field.inline-avisos, .inline-field.inline-educamos").forEach(el => {
-          autoResizeAvisosTextarea(el);
-        });
-      }, 50);
+        syncWeekFranjaHeights();
+      }, 60);
     }
     /* EDICIÓN DIRECTA EN LA TARJETA (INLINE AUTO-SAVE) */
     let saveTimeout = null;
