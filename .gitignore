@@ -1,0 +1,8 @@
+# Sistema operativo y cachés
+.DS_Store
+.firebase/
+
+# Archivos de respaldo temporales
+*.backup
+*.backup.html
+*backup*.html

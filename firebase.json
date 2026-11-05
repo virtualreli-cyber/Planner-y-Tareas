@@ -1,0 +1,17 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      ".firebaserc",
+      "**/.*",
+      "*.backup.html",
+      "*backup*.html",
+      "*.backup",
+      "Archivos referencia/**",
+      "*.pdf",
+      "*.csv",
+      "*.png"
+    ]
+  }
+}

@@ -1,0 +1,3035 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Control Docente - 17 Grupos</title>
+  
+  <!-- Icono de pestaña (Favicon de tareas/checks) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✅</text></svg>">
+
+  <!-- Firebase SDK Compat (Estable, universal, funciona en file:// y con soporte offline) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #2563eb;
+      
+      /* Estados de tareas */
+      --success: #15803d;
+      --success-bg: #dcfce7;
+      --success-border: #86efac;
+
+      /* Rojo pastel discreto para PENDIENTE */
+      --pending-bg: #fff1f2;
+      --pending-text: #be123c;
+      --pending-border: #fca5a5;
+
+      /* Ámbar/Naranja para ATRASADO (Deuda) */
+      --overdue-bg: #fef3c7;
+      --overdue-text: #92400e;
+      --overdue-border: #f59e0b;
+
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+      --accent: #f1f5f9;
+      
+      --purple: #7c3aed;
+      --purple-bg: #faf5ff;
+      --purple-border: #d8b4fe;
+
+      /* Colores temáticos pastel por centro */
+      --riba-bg: #ffe4e6;
+      --riba-text: #9f1239;
+      --riba-border: #fecdd3;
+
+      --manises-bg: #e0f2fe;
+      --manises-text: #0369a1;
+      --manises-border: #bae6fd;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    
+    html, body {
+      height: 100vh;
+      overflow: hidden;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      padding: 8px 14px;
+      max-width: 100%;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .top-panel {
+      flex-shrink: 0;
+    }
+
+    header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 6px; 
+      flex-wrap: nowrap; 
+      gap: 6px; 
+      white-space: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    header::-webkit-scrollbar {
+      display: none;
+    }
+    
+    /* Selector de Vista Principal */
+    .view-switcher {
+      display: flex;
+      background: #e2e8f0;
+      padding: 2px;
+      border-radius: 7px;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+    .view-btn {
+      border: none;
+      background: transparent;
+      padding: 3px 8px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+      height: 24px;
+      box-sizing: border-box;
+      display: inline-flex;
+      align-items: center;
+    }
+    .view-btn.active {
+      background: var(--card-bg);
+      color: var(--text);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* Enlace de cambio rápido a Planner */
+    .btn-app-switcher {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 24px;
+      padding: 0 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-decoration: none;
+      color: #334155;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+    .btn-app-switcher:hover {
+      background: var(--accent);
+      color: #0f172a;
+      border-color: #cbd5e1;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+      transform: translateY(-0.5px);
+    }
+    .btn-app-switcher:active {
+      transform: translateY(0);
+    }
+    .btn-app-switcher .switcher-icon {
+      font-size: 0.75rem;
+      line-height: 1;
+    }
+    
+    .actions { display: flex; gap: 4px; align-items: center; flex-wrap: nowrap; flex-shrink: 0; }
+    button { cursor: pointer; border-radius: 6px; padding: 2px 7px; font-size: 0.71rem; font-weight: 600; border: 1px solid var(--border); background: var(--card-bg); transition: 0.15s; white-space: nowrap; height: 24px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; }
+    button:hover { background: var(--accent); }
+    
+    button.all-done-btn { color: var(--success); border-color: #86efac; background: #f0fdf4; }
+    button.all-done-btn:hover { background: var(--success-bg); }
+
+    button.rollover-btn { color: #2563eb; border-color: #bfdbfe; background: #eff6ff; }
+    button.rollover-btn:hover { background: #dbeafe; }
+
+    button.hard-reset-btn { color: var(--danger); border-color: #fecaca; background: #fff5f5; }
+    button.hard-reset-btn:hover { background: var(--danger-bg); }
+
+    button.add-task-btn { background: var(--primary); color: white; border-color: var(--primary); }
+    button.add-task-btn:hover { background: #1d4ed8; }
+
+    .debt-badge { font-size: 0.68rem; padding: 2px 6px; border-radius: 999px; background: var(--overdue-bg); color: var(--overdue-text); font-weight: 800; border: 1px solid var(--overdue-border); display: none; white-space: nowrap; height: 22px; line-height: 18px; box-sizing: border-box; }
+
+    .tabs { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 6px; border-bottom: 1px solid var(--border); padding-bottom: 4px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab-btn { background: none; border: none; font-size: 0.76rem; color: var(--muted); padding: 3px 7px; height: 26px; }
+    .tab-btn.active { color: var(--primary); font-weight: 700; border-bottom: 2px solid var(--primary); border-radius: 0; }
+    .tab-btn.tab-riba.active { color: var(--riba-text); border-bottom-color: var(--riba-text); }
+    .tab-btn.tab-manises.active { color: var(--manises-text); border-bottom-color: var(--manises-text); }
+    .tab-btn.neae-tab.active { color: var(--purple); border-bottom-color: var(--purple); }
+
+    .progress-bar-container { background: #e2e8f0; border-radius: 999px; height: 4px; overflow: hidden; margin-bottom: 6px; }
+    .progress-bar { background: var(--success); height: 100%; width: 0%; transition: width 0.3s; }
+
+    /* CONTENEDOR CON SCROLL HORIZONTAL Y VERTICAL */
+    .table-container {
+      flex: 1;
+      overflow: auto;
+      background: var(--card-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      margin-bottom: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      text-align: left;
+      font-size: 0.83rem;
+    }
+
+    /* FILAS HOMOGÉNEAS EN AMBAS TABLAS */
+    tbody tr {
+      height: 72px;
+    }
+
+    thead th {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: #f8fafc;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      padding: 8px 10px;
+      box-shadow: inset 0 -1px 0 var(--border);
+      height: 52px;
+      box-sizing: border-box;
+      white-space: nowrap;
+    }
+    thead th.th-neae {
+      background: #faf5ff !important;
+      color: #6b21a8 !important;
+    }
+
+    tbody td {
+      height: 72px;
+      box-sizing: border-box;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      background: #ffffff;
+    }
+
+    /* COLUMNAS FIJAS: CENTRO (0px) Y GRUPO (140px) */
+    .col-center {
+      width: 140px;
+      min-width: 140px;
+      max-width: 140px;
+      position: sticky;
+      left: 0;
+    }
+    thead th.col-center {
+      z-index: 35;
+      background: #f8fafc;
+    }
+    tbody td.col-center {
+      z-index: 15;
+      background: #ffffff;
+    }
+
+    .col-group {
+      width: 240px;
+      min-width: 240px;
+      max-width: 240px;
+      position: sticky;
+      left: 140px;
+      border-right: 2px solid var(--border) !important;
+      box-shadow: 3px 0 5px -2px rgba(0,0,0,0.06);
+    }
+    thead th.col-group {
+      z-index: 35;
+      background: #f8fafc;
+    }
+    tbody td.col-group {
+      z-index: 15;
+      background: #ffffff;
+    }
+
+    /* COLUMNAS DE TAREAS SEMANALES: Distribución natural al 100% */
+    .weekly-task-col {
+      text-align: center;
+      min-width: 125px;
+    }
+
+    /* COLUMNAS DE TAREAS A LARGO PLAZO: Ancho exacto igual a las semanales (140px) */
+    .col-lt-task {
+      width: 140px;
+      min-width: 140px;
+      max-width: 140px;
+      text-align: center;
+    }
+
+    /* Columna de relleno solo para la tabla a largo plazo */
+    .col-filler {
+      width: auto;
+      padding: 0 !important;
+      background: #ffffff;
+    }
+    thead th.col-filler {
+      background: #f8fafc;
+    }
+
+    .th-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .th-actions-row {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .th-action-btn {
+      font-size: 0.62rem;
+      padding: 2px 7px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--muted);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+    .th-action-btn:hover {
+      background: var(--success-bg);
+      color: var(--success);
+      border-color: var(--success-border);
+    }
+    .th-delete-btn:hover {
+      background: var(--danger-bg) !important;
+      color: var(--danger) !important;
+      border-color: #fecaca !important;
+    }
+
+    .center-badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 999px; font-weight: 700; white-space: nowrap; }
+    .badge-ribarroja { background: var(--riba-bg); color: var(--riba-text); border: 1px solid var(--riba-border); }
+    .badge-manises { background: var(--manises-bg); color: var(--manises-text); border: 1px solid var(--manises-border); }
+
+    /* ESTADO BASE: ROJO PASTEL (PENDIENTE) */
+    .status-btn {
+      display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+      width: 100%; min-width: 95px; padding: 6px 6px; border-radius: 6px; 
+      border: 1px dashed var(--pending-border);
+      background: var(--pending-bg); 
+      color: var(--pending-text); 
+      font-size: 0.74rem; font-weight: 600; user-select: none;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .status-btn:hover { 
+      background: #ffe4e6; 
+      border-color: #f43f5e; 
+    }
+    
+    .status-btn.checked { 
+      background: var(--success-bg); 
+      color: var(--success); 
+      border: 1px solid var(--success-border); 
+    }
+    .status-btn.checked:hover {
+      background: #bbf7d0;
+      border-color: #4ade80;
+    }
+    
+    .status-btn.overdue { 
+      background: var(--overdue-bg); 
+      color: var(--overdue-text); 
+      border: 1px solid var(--overdue-border);
+      box-shadow: 0 0 0 1px #fde68a;
+    }
+
+    .status-btn.neae-pending { 
+      background: #fff1f2; 
+      color: var(--purple); 
+      border: 1px dashed var(--purple-border); 
+    }
+
+    .overdue-tag { font-size: 0.62rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.03em; margin-bottom: 2px; }
+
+    .group-name { font-weight: 700; font-size: 0.9rem; margin-bottom: 3px; }
+    .neae-textarea {
+      width: 100%; min-height: 42px; max-height: 42px; resize: none; font-size: 0.74rem; color: #581c87;
+      border: 1px solid #d8b4fe; border-radius: 6px; padding: 4px 6px; background: #faf5ff;
+      outline: none; font-family: inherit; line-height: 1.25; transition: border-color 0.15s;
+    }
+    .neae-textarea:focus { border-color: #9333ea; background: #ffffff; box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.12); }
+    .neae-textarea::placeholder { color: #c084fc; font-style: italic; }
+
+    .neae-static-empty { color: #94a3b8; font-size: 0.95rem; font-weight: 600; user-select: none; display: inline-block; }
+
+    .note-cell { min-width: 190px; }
+    .note-input {
+      width: 100%; padding: 6px 8px; font-size: 0.78rem; border: 1px solid var(--border);
+      border-radius: 6px; background: #fff; color: var(--text); outline: none;
+    }
+    .note-input:focus { border-color: var(--primary); background: #f8fafc; }
+    .note-input::placeholder { color: #cbd5e1; font-style: italic; }
+
+    /* CUADROS DE TEXTO Y BOTONES CONDICIONALES (FOTOCOPIAS, PLATAFORMA, NOTAS) */
+    .task-cell-box {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: stretch;
+      width: 100%;
+    }
+    .task-inline-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 3px 6px;
+      font-size: 0.73rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #ffffff;
+      color: var(--text);
+      outline: none;
+      transition: all 0.15s ease;
+      height: 25px;
+      line-height: 1;
+      font-family: inherit;
+    }
+    .task-inline-input:focus {
+      border-color: var(--primary);
+      background: #f8fafc;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.12);
+    }
+    .task-inline-input::placeholder {
+      color: #94a3b8;
+      font-style: italic;
+      font-size: 0.70rem;
+    }
+    .task-inline-input.has-content {
+      border-color: #93c5fd;
+      background: #f0f7ff;
+      color: #1e3a8a;
+      font-weight: 600;
+    }
+    .task-btn-wrap {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .task-btn-idle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 27px;
+      border-radius: 6px;
+      border: 1px dashed #e2e8f0;
+      background: #f8fafc;
+      color: #94a3b8;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: text;
+      user-select: none;
+      transition: all 0.15s ease;
+      box-sizing: border-box;
+    }
+    .task-btn-idle:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      color: #64748b;
+    }
+
+    /* MODAL INTEGRADO */
+    .modal-backdrop {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; z-index: 100;
+    }
+    .modal-card {
+      background: #ffffff; border-radius: 16px; width: 95%; max-width: 580px;
+      padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05);
+      border: 1px solid var(--border);
+    }
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;
+    }
+    .modal-title { font-size: 1.2rem; font-weight: 700; color: var(--text); }
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
+    .form-input {
+      width: 100%; padding: 9px 12px; font-size: 0.88rem; border: 1px solid var(--border);
+      border-radius: 8px; outline: none; background: #f8fafc; transition: border-color 0.15s, background 0.15s;
+    }
+    .form-input:focus { border-color: var(--primary); background: #ffffff; }
+
+    .scope-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 0.82rem;
+    }
+    .scope-card {
+      display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 8px;
+      border: 1px solid var(--border); background: #f8fafc; cursor: pointer; transition: all 0.15s; font-weight: 600;
+    }
+    .scope-card:hover { background: #f1f5f9; border-color: #cbd5e1; }
+    .scope-card input[type="radio"] { accent-color: var(--primary); }
+
+    .manual-groups-box {
+      margin-top: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 10px;
+      background: #f8fafc; display: none; grid-template-columns: 1fr 1fr; gap: 14px;
+      max-height: 260px; overflow-y: auto;
+    }
+    .manual-col {
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .manual-col-header {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+      padding: 3px 8px; border-radius: 6px; margin-bottom: 4px; display: inline-block; width: fit-content;
+    }
+    .manual-item {
+      display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 500;
+      padding: 4px 6px; border-radius: 6px; cursor: pointer; transition: background 0.1s;
+    }
+    .manual-item:hover { background: #ffffff; }
+    .manual-item input[type="checkbox"] { accent-color: var(--primary); }
+
+    .modal-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+
+    /* ESTILOS DE LA BASE DE DATOS EN LA NUBE (ICONO COMPACTO) */
+    .sync-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 2px 6px;
+      height: 24px;
+      min-width: 28px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+      user-select: none;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .sync-badge:hover { transform: translateY(-1px); }
+    .sync-badge.synced { background: #dcfce7; color: #15803d; border-color: #86efac; }
+    .sync-badge.syncing { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; }
+    .sync-badge.offline { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+    .sync-badge.unauth { background: #fef3c7; color: #b45309; border-color: #fde68a; }
+    
+    .sync-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .sync-badge.synced .sync-status-dot { background: #16a34a; box-shadow: 0 0 0 1px #86efac; }
+    .sync-badge.syncing .sync-status-dot { background: #2563eb; }
+    .sync-badge.offline .sync-status-dot { background: #dc2626; box-shadow: 0 0 0 1px #fca5a5; }
+    .sync-badge.unauth .sync-status-dot { background: #d97706; box-shadow: 0 0 0 1px #fde68a; }
+
+    /* BADGE Y SELECTOR DE SEMANA EN CABECERA (COMPACTO) */
+    .week-pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 5px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 7px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+      box-shadow: 0 1px 2px rgba(37, 99, 235, 0.05);
+      flex-shrink: 0;
+      white-space: nowrap;
+      width: auto;
+      min-width: 155px;
+      max-width: 185px;
+      box-sizing: border-box;
+      justify-content: space-between;
+      height: 24px;
+    }
+    .week-pill-badge:hover {
+      background: #dbeafe;
+      border-color: #93c5fd;
+    }
+    .week-nav-btn {
+      border: 1px solid #bfdbfe;
+      background: #ffffff;
+      color: #1e40af;
+      border-radius: 4px;
+      width: 18px;
+      min-width: 18px;
+      max-width: 18px;
+      height: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      cursor: pointer;
+      padding: 0;
+      transition: all 0.12s;
+      flex-shrink: 0;
+    }
+    .week-nav-btn:hover {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+    }
+    .week-pill-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      width: 85px;
+      min-width: 80px;
+      max-width: 105px;
+      flex-shrink: 0;
+      text-align: center;
+      overflow: hidden;
+      line-height: 1;
+    }
+    .week-pill-info span {
+      display: block;
+      width: 100%;
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .week-choose-btn {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0;
+      width: 22px;
+      min-width: 22px;
+      max-width: 22px;
+      height: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      border: 1px solid #bfdbfe;
+      background: #ffffff;
+      color: #1e40af;
+      cursor: pointer;
+      transition: all 0.12s;
+      flex-shrink: 0;
+    }
+    .week-choose-btn:hover {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+    }
+
+    .week-picker-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 8px;
+      max-height: 440px;
+      overflow-y: auto;
+      padding: 4px;
+    }
+    .week-picker-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      cursor: pointer;
+      transition: all 0.12s ease;
+      font-size: 0.82rem;
+    }
+    .week-picker-item:hover {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #1e40af;
+    }
+    .week-picker-item.active {
+      background: #dbeafe;
+      border-color: #3b82f6;
+      font-weight: 800;
+      color: #1d4ed8;
+      box-shadow: 0 0 0 1px #3b82f6;
+    }
+
+    /* ACCESOS DIRECTOS A SEMANA ACTUAL Y PRÓXIMA (COMPACTOS) */
+    .week-direct-shortcuts {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+    .week-shortcut-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 0.69rem;
+      font-weight: 700;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      height: 24px;
+      box-sizing: border-box;
+      line-height: 1;
+      user-select: none;
+    }
+    .week-shortcut-btn:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      transform: translateY(-1px);
+    }
+    .week-shortcut-btn.current-week.is-active-view {
+      background: #eff6ff;
+      color: #1e40af;
+      border-color: #93c5fd;
+      font-weight: 800;
+      box-shadow: 0 0 0 1px #93c5fd;
+    }
+    .week-shortcut-btn.next-week.is-active-view {
+      background: #faf5ff;
+      color: #6b21a8;
+      border-color: #d8b4fe;
+      font-weight: 800;
+      box-shadow: 0 0 0 1px #d8b4fe;
+    }
+
+    /* PESTAÑA Y BOTÓN DE SOLO PENDIENTES (COMPACTOS) */
+    .tab-btn.pending-tab {
+      color: #b45309;
+      font-weight: 700;
+    }
+    .tab-btn.pending-tab.active {
+      color: #92400e;
+      border-bottom-color: #f59e0b;
+      background: #fef3c7;
+      border-radius: 6px 6px 0 0;
+    }
+
+    .only-pending-pill {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #b45309;
+      background: #fef3c7;
+      border: 1px solid #fde68a;
+      padding: 2px 8px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      user-select: none;
+      white-space: nowrap;
+      height: 22px;
+      box-sizing: border-box;
+    }
+    .only-pending-pill:hover {
+      background: #fde68a;
+      border-color: #f59e0b;
+      transform: translateY(-1px);
+    }
+    .only-pending-pill.active {
+      background: #f59e0b;
+      color: #ffffff;
+      border-color: #d97706;
+      box-shadow: 0 1px 3px rgba(217, 119, 6, 0.25);
+    }
+
+    /* ETIQUETA DE COLUMNA 100% COMPLETADA */
+    .col-status-tag {
+      display: none;
+      font-size: 0.58rem;
+      font-weight: 800;
+      color: #15803d;
+      background: #dcfce7;
+      border: 1px solid #bbf7d0;
+      padding: 1px 5px;
+      border-radius: 4px;
+      line-height: 1;
+      letter-spacing: 0.02em;
+    }
+    .col-status-tag.active {
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-panel">
+    <header>
+      <div style="display:flex; align-items:center; gap: 6px; flex-shrink: 0;">
+        <div style="flex-shrink: 0;">
+          <h1 id="viewTitle" style="font-size: 0.95rem; font-weight: 800; line-height: 1.1; margin: 0; white-space: nowrap;">Control Clases</h1>
+          <p id="viewSubtitle" style="color: var(--muted); font-size: 0.64rem; line-height: 1.1; margin: 0; white-space: nowrap;">17 grupos</p>
+        </div>
+
+        <a href="planner.html" class="btn-app-switcher" title="Ir al Planner Anual">
+          <span class="switcher-icon">📚</span>
+          <span>Planner</span>
+        </a>
+
+        <div class="view-switcher">
+          <button class="view-btn active" id="btnViewWeekly" onclick="switchView('weekly')" title="Vista Semanal">📅 Semanal</button>
+          <button class="view-btn" id="btnViewLongTerm" onclick="switchView('longterm')" title="Vista Tareas a Largo Plazo">📌 Largo Plazo</button>
+        </div>
+
+        <!-- Indicador y Selector de Semana (Compacto) -->
+        <div class="week-pill-badge" id="weekPillBadge" onclick="openWeekPickerModal()" title="Clic para elegir semana a preparar">
+          <button type="button" class="week-nav-btn" onclick="event.stopPropagation(); navigateWeek(-1)" title="Semana anterior">◀</button>
+          <div class="week-pill-info">
+            <span id="weekPillTitle" style="font-weight:800; font-size:0.75rem; color:#1e40af; line-height:1.1;">Semana 7</span>
+            <span id="weekPillSubtitle" style="font-size:0.62rem; color:#475569; font-weight:600; line-height:1.1;">12/10 - 16/10</span>
+          </div>
+          <button type="button" class="week-nav-btn" onclick="event.stopPropagation(); navigateWeek(1)" title="Semana siguiente">▶</button>
+          <button type="button" class="week-choose-btn" onclick="event.stopPropagation(); openWeekPickerModal()" title="Elegir semana del calendario">📅</button>
+        </div>
+
+        <!-- Acceso directo: Semana Actual y Próxima Semana (Compactos) -->
+        <div class="week-direct-shortcuts" id="weekDirectShortcuts">
+          <button type="button" class="week-shortcut-btn current-week" id="btnGoCurrentWeek" onclick="goToRealCurrentWeek()" title="Ver semana en curso según el calendario">
+            📍 Actual
+          </button>
+          <button type="button" class="week-shortcut-btn next-week" id="btnGoNextWeek" onclick="goToRealNextWeek()" title="Ver próxima semana para preparar con antelación">
+            ⏩ Próxima
+          </button>
+        </div>
+
+        <div id="cloudSyncBadge" class="sync-badge syncing" onclick="CloudDB.openStatusModal()" title="Estado de la base de datos en la nube">
+          <span class="sync-status-dot"></span><span>☁️</span>
+        </div>
+      </div>
+
+      <!-- Acciones de la vista semanal (Compactas) -->
+      <div class="actions" id="weeklyActions">
+        <span id="debtIndicator" class="debt-badge">⚠️ 0</span>
+        <button onclick="markAllCompleted()" class="all-done-btn" title="Marcar todas las tareas semanales como completadas">✓ Todo</button>
+        <button onclick="startNewWeek()" class="rollover-btn" title="Avanzar a la siguiente semana pasando tareas pendientes">🔄 +Semana</button>
+        <button onclick="hardReset()" class="hard-reset-btn" title="Reset total de casillas de la semana actual">🗑️ Reset</button>
+      </div>
+
+      <!-- Acciones de la vista a largo plazo -->
+      <div class="actions" id="longTermActions" style="display:none;">
+        <button onclick="openNewTaskModal()" class="add-task-btn" title="Crear nueva columna / tarea a largo plazo">+ Tarea</button>
+      </div>
+    </header>
+
+    <div class="progress-bar-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- Pestañas de filtrado de centro y botón de Solo Pendientes (Compactas) -->
+    <div class="tabs">
+      <div style="display: flex; gap: 5px; align-items: center; flex-wrap: nowrap; flex-shrink: 0;">
+        <button class="tab-btn active" onclick="setFilter('all', this)">Todos (17)</button>
+        <button class="tab-btn tab-riba" onclick="setFilter('Riba-roja', this)">🔴 Riba-roja (9)</button>
+        <button class="tab-btn tab-manises" onclick="setFilter('Manises', this)">🔵 Manises (8)</button>
+        <button class="tab-btn neae-tab" id="neaeFilterTab" onclick="setFilter('neae', this)">🟣 NEAE</button>
+        <button class="tab-btn pending-tab" id="pendingFilterTab" onclick="setFilter('pending', this)" title="Ver únicamente los cursos que tienen tareas pendientes">
+          ⏳ Pendientes (<span id="pendingTabCount">0</span>)
+        </button>
+      </div>
+      <div style="display: flex; gap: 5px; align-items: center; flex-shrink: 0;">
+        <button type="button" class="only-pending-pill" id="btnToggleHideDone" onclick="toggleHideDone()" title="Ocultar los cursos que ya tienen todo completado en la vista actual">
+          ⏳ Ocultar hechos
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VISTA 1: TABLA SEMANAL (OCUPA EL 100% DEL ANCHO COMO ANTES) -->
+  <div class="table-container" id="weeklyTableContainer">
+    <table id="classesTable">
+      <thead>
+        <tr>
+          <th class="col-center">Centro</th>
+          <th class="col-group">Grupo y Necesidades NEAE</th>
+          
+          <th class="weekly-task-col">
+            <div class="th-content">
+              <span>1. Mat. Base</span>
+              <span id="colStatus-mat" class="col-status-tag"></span>
+              <button class="th-action-btn" onclick="toggleColumn('mat')">✓ Todos</button>
+            </div>
+          </th>
+
+          <th class="weekly-task-col th-neae">
+            <div class="th-content">
+              <span>2. Adapt. NEAE</span>
+              <span id="colStatus-neae" class="col-status-tag"></span>
+              <button class="th-action-btn" onclick="toggleColumn('neae')">✓ Todos</button>
+            </div>
+          </th>
+
+          <th class="weekly-task-col">
+            <div class="th-content">
+              <span>3. Fotocopias</span>
+              <span id="colStatus-print" class="col-status-tag"></span>
+              <button class="th-action-btn" onclick="toggleColumn('print')">✓ Todos</button>
+            </div>
+          </th>
+
+          <th class="weekly-task-col">
+            <div class="th-content">
+              <span>4. Plataformas</span>
+              <span id="colStatus-platform" class="col-status-tag"></span>
+              <button class="th-action-btn" onclick="toggleColumn('platform')">✓ Todos</button>
+            </div>
+          </th>
+
+          <th class="weekly-task-col">
+            <div class="th-content">
+              <span>5. Avisos Educamos</span>
+              <span id="colStatus-educamos" class="col-status-tag"></span>
+              <button class="th-action-btn" onclick="toggleColumn('educamos')">✓ Todos</button>
+            </div>
+          </th>
+
+          <th class="weekly-task-col">
+            <div class="th-content">
+              <span>6. Cuaderno / Notas</span>
+              <span id="colStatus-grades" class="col-status-tag"></span>
+              <button class="th-action-btn" onclick="toggleColumn('grades')">✓ Todos</button>
+            </div>
+          </th>
+
+          <th class="note-cell">Notas / Casos puntuales</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- VISTA 2: TABLA A LARGO PLAZO (COLUMNAS DE 140px, ESPACIO RESTANTE VACÍO Y SCROLL HORIZONTAL) -->
+  <div class="table-container" id="longTermTableContainer" style="display: none;">
+    <table>
+      <thead>
+        <tr id="longTermTableHeadRow">
+          <th class="col-center">Centro</th>
+          <th class="col-group">Grupo</th>
+          <!-- Columnas dinámicas inyectadas por JS -->
+        </tr>
+      </thead>
+      <tbody id="longTermTableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- MODAL: CREAR TAREA A LARGO PLAZO -->
+  <div class="modal-backdrop" id="newTaskModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">Nueva Tarea a Largo Plazo</div>
+        <button onclick="closeNewTaskModal()" style="border:none; background:none; font-size:1.1rem; color:var(--muted); cursor:pointer;">✕</button>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="taskNameInput">Nombre de la Columna / Tarea</label>
+        <input type="text" class="form-input" id="taskNameInput" placeholder="Ej: Rúbrica 1º Trimestre, Revisión Cuadernos..." autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Aplicar a los grupos:</label>
+        <div class="scope-grid">
+          <label class="scope-card">
+            <input type="radio" name="scopeOption" value="all" checked onchange="toggleManualGroups(false)">
+            <span>Todos los cursos (17)</span>
+          </label>
+          <label class="scope-card">
+            <input type="radio" name="scopeOption" value="Riba-roja" onchange="toggleManualGroups(false)">
+            <span>🔴 Riba-roja (9)</span>
+          </label>
+          <label class="scope-card">
+            <input type="radio" name="scopeOption" value="Manises" onchange="toggleManualGroups(false)">
+            <span>🔵 Manises (8)</span>
+          </label>
+          <label class="scope-card">
+            <input type="radio" name="scopeOption" value="manual" onchange="toggleManualGroups(true)">
+            <span>Selección manual...</span>
+          </label>
+        </div>
+
+        <div class="manual-groups-box" id="manualGroupsContainer">
+          <div class="manual-col">
+            <span class="manual-col-header badge-ribarroja">🔴 Riba-roja (9)</span>
+            <div id="manualRibaList"></div>
+          </div>
+          <div class="manual-col">
+            <span class="manual-col-header badge-manises">🔵 Manises (8)</span>
+            <div id="manualManisesList"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-buttons">
+        <button onclick="closeNewTaskModal()">Cancelar</button>
+        <button class="add-task-btn" onclick="saveNewTask()">Añadir Columna</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ELEGIR SEMANA A PREPARAR -->
+  <div class="modal-backdrop" id="weekPickerModal" style="display: none;">
+    <div class="modal-card" style="width: 580px; max-width: 95vw;">
+      <div class="modal-header">
+        <div class="modal-title" style="display:flex; align-items:center; gap:8px;">
+          <span>📅 Elegir Semana a Preparar</span>
+        </div>
+        <button onclick="closeWeekPickerModal()" style="border:none; background:none; font-size:1.1rem; color:var(--muted); cursor:pointer;">✕</button>
+      </div>
+      <p style="font-size:0.84rem; color:var(--muted); margin-bottom:12px; line-height:1.4;">
+        Selecciona la semana que estás preparando. Los avisos de Educamos se vincularán automáticamente con las sesiones de esa semana en el Planner.
+      </p>
+      <div class="week-picker-grid" id="weekPickerGrid">
+        <!-- Generado dinámicamente -->
+      </div>
+      <div class="modal-buttons" style="justify-content: flex-end; margin-top: 14px;">
+        <button type="button" onclick="closeWeekPickerModal()" style="border:1px solid var(--border); background:#f8fafc; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:0.85rem; font-weight:600;">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONECTAR A LA NUBE (FIREBASE) -->
+  <div class="modal-backdrop" id="cloudAuthModal">
+    <div class="modal-card" style="width: 440px;">
+      <div class="modal-header">
+        <div class="modal-title" style="display:flex; align-items:center; gap:8px;">
+          <span>☁️ Conectar Nube (Firebase)</span>
+        </div>
+        <button onclick="CloudDB.closeAuthModal()" style="border:none; background:none; font-size:1.1rem; color:var(--muted); cursor:pointer;">✕</button>
+      </div>
+
+      <p style="font-size:0.84rem; color:var(--muted); margin-bottom:16px; line-height:1.4;">
+        Introduce el correo y contraseña que configuraste en tu panel de Firebase. Se guardará de forma segura en este navegador para no volver a pedírtelo.
+      </p>
+      
+      <div class="form-group">
+        <label class="form-label" for="cloudEmailInput">Correo de Firebase</label>
+        <input type="email" class="form-input" id="cloudEmailInput" placeholder="tu-correo@ejemplo.com" value="virtual.reli@gmail.com" autocomplete="username">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="cloudPassInput">Contraseña</label>
+        <input type="password" class="form-input" id="cloudPassInput" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter') CloudDB.login()">
+      </div>
+
+      <div id="cloudAuthError" style="color:var(--danger); font-size:0.8rem; margin-top:8px; margin-bottom:12px; display:none; background:var(--danger-bg); padding:8px 10px; border-radius:6px; border:1px solid var(--danger);"></div>
+
+      <div class="modal-buttons" style="justify-content: space-between; align-items: center;">
+        <button type="button" onclick="CloudDB.closeAuthModal()" style="border:1px solid var(--border); background:#f8fafc; padding:8px 14px; border-radius:8px; cursor:pointer; font-size:0.85rem;">Usar en local</button>
+        <button type="button" class="add-task-btn" id="btnCloudLogin" onclick="CloudDB.login()">Conectar Nube</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ESTADO DE LA NUBE Y COPIAS DE SEGURIDAD -->
+  <div class="modal-backdrop" id="cloudStatusModal">
+    <div class="modal-card" style="width: 460px;">
+      <div class="modal-header">
+        <div class="modal-title" style="display:flex; align-items:center; gap:8px;">
+          <span>☁️ Estado de Sincronización</span>
+        </div>
+        <button onclick="CloudDB.closeStatusModal()" style="border:none; background:none; font-size:1.1rem; color:var(--muted); cursor:pointer;">✕</button>
+      </div>
+
+      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:18px;">
+        <div style="font-size:0.82rem; color:var(--muted); margin-bottom:4px;">Usuario conectado:</div>
+        <div id="cloudUserEmail" style="font-weight:700; font-size:0.95rem; color:var(--text); margin-bottom:10px;">-</div>
+        
+        <div style="font-size:0.82rem; color:var(--muted); margin-bottom:4px;">Estado actual:</div>
+        <div id="cloudStatusDetail" style="font-weight:600; font-size:0.88rem; color:var(--success);">🟢 Sincronizado en tiempo real</div>
+        
+        <div style="font-size:0.75rem; color:var(--muted); margin-top:10px;">
+          ℹ️ Todos los cambios se guardan automáticamente en tu Realtime Database y en tu almacenamiento local.
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <button type="button" onclick="CloudDB.exportBackup()" style="display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:#ffffff; font-weight:600; cursor:pointer; font-size:0.85rem;">
+          📥 Descargar Copia de Seguridad JSON
+        </button>
+
+        <button type="button" onclick="CloudDB.forcePushNow()" style="display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:10px; border-radius:8px; border:1px solid #bfdbfe; background:#eff6ff; color:#1e40af; font-weight:600; cursor:pointer; font-size:0.85rem;">
+          🔄 Forzar Sincronización Ahora
+        </button>
+      </div>
+
+      <div class="modal-buttons" style="justify-content: space-between; margin-top:20px;">
+        <button type="button" onclick="CloudDB.logout()" style="border:1px solid #fecdd3; background:#fff1f2; color:#be123c; padding:8px 14px; border-radius:8px; cursor:pointer; font-size:0.85rem; font-weight:600;">Cerrar Sesión</button>
+        <button type="button" onclick="CloudDB.closeStatusModal()" style="border:1px solid var(--border); background:#f8fafc; padding:8px 14px; border-radius:8px; cursor:pointer; font-size:0.85rem; font-weight:600;">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const initialGroups = [
+      // Riba-roja (Lunes y Miércoles) - 9 Grupos
+      { id: 'r_1eso_a', center: 'Riba-roja', days: 'L/X', name: '1º ESO A' },
+      { id: 'r_1eso_b', center: 'Riba-roja', days: 'L/X', name: '1º ESO B' },
+      { id: 'r_2eso_a', center: 'Riba-roja', days: 'L/X', name: '2º ESO A' },
+      { id: 'r_2eso_b', center: 'Riba-roja', days: 'L/X', name: '2º ESO B' },
+      { id: 'r_3eso_a', center: 'Riba-roja', days: 'L/X', name: '3º ESO A' },
+      { id: 'r_3eso_b', center: 'Riba-roja', days: 'L/X', name: '3º ESO B' },
+      { id: 'r_4eso_a', center: 'Riba-roja', days: 'L/X', name: '4º ESO A' },
+      { id: 'r_4eso_b', center: 'Riba-roja', days: 'L/X', name: '4º ESO B' },
+      { id: 'r_1bac',    center: 'Riba-roja', days: 'L/X', name: '1º BAC' },
+
+      // Manises (Martes y Jueves) - 8 Grupos
+      { id: 'm_1eso_a', center: 'Manises', days: 'M/J', name: '1º ESO A' },
+      { id: 'm_1eso_b', center: 'Manises', days: 'M/J', name: '1º ESO B' },
+      { id: 'm_2eso_a', center: 'Manises', days: 'M/J', name: '2º ESO A' },
+      { id: 'm_2eso_b', center: 'Manises', days: 'M/J', name: '2º ESO B' },
+      { id: 'm_3eso_a', center: 'Manises', days: 'M/J', name: '3º ESO A' },
+      { id: 'm_3eso_b', center: 'Manises', days: 'M/J', name: '3º ESO B' },
+      { id: 'm_4eso_a', center: 'Manises', days: 'M/J', name: '4º ESO A' },
+      { id: 'm_4eso_b', center: 'Manises', days: 'M/J', name: '4º ESO B' }
+    ];
+
+    // CALENDARIO ESCOLAR (44 Semanas coincidentes con Planner)
+    const WEEKS_CALENDAR = [{"week_index":0,"week_num":1,"num_sem":"Semana 1","rango":"01/09 - 04/09","date_start":"2026-09-01","mes":"SEPTIEMBRE","tipo_sem":""},{"week_index":1,"week_num":2,"num_sem":"Semana 2","rango":"07/09 - 11/09","date_start":"2026-09-07","mes":"SEPTIEMBRE","tipo_sem":""},{"week_index":2,"week_num":3,"num_sem":"Semana 3","rango":"14/09 - 18/09","date_start":"2026-09-14","mes":"SEPTIEMBRE","tipo_sem":"Festivo"},{"week_index":3,"week_num":4,"num_sem":"Semana 4","rango":"21/09 - 25/09","date_start":"2026-09-21","mes":"SEPTIEMBRE","tipo_sem":""},{"week_index":4,"week_num":5,"num_sem":"Semana 5","rango":"28/09 - 02/10","date_start":"2026-09-28","mes":"OCTUBRE","tipo_sem":""},{"week_index":5,"week_num":6,"num_sem":"Semana 6","rango":"05/10 - 09/10","date_start":"2026-10-05","mes":"OCTUBRE","tipo_sem":""},{"week_index":6,"week_num":7,"num_sem":"Semana 7","rango":"12/10 - 16/10","date_start":"2026-10-12","mes":"OCTUBRE","tipo_sem":"Festivo"},{"week_index":7,"week_num":8,"num_sem":"Semana 8","rango":"19/10 - 23/10","date_start":"2026-10-19","mes":"OCTUBRE","tipo_sem":"Exámenes"},{"week_index":8,"week_num":9,"num_sem":"Semana 9","rango":"26/10 - 30/10","date_start":"2026-10-26","mes":"OCTUBRE","tipo_sem":"Exámenes"},{"week_index":9,"week_num":10,"num_sem":"Semana 10","rango":"02/11 - 06/11","date_start":"2026-11-02","mes":"NOVIEMBRE","tipo_sem":"Evaluación"},{"week_index":10,"week_num":11,"num_sem":"Semana 11","rango":"09/11 - 13/11","date_start":"2026-11-09","mes":"NOVIEMBRE","tipo_sem":"Evaluación"},{"week_index":11,"week_num":12,"num_sem":"Semana 12","rango":"16/11 - 20/11","date_start":"2026-11-16","mes":"NOVIEMBRE","tipo_sem":""},{"week_index":12,"week_num":13,"num_sem":"Semana 13","rango":"23/11 - 27/11","date_start":"2026-11-23","mes":"NOVIEMBRE","tipo_sem":""},{"week_index":13,"week_num":14,"num_sem":"Semana 14","rango":"30/11 - 04/12","date_start":"2026-11-30","mes":"DICIEMBRE","tipo_sem":"Exámenes"},{"week_index":14,"week_num":15,"num_sem":"Semana 15","rango":"07/12 - 11/12","date_start":"2026-12-07","mes":"DICIEMBRE","tipo_sem":"Festivo"},{"week_index":15,"week_num":16,"num_sem":"Semana 16","rango":"14/12 - 18/12","date_start":"2026-12-14","mes":"DICIEMBRE","tipo_sem":""},{"week_index":16,"week_num":17,"num_sem":"Semana 17","rango":"21/12 - 25/12","date_start":"2026-12-21","mes":"DICIEMBRE","tipo_sem":"Vacaciones"},{"week_index":17,"week_num":18,"num_sem":"Semana 18","rango":"28/12 - 01/01","date_start":"2026-12-28","mes":"ENERO","tipo_sem":"Vacaciones"},{"week_index":18,"week_num":19,"num_sem":"Semana 19","rango":"04/01 - 08/01","date_start":"2027-01-04","mes":"ENERO","tipo_sem":"Vacaciones"},{"week_index":19,"week_num":20,"num_sem":"Semana 20","rango":"11/01 - 15/01","date_start":"2027-01-11","mes":"ENERO","tipo_sem":""},{"week_index":20,"week_num":21,"num_sem":"Semana 21","rango":"18/01 - 22/01","date_start":"2027-01-18","mes":"ENERO","tipo_sem":""},{"week_index":21,"week_num":22,"num_sem":"Semana 22","rango":"25/01 - 29/01","date_start":"2027-01-25","mes":"ENERO","tipo_sem":""},{"week_index":22,"week_num":23,"num_sem":"Semana 23","rango":"01/02 - 05/02","date_start":"2027-02-01","mes":"FEBRERO","tipo_sem":""},{"week_index":23,"week_num":24,"num_sem":"Semana 24","rango":"08/02 - 12/02","date_start":"2027-02-08","mes":"FEBRERO","tipo_sem":"Exámenes"},{"week_index":24,"week_num":25,"num_sem":"Semana 25","rango":"15/02 - 19/02","date_start":"2027-02-15","mes":"FEBRERO","tipo_sem":"Exámenes"},{"week_index":25,"week_num":26,"num_sem":"Semana 26","rango":"22/02 - 26/02","date_start":"2027-02-22","mes":"FEBRERO","tipo_sem":"Exámenes"},{"week_index":26,"week_num":27,"num_sem":"Semana 27","rango":"01/03 - 05/03","date_start":"2027-03-01","mes":"MARZO","tipo_sem":"Exámenes"},{"week_index":27,"week_num":28,"num_sem":"Semana 28","rango":"08/03 - 12/03","date_start":"2027-03-08","mes":"MARZO","tipo_sem":"Evaluación"},{"week_index":28,"week_num":29,"num_sem":"Semana 29","rango":"15/03 - 19/03","date_start":"2027-03-15","mes":"MARZO","tipo_sem":"Vacaciones"},{"week_index":29,"week_num":30,"num_sem":"Semana 30","rango":"22/03 - 26/03","date_start":"2027-03-22","mes":"MARZO","tipo_sem":"Vacaciones"},{"week_index":30,"week_num":31,"num_sem":"Semana 31","rango":"29/03 - 02/04","date_start":"2027-03-29","mes":"ABRIL","tipo_sem":"Vacaciones"},{"week_index":31,"week_num":32,"num_sem":"Semana 32","rango":"05/04 - 09/04","date_start":"2027-04-05","mes":"ABRIL","tipo_sem":"Vacaciones"},{"week_index":32,"week_num":33,"num_sem":"Semana 33","rango":"12/04 - 16/04","date_start":"2027-04-12","mes":"ABRIL","tipo_sem":""},{"week_index":33,"week_num":34,"num_sem":"Semana 34","rango":"19/04 - 23/04","date_start":"2027-04-19","mes":"ABRIL","tipo_sem":""},{"week_index":34,"week_num":35,"num_sem":"Semana 35","rango":"26/04 - 30/04","date_start":"2027-04-26","mes":"ABRIL","tipo_sem":""},{"week_index":35,"week_num":36,"num_sem":"Semana 36","rango":"03/05 - 07/05","date_start":"2027-05-03","mes":"MAYO","tipo_sem":"Exámenes"},{"week_index":36,"week_num":37,"num_sem":"Semana 37","rango":"10/05 - 14/05","date_start":"2027-05-10","mes":"MAYO","tipo_sem":"Exámenes"},{"week_index":37,"week_num":38,"num_sem":"Semana 38","rango":"17/05 - 21/05","date_start":"2027-05-17","mes":"MAYO","tipo_sem":""},{"week_index":38,"week_num":39,"num_sem":"Semana 39","rango":"24/05 - 28/05","date_start":"2027-05-24","mes":"MAYO","tipo_sem":""},{"week_index":39,"week_num":40,"num_sem":"Semana 40","rango":"31/05 - 04/06","date_start":"2027-05-31","mes":"JUNIO","tipo_sem":"Exámenes"},{"week_index":40,"week_num":41,"num_sem":"Semana 41","rango":"07/06 - 11/06","date_start":"2027-06-07","mes":"JUNIO","tipo_sem":"Exámenes"},{"week_index":41,"week_num":42,"num_sem":"Semana 42","rango":"14/06 - 18/06","date_start":"2027-06-14","mes":"JUNIO","tipo_sem":"Evaluación"},{"week_index":42,"week_num":43,"num_sem":"Semana 43","rango":"21/06 - 25/06","date_start":"2027-06-21","mes":"JUNIO","tipo_sem":""},{"week_index":43,"week_num":44,"num_sem":"Semana 44","rango":"28/06 - 02/07","date_start":"2027-06-28","mes":"JULIO","tipo_sem":""}];
+
+    // Correspondencia biunívoca con cursos y colegios en Planner
+    const groupToPlannerMap = {
+      'r_1eso_a': { school: 'ribarroja', course: '1º ESO - A' },
+      'r_1eso_b': { school: 'ribarroja', course: '1º ESO - B' },
+      'r_2eso_a': { school: 'ribarroja', course: '2º ESO - A' },
+      'r_2eso_b': { school: 'ribarroja', course: '2º ESO - B' },
+      'r_3eso_a': { school: 'ribarroja', course: '3º ESO - A' },
+      'r_3eso_b': { school: 'ribarroja', course: '3º ESO - B' },
+      'r_4eso_a': { school: 'ribarroja', course: '4º ESO - A' },
+      'r_4eso_b': { school: 'ribarroja', course: '4º ESO - B' },
+      'r_1bac':    { school: 'ribarroja', course: '1º BACHILLERATO' },
+      'm_1eso_a': { school: 'manises',   course: '1º ESO - A' },
+      'm_1eso_b': { school: 'manises',   course: '1º ESO - B' },
+      'm_2eso_a': { school: 'manises',   course: '2º ESO - A' },
+      'm_2eso_b': { school: 'manises',   course: '2º ESO - B' },
+      'm_3eso_a': { school: 'manises',   course: '3º ESO - A' },
+      'm_3eso_b': { school: 'manises',   course: '3º ESO - B' },
+      'm_4eso_a': { school: 'manises',   course: '4º ESO - A' },
+      'm_4eso_b': { school: 'manises',   course: '4º ESO - B' }
+    };
+
+    const standardTasks = ['mat', 'print', 'platform', 'grades'];
+    
+    // Estado de la semana seleccionada
+    let currentWeekIndex = parseInt(localStorage.getItem('docente_current_week') || '6', 10);
+    if (isNaN(currentWeekIndex) || currentWeekIndex < 0 || currentWeekIndex >= WEEKS_CALENDAR.length) {
+      currentWeekIndex = 6; // Por defecto Semana 7 (12/10 - 16/10 Octubre)
+    }
+
+    // Perfiles NEAE (globales para todo el curso)
+    let neaeProfiles = JSON.parse(localStorage.getItem('docente_neae_profiles_v6')) || {};
+
+    function hasNeae(groupId) {
+      return !!(neaeProfiles[groupId] && neaeProfiles[groupId].trim().length > 0);
+    }
+
+    // Tareas a largo plazo (globales e independientes de las semanas)
+    let longTermTasks = JSON.parse(localStorage.getItem('docente_lt_tasks_v1')) || [];
+    let longTermState = JSON.parse(localStorage.getItem('docente_lt_state_v1')) || {};
+
+    // Almacenamiento independiente por semanas (v7)
+    let weeksData = {};
+    try {
+      const rawWeeks = localStorage.getItem('docente_weeks_data_v7');
+      if (rawWeeks) weeksData = JSON.parse(rawWeeks);
+    } catch(e) {
+      console.warn("Error leyendo docente_weeks_data_v7:", e);
+    }
+    if (!weeksData || typeof weeksData !== 'object') {
+      weeksData = {};
+    }
+
+    // Migración inicial desde v6 si no existe aún histórico v7
+    if (Object.keys(weeksData).length === 0) {
+      const legacyState = JSON.parse(localStorage.getItem('docente_state_v6') || '{}');
+      const legacyOverdue = JSON.parse(localStorage.getItem('docente_overdue_v6') || '{}');
+      const legacyNotes = JSON.parse(localStorage.getItem('docente_notes_v6') || '{}');
+      weeksData[currentWeekIndex] = {
+        state: legacyState,
+        overdue: legacyOverdue,
+        notes: legacyNotes
+      };
+      try {
+        localStorage.setItem('docente_weeks_data_v7', JSON.stringify(weeksData));
+      } catch(e) {}
+    }
+
+    function escapeHTML(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function getWeekData(weekIdx) {
+      if (!weeksData[weekIdx]) {
+        weeksData[weekIdx] = { state: {}, overdue: {}, notes: {}, taskTexts: {} };
+      }
+      if (!weeksData[weekIdx].state) weeksData[weekIdx].state = {};
+      if (!weeksData[weekIdx].overdue) weeksData[weekIdx].overdue = {};
+      if (!weeksData[weekIdx].notes) weeksData[weekIdx].notes = {};
+      if (!weeksData[weekIdx].taskTexts) weeksData[weekIdx].taskTexts = {};
+      return weeksData[weekIdx];
+    }
+
+    // Punteros reactivos a la semana actualmente en pantalla
+    let state = {};
+    let overdue = {};
+    let notes = {};
+    let taskTexts = {};
+
+    function cleanOrphanedOverdue(weekIdx = currentWeekIndex) {
+      const wData = getWeekData(weekIdx);
+      if (!wData || !wData.overdue) return;
+      initialGroups.forEach(g => {
+        ['print', 'platform', 'grades'].forEach(t => {
+          const key = `${g.id}_${t}`;
+          const hasText = !!(wData.taskTexts && wData.taskTexts[key] && wData.taskTexts[key].trim().length > 0);
+          if (!hasText && wData.overdue[key]) {
+            delete wData.overdue[key];
+            if (weekIdx === currentWeekIndex) {
+              delete overdue[key];
+            }
+          }
+        });
+      });
+    }
+
+    function isTaskConfigured(groupId, taskType) {
+      if (taskType === 'mat') return true;
+      if (taskType === 'neae') return hasNeae(groupId);
+      if (taskType === 'print' || taskType === 'platform' || taskType === 'grades') {
+        const key = `${groupId}_${taskType}`;
+        return !!(taskTexts[key] && taskTexts[key].trim().length > 0);
+      }
+      return true;
+    }
+
+    function loadCurrentWeekPointers() {
+      const cur = getWeekData(currentWeekIndex);
+      state = cur.state;
+      overdue = cur.overdue;
+      notes = cur.notes;
+      taskTexts = cur.taskTexts;
+      cleanOrphanedOverdue(currentWeekIndex);
+    }
+    loadCurrentWeekPointers();
+
+    function isWeekActive(weekIdx) {
+      if (weekIdx === currentWeekIndex) return true;
+      const d = weeksData[weekIdx];
+      if (!d) return false;
+      const hasDone = d.state && Object.values(d.state).some(v => v === true);
+      const hasNotes = d.notes && Object.values(d.notes).some(n => n && n.trim().length > 0);
+      const hasTaskTexts = d.taskTexts && Object.values(d.taskTexts).some(t => t && t.trim().length > 0);
+      const hasDebt = d.overdue && Object.values(d.overdue).some(v => v === true);
+      return !!(hasDone || hasNotes || hasTaskTexts || hasDebt);
+    }
+
+    function syncOverdueForWeek(weekIdx) {
+      if (weekIdx <= 0) return;
+      const prevWeekIdx = weekIdx - 1;
+      const prevWeekData = getWeekData(prevWeekIdx);
+      const currWeekData = getWeekData(weekIdx);
+
+      if (!isWeekActive(prevWeekIdx)) return;
+
+      initialGroups.forEach(g => {
+        // 1. Tareas estándar (Base, Fotocopiar, Plataforma, Notas)
+        standardTasks.forEach(t => {
+          const key = `${g.id}_${t}`;
+          // Para print, platform, grades: solo cuenta como tarea previa si tenía texto
+          const hadTask = (t === 'mat') || !!(prevWeekData.taskTexts && prevWeekData.taskTexts[key] && prevWeekData.taskTexts[key].trim().length > 0);
+          if (!hadTask) {
+            delete currWeekData.overdue[key];
+            return;
+          }
+          const prevDone = !!(prevWeekData.state && prevWeekData.state[key]);
+          if (!prevDone) {
+            // Si en la semana previa quedó sin hacer y aquí no está saldada, marcar atrasada (ámbar)
+            if (!currWeekData.state[key]) {
+              currWeekData.overdue[key] = true;
+            }
+          } else {
+            // Si en la semana previa sí se completó, no hay deuda previa
+            if (currWeekData.overdue[key] && !currWeekData.state[key]) {
+              delete currWeekData.overdue[key];
+            }
+          }
+        });
+
+        // 2. Adaptación NEAE (solo si el grupo tiene alumnos NEAE)
+        if (hasNeae(g.id)) {
+          const key = `${g.id}_neae`;
+          const prevDone = !!(prevWeekData.state && prevWeekData.state[key]);
+          if (!prevDone) {
+            if (!currWeekData.state[key]) {
+              currWeekData.overdue[key] = true;
+            }
+          } else {
+            if (currWeekData.overdue[key] && !currWeekData.state[key]) {
+              delete currWeekData.overdue[key];
+            }
+          }
+        }
+
+        // 3. Avisos Educamos vinculados a la semana anterior en Planner
+        const prevSession = getPlannerSession(g.id, prevWeekIdx);
+        const currSession = getPlannerSession(g.id, weekIdx);
+        const educamosKey = `${g.id}_educamos`;
+        if (prevSession && prevSession.educamos && prevSession.educamos.trim().length > 0) {
+          if (!prevSession.educamosDado) {
+            if (!currSession || !currSession.educamosDado) {
+              currWeekData.overdue[educamosKey] = true;
+            }
+          } else {
+            if (!currSession || !currSession.educamosDado) {
+              delete currWeekData.overdue[educamosKey];
+            }
+          }
+        }
+      });
+    }
+
+    // Datos del Planner (en memoria y sincronizados)
+    let plannerWeeks = [];
+
+    function loadLocalPlannerWeeks() {
+      try {
+        const raw = localStorage.getItem('idoceo_planner_state_v3');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed.weeks)) {
+            plannerWeeks = parsed.weeks;
+            return true;
+          }
+        }
+      } catch (e) {
+        console.warn("[EducamosSync] Error leyendo planner local:", e);
+      }
+      return false;
+    }
+    loadLocalPlannerWeeks();
+
+    // Sincronización entre pestañas locales del navegador
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'idoceo_planner_state_v3') {
+        loadLocalPlannerWeeks();
+        if (currentView === 'weekly') {
+          renderTable();
+        }
+      }
+      if (e.key === 'docente_weeks_data_v7') {
+        try {
+          weeksData = JSON.parse(e.newValue || '{}');
+          loadCurrentWeekPointers();
+          if (currentView === 'weekly') {
+            renderTable();
+          }
+        } catch(err) {}
+      }
+    });
+
+    // Detección de Semana Actual y Próxima según la fecha del calendario
+    function getCalendarWeekIndices() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      const todayStr = `${y}-${m}-${d}`;
+
+      let currentIdx = 5; // Por defecto Semana 6 si está cerca de octubre
+      for (let i = 0; i < WEEKS_CALENDAR.length; i++) {
+        const startStr = WEEKS_CALENDAR[i].date_start;
+        const nextStartStr = (i < WEEKS_CALENDAR.length - 1) ? WEEKS_CALENDAR[i + 1].date_start : '2099-12-31';
+        if (todayStr >= startStr && todayStr < nextStartStr) {
+          currentIdx = i;
+          break;
+        }
+      }
+
+      const nextIdx = Math.min(currentIdx + 1, WEEKS_CALENDAR.length - 1);
+      return { currentIdx, nextIdx };
+    }
+
+    function goToRealCurrentWeek() {
+      const { currentIdx } = getCalendarWeekIndices();
+      selectWeek(currentIdx);
+    }
+
+    function goToRealNextWeek() {
+      const { nextIdx } = getCalendarWeekIndices();
+      selectWeek(nextIdx);
+    }
+
+    // Gestión del selector y visualizador de semanas
+    function updateWeekDisplay() {
+      const w = WEEKS_CALENDAR[currentWeekIndex] || WEEKS_CALENDAR[0];
+      const titleEl = document.getElementById('weekPillTitle');
+      const subEl = document.getElementById('weekPillSubtitle');
+      if (titleEl) titleEl.textContent = w.num_sem;
+
+      const { currentIdx, nextIdx } = getCalendarWeekIndices();
+      const curW = WEEKS_CALENDAR[currentIdx];
+      const nextW = WEEKS_CALENDAR[nextIdx];
+
+      if (subEl) {
+        let sub = `${w.rango}`;
+        if (currentWeekIndex === currentIdx) sub += ` (Hoy)`;
+        else if (currentWeekIndex === nextIdx) sub += ` (Próx)`;
+        subEl.textContent = sub;
+        subEl.title = `${w.num_sem} • ${w.rango}${w.tipo_sem ? ' (' + w.tipo_sem + ')' : ''}`;
+      }
+
+      const btnCur = document.getElementById('btnGoCurrentWeek');
+      const btnNext = document.getElementById('btnGoNextWeek');
+      if (btnCur) {
+        btnCur.innerHTML = `📍 Actual`;
+        btnCur.title = `Ir a Semana Actual (${curW.num_sem} • ${curW.rango})`;
+        if (currentWeekIndex === currentIdx) btnCur.classList.add('is-active-view');
+        else btnCur.classList.remove('is-active-view');
+      }
+      if (btnNext) {
+        btnNext.innerHTML = `⏩ Próxima`;
+        btnNext.title = `Ir a Próxima Semana (${nextW.num_sem} • ${nextW.rango})`;
+        if (currentWeekIndex === nextIdx) btnNext.classList.add('is-active-view');
+        else btnNext.classList.remove('is-active-view');
+      }
+    }
+
+    function navigateWeek(delta) {
+      const newIdx = currentWeekIndex + delta;
+      if (newIdx >= 0 && newIdx < WEEKS_CALENDAR.length) {
+        selectWeek(newIdx);
+      }
+    }
+
+    function openWeekPickerModal() {
+      renderWeekPickerGrid();
+      const modal = document.getElementById('weekPickerModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        setTimeout(() => {
+          const activeItem = modal.querySelector('.week-picker-item.active');
+          if (activeItem) activeItem.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }, 50);
+      }
+    }
+
+    function closeWeekPickerModal() {
+      const modal = document.getElementById('weekPickerModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function selectWeek(idx) {
+      if (idx < 0 || idx >= WEEKS_CALENDAR.length) return;
+
+      // 1. Guardar la semana actual
+      save(false);
+
+      // 2. Si avanzamos a una semana posterior, propagar tareas atrasadas
+      if (idx > currentWeekIndex) {
+        for (let w = currentWeekIndex + 1; w <= idx; w++) {
+          syncOverdueForWeek(w);
+        }
+      }
+
+      // 3. Cambiar punteros y semana activa
+      currentWeekIndex = idx;
+      localStorage.setItem('docente_current_week', currentWeekIndex.toString());
+      loadCurrentWeekPointers();
+
+      updateWeekDisplay();
+      closeWeekPickerModal();
+      save(true);
+      if (currentView === 'weekly') {
+        renderTable();
+      }
+    }
+
+    function renderWeekPickerGrid() {
+      const grid = document.getElementById('weekPickerGrid');
+      if (!grid) return;
+      const { currentIdx, nextIdx } = getCalendarWeekIndices();
+      grid.innerHTML = WEEKS_CALENDAR.map((w, idx) => {
+        const isActive = idx === currentWeekIndex;
+        const wData = weeksData[idx];
+        const hasDone = wData && wData.state && Object.values(wData.state).some(v => v === true);
+        const hasDebt = wData && wData.overdue && Object.values(wData.overdue).some(v => v === true);
+
+        let statusDot = '';
+        if (hasDebt) {
+          statusDot = `<span style="font-size:0.59rem; color:#92400e; font-weight:800; background:#fef3c7; border:1px solid #fde68a; padding:1px 5px; border-radius:4px;">⚠️ Pendientes</span>`;
+        } else if (hasDone) {
+          statusDot = `<span style="font-size:0.59rem; color:#15803d; font-weight:800; background:#dcfce7; border:1px solid #bbf7d0; padding:1px 5px; border-radius:4px;">✓ Lista</span>`;
+        }
+
+        let weekCalTag = '';
+        if (idx === currentIdx) {
+          weekCalTag = `<span style="font-size:0.59rem; color:#1e40af; font-weight:800; background:#dbeafe; border:1px solid #93c5fd; padding:1px 5px; border-radius:4px;">📍 Semana Actual</span>`;
+        } else if (idx === nextIdx) {
+          weekCalTag = `<span style="font-size:0.59rem; color:#6b21a8; font-weight:800; background:#f3e8ff; border:1px solid #d8b4fe; padding:1px 5px; border-radius:4px;">⏩ Próxima Semana</span>`;
+        }
+
+        const tagText = w.tipo_sem 
+          ? `<span style="font-size:0.62rem; color:${w.tipo_sem === 'Vacaciones' ? '#10b981' : (w.tipo_sem === 'Exámenes' ? '#ef4444' : '#8b5cf6')}; font-weight:700;">${w.tipo_sem}</span>` 
+          : '';
+        return `
+          <div class="week-picker-item ${isActive ? 'active' : ''}" onclick="selectWeek(${idx})">
+            <div style="display:flex; flex-direction:column; gap:2px;">
+              <span style="font-size:0.82rem; font-weight:700; color:inherit;">${w.num_sem}</span>
+              <span style="font-size:0.71rem; color:${isActive ? '#1e40af' : 'var(--muted)'};">${w.rango}</span>
+              <span style="font-size:0.64rem; color:${isActive ? '#1e40af' : '#64748b'}; text-transform:uppercase;">${w.mes}</span>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:3px;">
+              ${weekCalTag}
+              ${tagText}
+              ${statusDot}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Funciones de consulta y sincronización de Educamos con Planner
+    function getPlannerSession(groupId, weekIdx = currentWeekIndex) {
+      const map = groupToPlannerMap[groupId];
+      if (!map || !plannerWeeks || !plannerWeeks[weekIdx]) return null;
+      const schoolMap = plannerWeeks[weekIdx][map.school];
+      if (!schoolMap) return null;
+      return schoolMap[map.course] || null;
+    }
+
+    function renderEducamosCell(groupId) {
+      const session = getPlannerSession(groupId, currentWeekIndex);
+      const hasText = !!(session && session.educamos && session.educamos.trim().length > 0);
+
+      if (!hasText) {
+        return `<span class="neae-static-empty" title="Sin avisos de Educamos en el Planner para esta semana">—</span>`;
+      }
+
+      const isDone = !!(session && session.educamosDado);
+      const isOverdue = !!overdue[`${groupId}_educamos`] && !isDone;
+
+      let btnClass = 'status-btn';
+      let labelHtml = '';
+
+      if (isDone) {
+        btnClass += ' checked';
+        labelHtml = `<span>✓ Enviado</span>`;
+      } else if (isOverdue) {
+        btnClass += ' overdue';
+        labelHtml = `<span class="overdue-tag">⚠️ Atrasado</span><span>Saldar Educamos</span>`;
+      } else {
+        labelHtml = `<span>Avisar Educamos</span>`;
+      }
+
+      const escapedTooltip = (session.educamos || '').replace(/"/g, '&quot;');
+
+      return `
+        <button class="${btnClass}" onclick="handleEducamosClick('${groupId}')" title="${escapedTooltip}">
+          ${labelHtml}
+        </button>
+      `;
+    }
+
+    function handleEducamosClick(groupId) {
+      const map = groupToPlannerMap[groupId];
+      if (!map) return;
+
+      const weekIdx = currentWeekIndex;
+      if (!plannerWeeks) plannerWeeks = [];
+      if (!plannerWeeks[weekIdx]) plannerWeeks[weekIdx] = {};
+      if (!plannerWeeks[weekIdx][map.school]) plannerWeeks[weekIdx][map.school] = {};
+      if (!plannerWeeks[weekIdx][map.school][map.course]) {
+        plannerWeeks[weekIdx][map.school][map.course] = {
+          tema: '', actividades: '', avisos: '', educamos: '', sesion: '',
+          preparada: false, avisoDado: false, educamosDado: false
+        };
+      }
+
+      const session = plannerWeeks[weekIdx][map.school][map.course];
+      const overdueKey = `${groupId}_educamos`;
+
+      if (overdue[overdueKey]) {
+        delete overdue[overdueKey];
+        session.educamosDado = true;
+      } else {
+        session.educamosDado = !session.educamosDado;
+      }
+
+      save(true);
+
+      // Guardar en localStorage del Planner
+      try {
+        let pState = {};
+        try { pState = JSON.parse(localStorage.getItem('idoceo_planner_state_v3') || '{}'); } catch(e){}
+        pState.weeks = plannerWeeks;
+        pState.lastUpdated = Date.now();
+        localStorage.setItem('idoceo_planner_state_v3', JSON.stringify(pState));
+      } catch(e) {}
+
+      // Guardar en Realtime DB planner_anual si hay conexión
+      if (window.CloudDB && window.CloudDB.plannerDbRef && window.CloudDB.currentUser) {
+        try {
+          const coursePath = `weeks/${weekIdx}/${map.school}/${map.course}`;
+          window.CloudDB.plannerDbRef.child(`${coursePath}/educamosDado`).set(session.educamosDado);
+          window.CloudDB.plannerDbRef.child('lastUpdated').set(Date.now());
+        } catch(err) {
+          console.error("[EducamosSync] Error enviando actualización a planner_anual:", err);
+        }
+      }
+
+      renderTable();
+    }
+
+    function toggleEducamosColumn() {
+      const targetGroups = initialGroups.filter(g => {
+        if (activeFilter === 'neae') return hasNeae(g.id);
+        if (activeFilter === 'pending' && !isGroupPending(g.id)) return false;
+        if (hideCompletedRows && !isGroupPending(g.id)) return false;
+        if (activeFilter !== 'all' && activeFilter !== 'pending' && g.center !== activeFilter) return false;
+        return true;
+      });
+
+      const applicableGroups = targetGroups.filter(g => {
+        const s = getPlannerSession(g.id, currentWeekIndex);
+        return !!(s && s.educamos && s.educamos.trim().length > 0);
+      });
+
+      if (applicableGroups.length === 0) return;
+
+      const allDone = applicableGroups.every(g => {
+        const s = getPlannerSession(g.id, currentWeekIndex);
+        return !!(s && s.educamosDado);
+      });
+
+      const newTarget = !allDone;
+      const weekIdx = currentWeekIndex;
+      const updates = {};
+
+      applicableGroups.forEach(g => {
+        const map = groupToPlannerMap[g.id];
+        if (!map) return;
+        if (!plannerWeeks[weekIdx]) plannerWeeks[weekIdx] = {};
+        if (!plannerWeeks[weekIdx][map.school]) plannerWeeks[weekIdx][map.school] = {};
+        if (!plannerWeeks[weekIdx][map.school][map.course]) {
+          plannerWeeks[weekIdx][map.school][map.course] = {
+            tema: '', actividades: '', avisos: '', educamos: '', sesion: '',
+            preparada: false, avisoDado: false, educamosDado: false
+          };
+        }
+        const session = plannerWeeks[weekIdx][map.school][map.course];
+        session.educamosDado = newTarget;
+        if (newTarget) {
+          delete overdue[`${g.id}_educamos`];
+        }
+        updates[`weeks/${weekIdx}/${map.school}/${map.course}/educamosDado`] = newTarget;
+      });
+
+      save(true);
+
+      try {
+        let pState = {};
+        try { pState = JSON.parse(localStorage.getItem('idoceo_planner_state_v3') || '{}'); } catch(e){}
+        pState.weeks = plannerWeeks;
+        pState.lastUpdated = Date.now();
+        localStorage.setItem('idoceo_planner_state_v3', JSON.stringify(pState));
+      } catch(e) {}
+
+      if (window.CloudDB && window.CloudDB.plannerDbRef && window.CloudDB.currentUser) {
+        updates['lastUpdated'] = Date.now();
+        window.CloudDB.plannerDbRef.update(updates).catch(e => console.error("Error bulk educamos update:", e));
+      }
+
+      renderTable();
+    }
+    
+    let currentView = 'weekly';
+    let activeFilter = 'all';
+    let hideCompletedRows = false;
+
+    function isGroupPending(groupId) {
+      if (currentView === 'weekly') {
+        if (!state[`${groupId}_mat`]) return true;
+
+        if (hasNeae(groupId) && !state[`${groupId}_neae`]) return true;
+
+        for (const t of ['print', 'platform', 'grades']) {
+          if (isTaskConfigured(groupId, t)) {
+            const key = `${groupId}_${t}`;
+            if (!state[key]) return true;
+          }
+        }
+
+        const session = getPlannerSession(groupId, currentWeekIndex);
+        if (session && session.educamos && session.educamos.trim().length > 0) {
+          if (!session.educamosDado) return true;
+        }
+        return false;
+      } else {
+        for (const task of longTermTasks) {
+          if (isGroupInTask(task, groupId)) {
+            if (!longTermState[`${task.id}_${groupId}`]) return true;
+          }
+        }
+        return false;
+      }
+    }
+
+    function toggleHideDone() {
+      hideCompletedRows = !hideCompletedRows;
+      const btn = document.getElementById('btnToggleHideDone');
+      if (btn) {
+        if (hideCompletedRows) {
+          btn.classList.add('active');
+          btn.innerHTML = '👁️ Ver todos';
+          btn.title = 'Mostrar todos los cursos (incluidos completados)';
+        } else {
+          btn.classList.remove('active');
+          btn.innerHTML = '⏳ Ocultar hechos';
+          btn.title = 'Ocultar los cursos que ya tienen todo completado en la vista actual';
+        }
+      }
+      if (currentView === 'weekly') renderTable();
+      else renderLongTermTable();
+    }
+
+    function switchView(view) {
+      currentView = view;
+      const btnWeekly = document.getElementById('btnViewWeekly');
+      const btnLT = document.getElementById('btnViewLongTerm');
+      const weeklyContainer = document.getElementById('weeklyTableContainer');
+      const ltContainer = document.getElementById('longTermTableContainer');
+      const weeklyActions = document.getElementById('weeklyActions');
+      const ltActions = document.getElementById('longTermActions');
+      const neaeFilterTab = document.getElementById('neaeFilterTab');
+      const title = document.getElementById('viewTitle');
+      const subtitle = document.getElementById('viewSubtitle');
+
+      if (view === 'weekly') {
+        btnWeekly.classList.add('active');
+        btnLT.classList.remove('active');
+        weeklyContainer.style.display = 'block';
+        ltContainer.style.display = 'none';
+        weeklyActions.style.display = 'flex';
+        ltActions.style.display = 'none';
+        neaeFilterTab.style.display = 'inline-block';
+        renderTable();
+      } else {
+        btnWeekly.classList.remove('active');
+        btnLT.classList.add('active');
+        weeklyContainer.style.display = 'none';
+        ltContainer.style.display = 'block';
+        weeklyActions.style.display = 'none';
+        ltActions.style.display = 'flex';
+        neaeFilterTab.style.display = 'none';
+        if (activeFilter === 'neae') activeFilter = 'all';
+        renderLongTermTable();
+      }
+    }
+
+    /* ========================================================
+       LÓGICA VISTA 1: SEMANAL (OCUPA 100% ANCHO NATURAL)
+       ======================================================== */
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+
+      let visibleCount = 0;
+
+      initialGroups.forEach(g => {
+        const groupHasNeae = hasNeae(g.id);
+        const groupIsPending = isGroupPending(g.id);
+
+        if (activeFilter === 'neae' && !groupHasNeae) return;
+        if (activeFilter === 'pending' && !groupIsPending) return;
+        if (hideCompletedRows && !groupIsPending) return;
+        if (activeFilter !== 'all' && activeFilter !== 'neae' && activeFilter !== 'pending' && g.center !== activeFilter) return;
+
+        visibleCount++;
+        const tr = document.createElement('tr');
+        tr.id = `row-${g.id}`;
+        const badgeClass = g.center === 'Riba-roja' ? 'badge-ribarroja' : 'badge-manises';
+        const platformLabel = g.center === 'Riba-roja' ? 'Teams' : 'Classroom';
+
+        tr.innerHTML = `
+          <td class="col-center"><span class="center-badge ${badgeClass}">${g.center} (${g.days})</span></td>
+          <td class="col-group">
+            <div class="group-name">${g.name}</div>
+            <textarea 
+              class="neae-textarea" 
+              placeholder="Necesidades NEAE (ej. 2 Dislexia, 1 TDAH)..."
+              oninput="handleNeaeInput('${g.id}', this.value)"
+            >${neaeProfiles[g.id] || ''}</textarea>
+          </td>
+          
+          ${renderStandardTaskCell(g.id, 'mat', 'Crear Base', platformLabel)}
+
+          <td id="neae-cell-${g.id}" class="weekly-task-col" style="background: #faf5ff;">
+            ${renderNeaeCellContent(g.id)}
+          </td>
+
+          ${renderConditionalTaskCell(g.id, 'print', platformLabel)}
+          ${renderConditionalTaskCell(g.id, 'platform', platformLabel)}
+
+          <td id="educamos-cell-${g.id}" class="weekly-task-col">
+            ${renderEducamosCell(g.id)}
+          </td>
+
+          ${renderConditionalTaskCell(g.id, 'grades', platformLabel)}
+
+          <td class="note-cell">
+            <input 
+              type="text" 
+              class="note-input" 
+              placeholder="Notas puntuales..." 
+              value="${notes[g.id] || ''}" 
+              oninput="handleNoteInput('${g.id}', this.value)"
+            />
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      if (visibleCount === 0) {
+        const emptyRow = document.createElement('tr');
+        emptyRow.innerHTML = `
+          <td colspan="8" style="text-align:center; padding: 42px 20px; background:#f0fdf4; border-radius:8px; border:1px dashed #86efac;">
+            <div style="font-size: 1.4rem; margin-bottom: 6px;">🎉 ¡Todo al día!</div>
+            <div style="color: #15803d; font-size: 0.9rem; font-weight: 600;">
+              ${(activeFilter === 'pending' || hideCompletedRows) ? 'No queda ninguna tarea pendiente en los cursos filtrados.' : 'No hay cursos que mostrar con este filtro.'}
+            </div>
+          </td>
+        `;
+        tbody.appendChild(emptyRow);
+      }
+
+      updateStats();
+    }
+
+    function renderStandardTaskCell(groupId, taskType, defaultLabel, platformLabel) {
+      const key = `${groupId}_${taskType}`;
+      const isDone = !!state[key];
+      const isOverdue = !!overdue[key] && !isDone;
+
+      let btnClass = 'status-btn';
+      let labelHtml = `<span>${defaultLabel}</span>`;
+
+      if (isDone) {
+        btnClass += ' checked';
+        let doneText = '✓ Listo';
+        if (taskType === 'print') doneText = '✓ Impreso';
+        if (taskType === 'platform') doneText = `✓ En ${platformLabel}`;
+        if (taskType === 'grades') doneText = '✓ Al día';
+        labelHtml = `<span>${doneText}</span>`;
+      } else if (isOverdue) {
+        btnClass += ' overdue';
+        labelHtml = `<span class="overdue-tag">⚠️ Atrasado</span><span>Saldar deuda</span>`;
+      }
+
+      return `
+        <td class="weekly-task-col">
+          <button class="${btnClass}" onclick="handleStandardTaskClick('${key}')">
+            ${labelHtml}
+          </button>
+        </td>
+      `;
+    }
+
+    function renderTaskButtonContent(groupId, taskType, platformLabel) {
+      const key = `${groupId}_${taskType}`;
+      const textVal = taskTexts[key];
+      const hasText = !!(textVal && textVal.trim().length > 0);
+
+      if (!hasText) {
+        let hint = 'imprimir';
+        if (taskType === 'platform') hint = 'subir';
+        if (taskType === 'grades') hint = 'evaluar';
+        return `
+          <div class="task-btn-idle" onclick="document.getElementById('input-${key}')?.focus()" title="Escribe arriba qué ${hint} para activar el botón de pendiente">
+            —
+          </div>
+        `;
+      }
+
+      const isDone = !!state[key];
+      const isOverdue = !!overdue[key] && !isDone;
+
+      let btnClass = 'status-btn';
+      let labelHtml = '';
+
+      if (isDone) {
+        btnClass += ' checked';
+        let doneText = '✓ Listo';
+        if (taskType === 'print') doneText = '✓ Impreso';
+        if (taskType === 'platform') doneText = `✓ En ${platformLabel}`;
+        if (taskType === 'grades') doneText = '✓ Al día';
+        labelHtml = `<span>${doneText}</span>`;
+      } else if (isOverdue) {
+        btnClass += ' overdue';
+        labelHtml = `<span class="overdue-tag">⚠️ Atrasado</span><span>Saldar deuda</span>`;
+      } else {
+        let pendText = 'Fotocopiar';
+        if (taskType === 'platform') pendText = `Subir ${platformLabel}`;
+        if (taskType === 'grades') pendText = 'Poner notas';
+        labelHtml = `<span>${pendText}</span>`;
+      }
+
+      return `
+        <button class="${btnClass}" onclick="handleStandardTaskClick('${key}')">
+          ${labelHtml}
+        </button>
+      `;
+    }
+
+    function renderConditionalTaskCell(groupId, taskType, platformLabel) {
+      const key = `${groupId}_${taskType}`;
+      const textVal = taskTexts[key] || '';
+      const hasContentClass = textVal.trim().length > 0 ? ' has-content' : '';
+
+      let placeholder = 'Fotocopiar...';
+      if (taskType === 'platform') placeholder = `Subir ${platformLabel}...`;
+      if (taskType === 'grades') placeholder = 'Poner notas...';
+
+      return `
+        <td class="weekly-task-col">
+          <div class="task-cell-box">
+            <input 
+              type="text" 
+              id="input-${key}"
+              class="task-inline-input${hasContentClass}" 
+              placeholder="${placeholder}" 
+              value="${escapeHTML(textVal)}" 
+              oninput="handleTaskTextInput('${groupId}', '${taskType}', this.value)" 
+              title="Escribe aquí sólo si tienes tarea pendiente para este curso"
+            />
+            <div id="btn-wrap-${key}" class="task-btn-wrap">
+              ${renderTaskButtonContent(groupId, taskType, platformLabel)}
+            </div>
+          </div>
+        </td>
+      `;
+    }
+
+    function renderNeaeCellContent(groupId) {
+      if (!hasNeae(groupId)) {
+        return `<span class="neae-static-empty" title="Sin alumnos NEAE configurados">—</span>`;
+      }
+
+      const key = `${groupId}_neae`;
+      const isDone = !!state[key];
+      const isOverdue = !!overdue[key] && !isDone;
+
+      let btnClass = 'status-btn';
+      let labelHtml = '';
+
+      if (isDone) {
+        btnClass += ' checked';
+        labelHtml = `<span>✓ Adaptado</span>`;
+      } else if (isOverdue) {
+        btnClass += ' overdue';
+        labelHtml = `<span class="overdue-tag">⚠️ Atrasado</span><span>Saldar NEAE</span>`;
+      } else {
+        btnClass += ' neae-pending';
+        labelHtml = `<span>Adaptar NEAE</span>`;
+      }
+
+      return `
+        <button class="${btnClass}" onclick="handleNeaeClick('${groupId}')">
+          ${labelHtml}
+        </button>
+      `;
+    }
+
+    function toggleColumn(taskType) {
+      if (taskType === 'educamos') {
+        toggleEducamosColumn();
+        return;
+      }
+
+      const targetGroups = initialGroups.filter(g => {
+        if (activeFilter === 'neae') return hasNeae(g.id);
+        if (activeFilter === 'pending' && !isGroupPending(g.id)) return false;
+        if (hideCompletedRows && !isGroupPending(g.id)) return false;
+        if (activeFilter !== 'all' && activeFilter !== 'pending' && g.center !== activeFilter) return false;
+        return true;
+      });
+
+      const applicableGroups = taskType === 'neae' 
+        ? targetGroups.filter(g => hasNeae(g.id)) 
+        : (['print', 'platform', 'grades'].includes(taskType)
+          ? targetGroups.filter(g => isTaskConfigured(g.id, taskType))
+          : targetGroups);
+
+      if (applicableGroups.length === 0) return;
+
+      const allDone = applicableGroups.every(g => !!state[`${g.id}_${taskType}`]);
+
+      applicableGroups.forEach(g => {
+        const key = `${g.id}_${taskType}`;
+        if (allDone) {
+          state[key] = false;
+        } else {
+          state[key] = true;
+          delete overdue[key];
+        }
+      });
+
+      save();
+      renderTable();
+    }
+
+    let neaeSaveTimeout = null;
+    function handleNeaeInput(groupId, val) {
+      neaeProfiles[groupId] = val;
+      localStorage.setItem('docente_neae_profiles_v6', JSON.stringify(neaeProfiles));
+      localStorage.setItem('docente_last_updated', Date.now().toString());
+      clearTimeout(neaeSaveTimeout);
+      neaeSaveTimeout = setTimeout(() => {
+        if (window.CloudDB && typeof window.CloudDB.scheduleSave === 'function') {
+          window.CloudDB.scheduleSave(300);
+        }
+      }, 300);
+      const cell = document.getElementById(`neae-cell-${groupId}`);
+      if (cell) cell.innerHTML = renderNeaeCellContent(groupId);
+      updateStats();
+    }
+
+    let noteSaveTimeout = null;
+    function handleNoteInput(groupId, val) {
+      notes[groupId] = val;
+      if (!weeksData[currentWeekIndex]) weeksData[currentWeekIndex] = {};
+      weeksData[currentWeekIndex].notes = notes;
+      localStorage.setItem('docente_weeks_data_v7', JSON.stringify(weeksData));
+      localStorage.setItem('docente_notes_v6', JSON.stringify(notes));
+      localStorage.setItem('docente_last_updated', Date.now().toString());
+      clearTimeout(noteSaveTimeout);
+      noteSaveTimeout = setTimeout(() => {
+        if (window.CloudDB && typeof window.CloudDB.scheduleSave === 'function') {
+          window.CloudDB.scheduleSave(300);
+        }
+      }, 300);
+    }
+
+    let taskTextSaveTimeout = null;
+    function handleTaskTextInput(groupId, taskType, val) {
+      const key = `${groupId}_${taskType}`;
+      if (!val || val.trim().length === 0) {
+        delete taskTexts[key];
+        delete state[key];
+        delete overdue[key];
+      } else {
+        taskTexts[key] = val;
+      }
+
+      if (!weeksData[currentWeekIndex]) weeksData[currentWeekIndex] = {};
+      weeksData[currentWeekIndex].taskTexts = taskTexts;
+      weeksData[currentWeekIndex].state = state;
+      weeksData[currentWeekIndex].overdue = overdue;
+
+      localStorage.setItem('docente_weeks_data_v7', JSON.stringify(weeksData));
+      localStorage.setItem('docente_task_texts_v7', JSON.stringify(taskTexts));
+      localStorage.setItem('docente_state_v6', JSON.stringify(state));
+      localStorage.setItem('docente_overdue_v6', JSON.stringify(overdue));
+      localStorage.setItem('docente_last_updated', Date.now().toString());
+
+      clearTimeout(taskTextSaveTimeout);
+      taskTextSaveTimeout = setTimeout(() => {
+        if (window.CloudDB && typeof window.CloudDB.scheduleSave === 'function') {
+          window.CloudDB.scheduleSave(300);
+        }
+      }, 300);
+
+      const wrap = document.getElementById(`btn-wrap-${key}`);
+      const g = initialGroups.find(item => item.id === groupId);
+      const platformLabel = (g && g.center === 'Riba-roja') ? 'Teams' : 'Classroom';
+      if (wrap) {
+        wrap.innerHTML = renderTaskButtonContent(groupId, taskType, platformLabel);
+      }
+
+      const input = document.getElementById(`input-${key}`);
+      if (input) {
+        if (val && val.trim().length > 0) input.classList.add('has-content');
+        else input.classList.remove('has-content');
+      }
+
+      updateStats();
+      if (typeof updateColumnStatusTags === 'function') updateColumnStatusTags();
+    }
+
+    function flushPendingSaves() {
+      if (neaeSaveTimeout) {
+        clearTimeout(neaeSaveTimeout);
+        neaeSaveTimeout = null;
+      }
+      if (noteSaveTimeout) {
+        clearTimeout(noteSaveTimeout);
+        noteSaveTimeout = null;
+      }
+      if (taskTextSaveTimeout) {
+        clearTimeout(taskTextSaveTimeout);
+        taskTextSaveTimeout = null;
+      }
+      if (window.CloudDB && typeof window.CloudDB.saveNow === 'function') {
+        window.CloudDB.saveNow();
+      }
+    }
+
+    // Guardado inmediato al salir del campo (hacer clic fuera, tabular, tocar otra celda o botón)
+    window.addEventListener("focusout", (e) => {
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT')) {
+        flushPendingSaves();
+      }
+    });
+
+    window.addEventListener("change", (e) => {
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT')) {
+        flushPendingSaves();
+      }
+    });
+
+    window.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === 'hidden') {
+        flushPendingSaves();
+      }
+    });
+    window.addEventListener("pagehide", () => {
+      flushPendingSaves();
+    });
+    window.addEventListener("beforeunload", () => {
+      flushPendingSaves();
+    });
+
+    function handleStandardTaskClick(key) {
+      if (overdue[key]) {
+        delete overdue[key];
+        state[key] = true;
+      } else {
+        state[key] = !state[key];
+      }
+      save(true);
+      renderTable();
+    }
+
+    function handleNeaeClick(groupId) {
+      const key = `${groupId}_neae`;
+      if (overdue[key]) {
+        delete overdue[key];
+        state[key] = true;
+      } else {
+        state[key] = !state[key];
+      }
+      save(true);
+      const cell = document.getElementById(`neae-cell-${groupId}`);
+      if (cell) cell.innerHTML = renderNeaeCellContent(groupId);
+      updateStats();
+    }
+
+    function updateStats() {
+      let total = 0;
+      let done = 0;
+      let overdueCount = 0;
+
+      if (currentView === 'weekly') {
+        initialGroups.forEach(g => {
+          // 1. Material base siempre cuenta
+          const matKey = `${g.id}_mat`;
+          total++;
+          if (state[matKey]) done++;
+          if (overdue[matKey] && !state[matKey]) overdueCount++;
+
+          // 2. NEAE (solo si tiene alumnos NEAE)
+          if (hasNeae(g.id)) {
+            const key = `${g.id}_neae`;
+            total++;
+            if (state[key]) done++;
+            if (overdue[key] && !state[key]) overdueCount++;
+          }
+
+          // 3. Fotocopias, Plataformas, Notas: solo si están configuradas con texto (o si ya fueron marcadas hechas)
+          ['print', 'platform', 'grades'].forEach(t => {
+            const key = `${g.id}_${t}`;
+            if (isTaskConfigured(g.id, t) || state[key]) {
+              total++;
+              if (state[key]) done++;
+              if (overdue[key] && !state[key]) overdueCount++;
+            }
+          });
+
+          // 4. Avisos Educamos vinculados a la semana activa en Planner
+          const session = getPlannerSession(g.id, currentWeekIndex);
+          if (session && session.educamos && session.educamos.trim().length > 0) {
+            total++;
+            if (session.educamosDado) done++;
+            if (overdue[`${g.id}_educamos`] && !session.educamosDado) overdueCount++;
+          }
+        });
+
+        const debtIndicator = document.getElementById('debtIndicator');
+        if (overdueCount > 0) {
+          debtIndicator.style.display = 'inline-block';
+          debtIndicator.textContent = `⚠️ ${overdueCount}`;
+          debtIndicator.title = `⚠️ ${overdueCount} tarea${overdueCount > 1 ? 's' : ''} atrasada${overdueCount > 1 ? 's' : ''}`;
+        } else {
+          debtIndicator.style.display = 'none';
+        }
+      } else {
+        longTermTasks.forEach(t => {
+          initialGroups.forEach(g => {
+            if (isGroupInTask(t, g.id)) {
+              total++;
+              if (longTermState[`${t.id}_${g.id}`]) done++;
+            }
+          });
+        });
+      }
+
+      // Contador de cursos con tareas pendientes
+      let pendingGroupsCount = 0;
+      initialGroups.forEach(g => {
+        if (isGroupPending(g.id)) pendingGroupsCount++;
+      });
+      const pendingCountEl = document.getElementById('pendingTabCount');
+      if (pendingCountEl) pendingCountEl.textContent = pendingGroupsCount;
+
+      updateColumnStatusBadges();
+
+      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+      document.getElementById('progressBar').style.width = pct + '%';
+    }
+
+    function updateColumnStatusBadges() {
+      if (currentView !== 'weekly') return;
+
+      const targetGroups = initialGroups.filter(g => {
+        if (activeFilter === 'neae') return hasNeae(g.id);
+        if (activeFilter === 'pending') return isGroupPending(g.id);
+        if (hideCompletedRows && !isGroupPending(g.id)) return false;
+        if (activeFilter !== 'all' && activeFilter !== 'pending' && g.center !== activeFilter) return false;
+        return true;
+      });
+
+      const checkColDone = (taskType) => {
+        if (targetGroups.length === 0) return false;
+        if (taskType === 'neae') {
+          const neaeGroups = targetGroups.filter(g => hasNeae(g.id));
+          if (neaeGroups.length === 0) return false;
+          return neaeGroups.every(g => !!state[`${g.id}_neae`]);
+        }
+        if (taskType === 'educamos') {
+          const educamosGroups = targetGroups.filter(g => {
+            const s = getPlannerSession(g.id, currentWeekIndex);
+            return !!(s && s.educamos && s.educamos.trim().length > 0);
+          });
+          if (educamosGroups.length === 0) return false;
+          return educamosGroups.every(g => {
+            const s = getPlannerSession(g.id, currentWeekIndex);
+            return !!(s && s.educamosDado);
+          });
+        }
+        if (taskType === 'print' || taskType === 'platform' || taskType === 'grades') {
+          const activeGroups = targetGroups.filter(g => isTaskConfigured(g.id, taskType));
+          if (activeGroups.length === 0) return false;
+          return activeGroups.every(g => !!state[`${g.id}_${taskType}`]);
+        }
+        return targetGroups.every(g => !!state[`${g.id}_${taskType}`]);
+      };
+
+      const cols = ['mat', 'neae', 'print', 'platform', 'educamos', 'grades'];
+      cols.forEach(col => {
+        const el = document.getElementById(`colStatus-${col}`);
+        if (el) {
+          const isDone = checkColDone(col);
+          if (isDone) {
+            el.textContent = '✓ Lista';
+            el.classList.add('active');
+          } else {
+            el.textContent = '';
+            el.classList.remove('active');
+          }
+        }
+      });
+    }
+
+    function updateColumnStatusTags() {
+      updateColumnStatusBadges();
+    }
+
+    function setFilter(filter, btnElement) {
+      activeFilter = filter;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      if (btnElement) {
+        btnElement.classList.add('active');
+      } else {
+        const found = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick') && b.getAttribute('onclick').includes(`'${filter}'`));
+        if (found) found.classList.add('active');
+      }
+      if (currentView === 'weekly') renderTable();
+      else renderLongTermTable();
+    }
+
+    function markAllCompleted() {
+      if (confirm('¿Quieres marcar todas las tareas semanales como completadas?')) {
+        const updates = {};
+        const weekIdx = currentWeekIndex;
+
+        initialGroups.forEach(g => {
+          // Material base siempre
+          state[`${g.id}_mat`] = true;
+          delete overdue[`${g.id}_mat`];
+
+          if (hasNeae(g.id)) {
+            state[`${g.id}_neae`] = true;
+            delete overdue[`${g.id}_neae`];
+          }
+
+          // Fotocopias, Plataformas y Notas: solo si están configuradas con texto
+          ['print', 'platform', 'grades'].forEach(t => {
+            if (isTaskConfigured(g.id, t)) {
+              state[`${g.id}_${t}`] = true;
+              delete overdue[`${g.id}_${t}`];
+            }
+          });
+
+          const map = groupToPlannerMap[g.id];
+          const session = getPlannerSession(g.id, currentWeekIndex);
+          if (session && session.educamos && session.educamos.trim().length > 0) {
+            session.educamosDado = true;
+            delete overdue[`${g.id}_educamos`];
+            if (map) {
+              updates[`weeks/${weekIdx}/${map.school}/${map.course}/educamosDado`] = true;
+            }
+          }
+        });
+
+        save();
+
+        try {
+          let pState = {};
+          try { pState = JSON.parse(localStorage.getItem('idoceo_planner_state_v3') || '{}'); } catch(e){}
+          pState.weeks = plannerWeeks;
+          pState.lastUpdated = Date.now();
+          localStorage.setItem('idoceo_planner_state_v3', JSON.stringify(pState));
+        } catch(e) {}
+
+        if (window.CloudDB && window.CloudDB.plannerDbRef && window.CloudDB.currentUser && Object.keys(updates).length > 0) {
+          updates['lastUpdated'] = Date.now();
+          window.CloudDB.plannerDbRef.update(updates).catch(e => console.error("Error bulk markAllCompleted educamos:", e));
+        }
+
+        renderTable();
+      }
+    }
+
+    function startNewWeek() {
+      if (currentWeekIndex >= WEEKS_CALENDAR.length - 1) {
+        alert("Ya estás en la última semana del calendario escolar.");
+        return;
+      }
+      const nextWeek = WEEKS_CALENDAR[currentWeekIndex + 1];
+      if (confirm(`¿Preparar la siguiente semana (${nextWeek.num_sem} - ${nextWeek.rango})?\n\n• Se guardará el estado de la semana actual.\n• Las tareas que hayan quedado pendientes pasarán como atrasadas (en ámbar) a la nueva semana.\n• Se avanzará automáticamente a la siguiente semana.\n• Las tareas a largo plazo seguirán a su propio ritmo.`)) {
+        selectWeek(currentWeekIndex + 1);
+      }
+    }
+
+    function hardReset() {
+      const w = WEEKS_CALENDAR[currentWeekIndex] || { num_sem: `Semana ${currentWeekIndex + 1}` };
+      if (confirm(`⚠️ RESET SEMANAL (${w.num_sem}):\n\nSe pondrán todas las casillas de esta semana en blanco y se limpiarán sus atrasos.\n(Las demás semanas, notas de otras semanas, necesidades NEAE y tareas a largo plazo NO se borrarán).`)) {
+        state = {};
+        overdue = {};
+        taskTexts = {};
+        if (weeksData[currentWeekIndex]) {
+          weeksData[currentWeekIndex].state = {};
+          weeksData[currentWeekIndex].overdue = {};
+          weeksData[currentWeekIndex].taskTexts = {};
+        }
+        save(true);
+        renderTable();
+      }
+    }
+
+    function save(immediateCloud = false) {
+      if (!weeksData[currentWeekIndex]) weeksData[currentWeekIndex] = {};
+      weeksData[currentWeekIndex].state = state;
+      weeksData[currentWeekIndex].overdue = overdue;
+      weeksData[currentWeekIndex].notes = notes;
+      weeksData[currentWeekIndex].taskTexts = taskTexts;
+
+      localStorage.setItem('docente_weeks_data_v7', JSON.stringify(weeksData));
+      localStorage.setItem('docente_state_v6', JSON.stringify(state));
+      localStorage.setItem('docente_overdue_v6', JSON.stringify(overdue));
+      localStorage.setItem('docente_notes_v6', JSON.stringify(notes));
+      localStorage.setItem('docente_task_texts_v7', JSON.stringify(taskTexts));
+      localStorage.setItem('docente_last_updated', Date.now().toString());
+      if (window.CloudDB) {
+        if (immediateCloud) {
+          window.CloudDB.saveNow();
+        } else {
+          window.CloudDB.scheduleSave(350);
+        }
+      }
+    }
+
+
+    /* ========================================================
+       LÓGICA VISTA 2: TAREAS A LARGO PLAZO (140px POR COLUMNA)
+       ======================================================== */
+    function isGroupInTask(task, groupId) {
+      if (task.scope === 'all') return true;
+      if (task.scope === 'Riba-roja') return groupId.startsWith('r_');
+      if (task.scope === 'Manises') return groupId.startsWith('m_');
+      if (task.scope === 'manual') return Array.isArray(task.groups) && task.groups.includes(groupId);
+      return false;
+    }
+
+    function renderLongTermTable() {
+      const headRow = document.getElementById('longTermTableHeadRow');
+      const tbody = document.getElementById('longTermTableBody');
+
+      headRow.innerHTML = `
+        <th class="col-center">Centro</th>
+        <th class="col-group">Grupo</th>
+      `;
+
+      if (longTermTasks.length === 0) {
+        headRow.innerHTML += `
+          <th style="font-weight: 500; font-style: italic; color: #94a3b8; text-transform: none; padding-left: 18px; width: 340px;">
+            No hay tareas a largo plazo creadas. Pulsa en "+ Nueva Tarea / Columna".
+          </th>
+          <th class="col-filler"></th>
+        `;
+      } else {
+        longTermTasks.forEach(task => {
+          const th = document.createElement('th');
+          th.className = 'col-lt-task';
+          th.innerHTML = `
+            <div class="th-content">
+              <span title="${task.name}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">${task.name}</span>
+              <div class="th-actions-row">
+                <button class="th-action-btn" onclick="toggleLtColumn('${task.id}')" title="Marcar/Desmarcar visibles">✓ Todos</button>
+                <button class="th-action-btn th-delete-btn" onclick="deleteLtTask('${task.id}')" title="Eliminar columna">🗑️</button>
+              </div>
+            </div>
+          `;
+          headRow.appendChild(th);
+        });
+
+        const thFiller = document.createElement('th');
+        thFiller.className = 'col-filler';
+        headRow.appendChild(thFiller);
+      }
+
+      tbody.innerHTML = '';
+      let visibleCount = 0;
+      initialGroups.forEach(g => {
+        const groupIsPending = isGroupPending(g.id);
+        if (activeFilter === 'pending' && !groupIsPending) return;
+        if (hideCompletedRows && !groupIsPending) return;
+        if (activeFilter !== 'all' && activeFilter !== 'pending' && g.center !== activeFilter) return;
+
+        visibleCount++;
+        const tr = document.createElement('tr');
+        const badgeClass = g.center === 'Riba-roja' ? 'badge-ribarroja' : 'badge-manises';
+
+        let cellsHtml = `
+          <td class="col-center"><span class="center-badge ${badgeClass}">${g.center} (${g.days})</span></td>
+          <td class="col-group"><div class="group-name" style="margin-bottom:0;">${g.name}</div></td>
+        `;
+
+        if (longTermTasks.length === 0) {
+          cellsHtml += `<td style="color:#cbd5e1; padding-left: 18px;">—</td><td class="col-filler"></td>`;
+        } else {
+          longTermTasks.forEach(task => {
+            const applies = isGroupInTask(task, g.id);
+            if (!applies) {
+              cellsHtml += `<td class="col-lt-task"><span class="neae-static-empty">—</span></td>`;
+            } else {
+              const key = `${task.id}_${g.id}`;
+              const isDone = !!longTermState[key];
+              const btnClass = isDone ? 'status-btn checked' : 'status-btn';
+              const label = isDone ? '✓ Hecho' : 'Pendiente';
+
+              cellsHtml += `
+                <td class="col-lt-task">
+                  <button class="${btnClass}" onclick="toggleLtStatus('${task.id}', '${g.id}')">
+                    <span>${label}</span>
+                  </button>
+                </td>
+              `;
+            }
+          });
+          cellsHtml += `<td class="col-filler"></td>`;
+        }
+
+        tr.innerHTML = cellsHtml;
+        tbody.appendChild(tr);
+      });
+
+      if (visibleCount === 0) {
+        const colSpan = Math.max(3, longTermTasks.length + 3);
+        const emptyRow = document.createElement('tr');
+        emptyRow.innerHTML = `
+          <td colspan="${colSpan}" style="text-align:center; padding: 42px 20px; background:#f0fdf4; border-radius:8px; border:1px dashed #86efac;">
+            <div style="font-size: 1.4rem; margin-bottom: 6px;">🎉 ¡Todo al día!</div>
+            <div style="color: #15803d; font-size: 0.9rem; font-weight: 600;">
+              ${(activeFilter === 'pending' || hideCompletedRows) ? 'No queda ninguna tarea a largo plazo pendiente en los cursos filtrados.' : 'No hay cursos que mostrar con este filtro.'}
+            </div>
+          </td>
+        `;
+        tbody.appendChild(emptyRow);
+      }
+
+      updateStats();
+    }
+
+    function toggleLtStatus(taskId, groupId) {
+      const key = `${taskId}_${groupId}`;
+      longTermState[key] = !longTermState[key];
+      saveLongTerm();
+      renderLongTermTable();
+    }
+
+    function toggleLtColumn(taskId) {
+      const task = longTermTasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      const visibleGroups = initialGroups.filter(g => {
+        if (activeFilter === 'pending' && !isGroupPending(g.id)) return false;
+        if (hideCompletedRows && !isGroupPending(g.id)) return false;
+        if (activeFilter !== 'all' && activeFilter !== 'pending' && g.center !== activeFilter) return false;
+        return isGroupInTask(task, g.id);
+      });
+
+      if (visibleGroups.length === 0) return;
+
+      const allDone = visibleGroups.every(g => !!longTermState[`${taskId}_${g.id}`]);
+
+      visibleGroups.forEach(g => {
+        longTermState[`${taskId}_${g.id}`] = !allDone;
+      });
+
+      saveLongTerm();
+      renderLongTermTable();
+    }
+
+    function deleteLtTask(taskId) {
+      const task = longTermTasks.find(t => t.id === taskId);
+      const taskName = task ? `"${task.name}"` : 'esta tarea';
+      if (confirm(`¿Eliminar la columna ${taskName}? Se borrarán las marcas asociadas.`)) {
+        longTermTasks = longTermTasks.filter(t => t.id !== taskId);
+        Object.keys(longTermState).forEach(k => {
+          if (k.startsWith(`${taskId}_`)) delete longTermState[k];
+        });
+        saveLongTerm();
+        renderLongTermTable();
+      }
+    }
+
+    function saveLongTerm(immediateCloud = true) {
+      localStorage.setItem('docente_lt_tasks_v1', JSON.stringify(longTermTasks));
+      localStorage.setItem('docente_lt_state_v1', JSON.stringify(longTermState));
+      localStorage.setItem('docente_last_updated', Date.now().toString());
+      if (window.CloudDB) {
+        if (immediateCloud) {
+          window.CloudDB.saveNow();
+        } else {
+          window.CloudDB.scheduleSave(350);
+        }
+      }
+    }
+
+    function openNewTaskModal() {
+      document.getElementById('taskNameInput').value = '';
+      document.querySelector('input[name="scopeOption"][value="all"]').checked = true;
+      toggleManualGroups(false);
+      
+      const ribaContainer = document.getElementById('manualRibaList');
+      const manisesContainer = document.getElementById('manualManisesList');
+      ribaContainer.innerHTML = '';
+      manisesContainer.innerHTML = '';
+
+      initialGroups.filter(g => g.center === 'Riba-roja').forEach(g => {
+        const lbl = document.createElement('label');
+        lbl.className = 'manual-item';
+        lbl.innerHTML = `<input type="checkbox" value="${g.id}"> <span>${g.name}</span>`;
+        ribaContainer.appendChild(lbl);
+      });
+
+      initialGroups.filter(g => g.center === 'Manises').forEach(g => {
+        const lbl = document.createElement('label');
+        lbl.className = 'manual-item';
+        lbl.innerHTML = `<input type="checkbox" value="${g.id}"> <span>${g.name}</span>`;
+        manisesContainer.appendChild(lbl);
+      });
+
+      document.getElementById('newTaskModal').style.display = 'flex';
+      setTimeout(() => document.getElementById('taskNameInput').focus(), 50);
+    }
+
+    function closeNewTaskModal() {
+      document.getElementById('newTaskModal').style.display = 'none';
+    }
+
+    function toggleManualGroups(show) {
+      document.getElementById('manualGroupsContainer').style.display = show ? 'grid' : 'none';
+    }
+
+    function saveNewTask() {
+      const nameInput = document.getElementById('taskNameInput');
+      const name = nameInput.value.trim();
+      if (!name) {
+        alert('Por favor, escribe un nombre para la tarea.');
+        nameInput.focus();
+        return;
+      }
+
+      const scope = document.querySelector('input[name="scopeOption"]:checked').value;
+      let selectedGroups = [];
+
+      if (scope === 'manual') {
+        const checkedBoxes = document.querySelectorAll('#manualGroupsContainer input[type="checkbox"]:checked');
+        checkedBoxes.forEach(b => selectedGroups.push(b.value));
+        if (selectedGroups.length === 0) {
+          alert('Selecciona al menos un curso de la lista.');
+          return;
+        }
+      }
+
+      const newTask = {
+        id: 'lt_' + Date.now(),
+        name: name,
+        scope: scope,
+        groups: selectedGroups
+      };
+
+      longTermTasks.push(newTask);
+      saveLongTerm();
+      closeNewTaskModal();
+      renderLongTermTable();
+    }
+
+    // Render inicial
+    updateWeekDisplay();
+    renderTable();
+
+    /* ========================================================
+       MÓDULO DE BASE DE DATOS EN LA NUBE (FIREBASE REALTIME DB)
+       Arquitectura Local-First, Cero Fallos y Sincronización Realtime
+       ======================================================== */
+    const firebaseConfig = {
+      apiKey: "AIzaSyDE1zrBr-rSZDOwJiRQ-ylRBWJ-FOWJqYE",
+      authDomain: "mi-planner-clases.firebaseapp.com",
+      databaseURL: "https://mi-planner-clases-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "mi-planner-clases",
+      storageBucket: "mi-planner-clases.firebasestorage.app",
+      messagingSenderId: "937193939100",
+      appId: "1:937193939100:web:ce5d40ce7723832a7e0d59"
+    };
+
+    window.CloudDB = {
+      isInitialized: false,
+      isFirebaseAvailable: false,
+      currentUser: null,
+      dbRef: null,
+      saveTimer: null,
+      isRemoteUpdate: false,
+
+      init() {
+        if (typeof firebase === 'undefined') {
+          console.warn("[CloudDB] Firebase SDK no disponible o sin conexión. Operando en modo local.");
+          this.updateBadge('offline', '🟡 Modo Local (Sin conexión)');
+          return;
+        }
+        this.isFirebaseAvailable = true;
+
+        try {
+          if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+          }
+
+          const auth = firebase.auth();
+          auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(e => {
+            console.warn("[CloudDB] Persistencia de sesión:", e);
+          });
+
+          auth.onAuthStateChanged((user) => {
+            if (user) {
+              this.currentUser = user;
+              this.updateBadge('syncing', '🔄 Conectando nube...');
+              this.connectRealtimeDB();
+            } else {
+              this.currentUser = null;
+              this.isInitialized = false;
+              this.updateBadge('unauth', '🔒 Conectar Nube');
+              if (!sessionStorage.getItem('cloud_login_dismissed')) {
+                this.openAuthModal();
+              }
+            }
+          });
+        } catch (err) {
+          console.error("[CloudDB] Error al inicializar Firebase:", err);
+          this.updateBadge('offline', '🟡 Modo Local');
+        }
+      },
+
+      connectRealtimeDB() {
+        try {
+          const db = firebase.database();
+          this.dbRef = db.ref('control_clases');
+
+          // Listener en tiempo real
+          this.dbRef.on('value', (snapshot) => {
+            const cloudData = snapshot.val();
+
+            if (cloudData === null) {
+              console.log("[CloudDB] Base de datos vacía en la nube. Realizando subida inicial de datos locales...");
+              this.initialSeedUpload();
+              this.isInitialized = true;
+              this.updateBadge('synced', '🟢 Nube Activa');
+              return;
+            }
+
+            // Comprobación de marca temporal inteligente
+            const localLastUpdated = Number(localStorage.getItem('docente_last_updated') || 0);
+            const cloudLastUpdated = Number(cloudData.lastUpdated || 0);
+
+            if (localLastUpdated > cloudLastUpdated + 1500) {
+              console.log("[CloudDB] Datos locales de control más recientes. Actualizando la nube...");
+              this.saveNow();
+              this.isInitialized = true;
+              this.updateBadge('synced', '🟢 Nube Activa');
+              return;
+            }
+
+            this.isRemoteUpdate = true;
+            try {
+              if (typeof cloudData.currentWeekIndex === 'number' && cloudData.currentWeekIndex >= 0 && cloudData.currentWeekIndex < WEEKS_CALENDAR.length) {
+                currentWeekIndex = cloudData.currentWeekIndex;
+                localStorage.setItem('docente_current_week', currentWeekIndex.toString());
+                updateWeekDisplay();
+              }
+
+              if (cloudData.weeksData && typeof cloudData.weeksData === 'object') {
+                weeksData = cloudData.weeksData;
+                localStorage.setItem('docente_weeks_data_v7', JSON.stringify(weeksData));
+              } else if (cloudData.state) {
+                if (!weeksData[currentWeekIndex]) weeksData[currentWeekIndex] = {};
+                weeksData[currentWeekIndex].state = cloudData.state || {};
+                weeksData[currentWeekIndex].overdue = cloudData.overdue || {};
+                weeksData[currentWeekIndex].notes = cloudData.notes || {};
+                weeksData[currentWeekIndex].taskTexts = cloudData.taskTexts || {};
+                localStorage.setItem('docente_weeks_data_v7', JSON.stringify(weeksData));
+              }
+
+              loadCurrentWeekPointers();
+              neaeProfiles = cloudData.neaeProfiles || {};
+              longTermTasks = Array.isArray(cloudData.longTermTasks) ? cloudData.longTermTasks : [];
+              longTermState = cloudData.longTermState || {};
+
+              localStorage.setItem('docente_state_v6', JSON.stringify(state));
+              localStorage.setItem('docente_notes_v6', JSON.stringify(notes));
+              localStorage.setItem('docente_overdue_v6', JSON.stringify(overdue));
+              localStorage.setItem('docente_neae_profiles_v6', JSON.stringify(neaeProfiles));
+              localStorage.setItem('docente_lt_tasks_v1', JSON.stringify(longTermTasks));
+              localStorage.setItem('docente_lt_state_v1', JSON.stringify(longTermState));
+              localStorage.setItem('docente_last_updated', cloudLastUpdated.toString());
+
+              const activeTag = document.activeElement ? document.activeElement.tagName : '';
+              if (activeTag !== 'INPUT' && activeTag !== 'TEXTAREA') {
+                renderTable();
+                if (typeof renderLongTermTable === 'function') renderLongTermTable();
+                updateStats();
+              }
+            } catch (syncErr) {
+              console.error("[CloudDB] Error aplicando datos remotos:", syncErr);
+            } finally {
+              this.isRemoteUpdate = false;
+            }
+
+            this.isInitialized = true;
+            this.updateBadge('synced', '🟢 Nube Activa');
+          }, (err) => {
+            console.error("[CloudDB] Error de permisos o lectura:", err);
+            this.updateBadge('offline', '⚠️ Error de Acceso');
+          });
+
+          // Listener en tiempo real para planner_anual (Sincronización bidireccional Educamos)
+          this.plannerDbRef = db.ref('planner_anual');
+          this.plannerDbRef.on('value', (snapshot) => {
+            const plannerData = snapshot.val();
+            if (plannerData && Array.isArray(plannerData.weeks)) {
+              plannerWeeks = plannerData.weeks;
+              try {
+                let existingState = {};
+                try { existingState = JSON.parse(localStorage.getItem('idoceo_planner_state_v3') || '{}'); } catch(e) {}
+                existingState.weeks = plannerWeeks;
+                existingState.lastUpdated = plannerData.lastUpdated || Date.now();
+                localStorage.setItem('idoceo_planner_state_v3', JSON.stringify(existingState));
+              } catch(e) {}
+
+              const activeTag = document.activeElement ? document.activeElement.tagName : '';
+              if (currentView === 'weekly' && activeTag !== 'INPUT' && activeTag !== 'TEXTAREA') {
+                renderTable();
+                updateStats();
+              }
+            }
+          }, (err) => {
+            console.warn("[CloudDB] Listener planner_anual:", err);
+          });
+        } catch (e) {
+          console.error("[CloudDB] Error al conectar a Realtime DB:", e);
+          this.updateBadge('offline', '🟡 Modo Local');
+        }
+      },
+
+      getStatePayload() {
+        return {
+          currentWeekIndex: currentWeekIndex,
+          weeksData: weeksData || {},
+          state: state || {},
+          notes: notes || {},
+          overdue: overdue || {},
+          taskTexts: taskTexts || {},
+          neaeProfiles: neaeProfiles || {},
+          longTermTasks: longTermTasks || [],
+          longTermState: longTermState || {},
+          lastUpdated: Date.now()
+        };
+      },
+
+      initialSeedUpload() {
+        if (!this.dbRef || !this.currentUser) return;
+        this.dbRef.set(this.getStatePayload()).catch(e => console.error("[CloudDB] Error seed upload:", e));
+      },
+
+      saveNow() {
+        if (this.isRemoteUpdate) return;
+        if (this.saveTimer) {
+          clearTimeout(this.saveTimer);
+          this.saveTimer = null;
+        }
+        if (!this.isInitialized || !this.dbRef || !this.currentUser) return;
+
+        this.updateBadge('syncing', '🔄 Guardando...');
+        this.dbRef.set(this.getStatePayload())
+          .then(() => {
+            this.updateBadge('synced', '🟢 Nube Activa');
+          })
+          .catch(err => {
+            console.error("[CloudDB] Error guardando en nube:", err);
+            this.updateBadge('offline', '⚠️ Error al guardar');
+          });
+      },
+
+      scheduleSave(delay = 350) {
+        if (this.isRemoteUpdate) return;
+        if (!this.isInitialized || !this.dbRef || !this.currentUser) return;
+
+        this.updateBadge('syncing', '🔄 Guardando...');
+        if (this.saveTimer) clearTimeout(this.saveTimer);
+
+        this.saveTimer = setTimeout(() => {
+          this.saveTimer = null;
+          this.saveNow();
+        }, delay);
+      },
+
+      forcePushNow() {
+        if (!this.dbRef || !this.currentUser) {
+          alert("Debes iniciar sesión con Firebase para sincronizar.");
+          return;
+        }
+        this.saveNow();
+        alert("✓ Datos subidos y sincronizados con la nube con éxito.");
+      },
+
+      updateBadge(status, text) {
+        const badge = document.getElementById('cloudSyncBadge');
+        if (!badge) return;
+        badge.className = `sync-badge ${status}`;
+        let icon = '☁️';
+        if (status === 'syncing') icon = '🔄';
+        else if (status === 'unauth') icon = '🔒';
+        badge.innerHTML = `<span class="sync-status-dot"></span><span>${icon}</span>`;
+        badge.title = `${text || 'Estado de la nube'}${this.currentUser ? ' (' + this.currentUser.email + ')' : ''} • Clic para gestionar`;
+        const detail = document.getElementById('cloudStatusDetail');
+        if (detail) {
+          if (status === 'synced') detail.innerHTML = '🟢 Sincronizado en tiempo real';
+          else if (status === 'syncing') detail.innerHTML = '🔄 Conectando / Guardando...';
+          else if (status === 'unauth') detail.innerHTML = '🔒 Sesión no iniciada';
+          else detail.innerHTML = '🟡 Modo Local (Sin conexión a la nube)';
+        }
+      },
+
+      openAuthModal() {
+        const modal = document.getElementById('cloudAuthModal');
+        if (modal) {
+          modal.style.display = 'flex';
+          const input = document.getElementById('cloudEmailInput');
+          if (input) {
+            const savedEmail = localStorage.getItem('docente_cloud_email') || 'virtual.reli@gmail.com';
+            if (!input.value) input.value = savedEmail;
+            setTimeout(() => {
+              const pass = document.getElementById('cloudPassInput');
+              if (pass) pass.focus();
+              else input.focus();
+            }, 100);
+          }
+        }
+      },
+
+      closeAuthModal() {
+        const modal = document.getElementById('cloudAuthModal');
+        if (modal) modal.style.display = 'none';
+        sessionStorage.setItem('cloud_login_dismissed', 'true');
+      },
+
+      openStatusModal() {
+        if (this.currentUser) {
+          const emailEl = document.getElementById('cloudUserEmail');
+          if (emailEl) emailEl.textContent = this.currentUser.email;
+          const modal = document.getElementById('cloudStatusModal');
+          if (modal) modal.style.display = 'flex';
+        } else {
+          this.openAuthModal();
+        }
+      },
+
+      closeStatusModal() {
+        const modal = document.getElementById('cloudStatusModal');
+        if (modal) modal.style.display = 'none';
+      },
+
+      login() {
+        if (!this.isFirebaseAvailable) {
+          alert("Firebase no está disponible. Comprueba tu conexión a internet.");
+          return;
+        }
+        const emailInput = document.getElementById('cloudEmailInput');
+        const passInput = document.getElementById('cloudPassInput');
+        const errBox = document.getElementById('cloudAuthError');
+        const btn = document.getElementById('btnCloudLogin');
+
+        const email = emailInput ? emailInput.value.trim() : '';
+        const pass = passInput ? passInput.value : '';
+
+        if (!email || !pass) {
+          if (errBox) {
+            errBox.textContent = 'Por favor, escribe tu correo y contraseña.';
+            errBox.style.display = 'block';
+          }
+          return;
+        }
+
+        if (errBox) errBox.style.display = 'none';
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = 'Conectando...';
+        }
+
+        firebase.auth().signInWithEmailAndPassword(email, pass)
+          .then(() => {
+            localStorage.setItem('docente_cloud_email', email);
+            if (btn) {
+              btn.disabled = false;
+              btn.textContent = 'Conectar Nube';
+            }
+            this.closeAuthModal();
+          })
+          .catch(err => {
+            if (btn) {
+              btn.disabled = false;
+              btn.textContent = 'Conectar Nube';
+            }
+            if (errBox) {
+              let msg = 'Error de conexión: ' + err.message;
+              if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
+                msg = 'Correo o contraseña incorrectos. Revisa las credenciales de Firebase.';
+              } else if (err.code === 'auth/invalid-email') {
+                msg = 'El formato de correo no es válido.';
+              }
+              errBox.textContent = msg;
+              errBox.style.display = 'block';
+            }
+          });
+      },
+
+      logout() {
+        if (confirm("¿Cerrar sesión de la nube en este dispositivo?\n\n(Tus datos guardados en el navegador local seguirán estando intactos).")) {
+          firebase.auth().signOut().then(() => {
+            this.closeStatusModal();
+            this.updateBadge('unauth', '🔒 Conectar Nube');
+          });
+        }
+      },
+
+      exportBackup() {
+        const backupData = {
+          exportDate: new Date().toISOString(),
+          app: "Control de Clases Docente",
+          currentWeekIndex: currentWeekIndex,
+          weeksData: weeksData,
+          state: state,
+          notes: notes,
+          overdue: overdue,
+          taskTexts: taskTexts,
+          neaeProfiles: neaeProfiles,
+          longTermTasks: longTermTasks,
+          longTermState: longTermState
+        };
+        const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `backup_control_clases_${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    };
+    const CloudDB = window.CloudDB;
+
+    // Iniciar conexión con la nube
+    CloudDB.init();
+  </script>
+</body>
+</html>
