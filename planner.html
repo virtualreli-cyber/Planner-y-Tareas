@@ -1041,6 +1041,7 @@
       gap: 3px;
       overflow: visible;
       min-height: 0;
+      justify-content: flex-start;
     }
 
     .inline-field {
@@ -1135,11 +1136,12 @@
       color: #334155;
       line-height: 1.35;
       resize: none;
-      flex: 1;
+      flex: 1 0 auto;
+      flex-shrink: 0;
       width: 100%;
       height: auto;
-      min-height: 35px;
-      overflow-y: hidden; /* CERO scroll de actividades: auto-expande */
+      min-height: 95px;
+      overflow-y: hidden; /* CERO scroll de actividades: auto-expande hacia abajo */
       field-sizing: content;
       box-sizing: border-box;
     }
@@ -5487,25 +5489,25 @@
     function getFranjaDefinitions(isIntensiva) {
       if (isIntensiva) {
         return [
-          { index: 0, label: "08:00", name: "1ª hora", isClassFranja: true },
-          { index: 1, label: "09:00", name: "2ª hora", isClassFranja: true },
-          { index: 2, label: "09:50", name: "3ª hora", isClassFranja: true },
-          { index: 3, label: "10:45", name: "Recreo / Clase", isClassFranja: true },
-          { index: 4, label: "11:25", name: "4ª hora", isClassFranja: true },
-          { index: 5, label: "12:20", name: "5ª hora", isClassFranja: true },
-          { index: 6, label: "13:15", name: "Salida / Reunión", isClassFranja: true }
+          { index: 0, label: "08:00", name: "1ª hora", duration: 55 },
+          { index: 1, label: "09:00", name: "2ª hora", duration: 55 },
+          { index: 2, label: "09:50", name: "3ª hora", duration: 55 },
+          { index: 3, label: "10:45", name: "Recreo / Clase", duration: 55 },
+          { index: 4, label: "11:25", name: "4ª hora", duration: 55 },
+          { index: 5, label: "12:20", name: "5ª hora", duration: 55 },
+          { index: 6, label: "13:15", name: "Salida / Reunión", duration: 55 }
         ];
       }
       return [
-        { index: 0, label: "08:00", name: "1ª hora", isClassFranja: true },
-        { index: 1, label: "09:00", name: "2ª hora", isClassFranja: true },
-        { index: 2, label: "09:50", name: "3ª hora / Patio", isClassFranja: true },
-        { index: 3, label: "10:45", name: "Lectura / Recreo", isClassFranja: false },
-        { index: 4, label: "11:25", name: "4ª hora", isClassFranja: true },
-        { index: 5, label: "12:20", name: "5ª hora", isClassFranja: true },
-        { index: 6, label: "13:15", name: "Comedor", isClassFranja: false },
-        { index: 7, label: "15:00", name: "6ª hora", isClassFranja: true },
-        { index: 8, label: "15:55", name: "7ª hora", isClassFranja: true }
+        { index: 0, label: "08:00", name: "1ª hora", duration: 55 },
+        { index: 1, label: "09:00", name: "2ª hora", duration: 55 },
+        { index: 2, label: "09:50", name: "3ª hora / Patio", duration: 55 },
+        { index: 3, label: "10:45", name: "Lectura / Recreo", duration: 55 },
+        { index: 4, label: "11:25", name: "4ª hora", duration: 55 },
+        { index: 5, label: "12:20", name: "5ª hora", duration: 55 },
+        { index: 6, label: "13:15", name: "Comedor", duration: 105 },
+        { index: 7, label: "15:00", name: "6ª hora", duration: 55 },
+        { index: 8, label: "15:55", name: "7ª hora", duration: 55 }
       ];
     }
 
@@ -5514,11 +5516,13 @@
       const wrap = document.querySelector(".week-view-wrapper");
       if (!wrap) return;
 
+      const prevScrollTop = wrap.scrollTop;
+
       // 1. Auto-expandir todos los textareas de texto sin scroll
-      wrap.querySelectorAll(".inline-content").forEach(el => autoResizeTextarea(el, 35));
+      wrap.querySelectorAll(".inline-content").forEach(el => autoResizeTextarea(el, 95));
       wrap.querySelectorAll(".inline-avisos").forEach(el => autoResizeTextarea(el, 20));
       wrap.querySelectorAll(".inline-educamos").forEach(el => autoResizeTextarea(el, 20));
-      wrap.querySelectorAll(".slot-note-textarea").forEach(el => autoResizeTextarea(el, 24));
+      wrap.querySelectorAll(".slot-note-textarea").forEach(el => autoResizeTextarea(el, 28));
 
       const weekIndex = state.currentWeekIndex;
       const days = getDatesForWeek(weekIndex);
@@ -5528,26 +5532,13 @@
       const franjaDefs = getFranjaDefinitions(isIntensiva);
       const numFranjas = franjaDefs.length;
 
-      // 2. Altura mínima base de cada franja según la escala de zoom
+      // 2. Altura mínima base de cada franja según su duración original (55 min -> ~238px, Comedor 105 min -> ~458px)
       const franjaHeights = franjaDefs.map(f => {
-        if (f.isClassFranja) {
-          return Math.max(Math.round(55 * scale * 0.92), 220);
-        } else if (f.index === 6 && !isIntensiva) {
-          // Comedor ordinario
-          return Math.max(Math.round(45 * scale * 0.35), 65);
-        } else {
-          // Recreo / Patio
-          return Math.max(Math.round(35 * scale * 0.35), 45);
-        }
+        return Math.max(Math.round(f.duration * scale) - 4, 30);
       });
 
-      // 3. Medir cada tarjeta para determinar la altura máxima necesaria en cada franja
+      // 3. Medir cada tarjeta para determinar la altura máxima necesaria en cada franja (hacia abajo)
       const allSlots = Array.from(wrap.querySelectorAll(".session-card, .static-slot-block"));
-
-      // Quitar temporalmente altura fija para medir offsetHeight natural de cada tarjeta
-      allSlots.forEach(el => {
-        el.style.height = "auto";
-      });
 
       allSlots.forEach(el => {
         const fIdx = parseInt(el.dataset.franja, 10);
@@ -5556,31 +5547,58 @@
         const isSpan = !!el.dataset.span;
         const sub = el.dataset.sub;
 
-        if (!isSpan) {
+        if (el.classList.contains("session-card")) {
+          const contentArea = el.querySelector(".inline-content");
+          const avisosArea = el.querySelector(".inline-avisos");
+          const educamosArea = el.querySelector(".inline-educamos");
+
+          const contentH = contentArea ? Math.max(95, contentArea.scrollHeight) : 95;
+          const avisosH = avisosArea ? Math.max(20, avisosArea.scrollHeight) + 8 : 28;
+          const educamosH = educamosArea ? Math.max(20, educamosArea.scrollHeight) + 8 : 28;
+
+          // Cabecera (22) + Título (22) + Contenido + Avisos + Educamos + Padding/Gaps/Bordes (18)
+          const needed = 22 + 22 + contentH + avisosH + educamosH + 18;
+          if (needed > franjaHeights[fIdx]) {
+            franjaHeights[fIdx] = needed;
+          }
+        } else {
+          // Bloques estáticos (Lectura, Recreo, Tiempo Libre, Guardia, Comedor, etc.)
           if (sub === "lectura") {
-            const needed = el.offsetHeight + 4;
-            if (needed + 32 > franjaHeights[fIdx]) {
-              franjaHeights[fIdx] = needed + 32;
+            const noteTa = el.querySelector(".slot-note-textarea");
+            if (noteTa) {
+              const needed = 24 + Math.max(28, noteTa.scrollHeight) + 16;
+              const recreoBase = Math.max(Math.round(25 * scale) - 4, 30);
+              if (needed + recreoBase > franjaHeights[fIdx]) {
+                franjaHeights[fIdx] = needed + recreoBase;
+              }
             }
           } else if (sub === "recreo") {
-            const needed = el.offsetHeight + 4;
-            if (needed + 30 > franjaHeights[fIdx]) {
-              franjaHeights[fIdx] = needed + 30;
+            const noteTa = el.querySelector(".slot-note-textarea");
+            if (noteTa) {
+              const needed = 24 + Math.max(28, noteTa.scrollHeight) + 16;
+              const lecturaOffset = Math.max(Math.round(15 * scale), 28);
+              if (needed + lecturaOffset > franjaHeights[fIdx]) {
+                franjaHeights[fIdx] = needed + lecturaOffset;
+              }
+            }
+          } else if (el.dataset.spanType === "mie_tarde") {
+            const noteTa = el.querySelector(".slot-note-textarea");
+            if (noteTa) {
+              const needed = 24 + Math.max(28, noteTa.scrollHeight) + 16;
+              const combined = franjaHeights[7] + (franjaHeights[8] || 0);
+              if (needed > combined) {
+                const diff = needed - combined;
+                franjaHeights[8] = (franjaHeights[8] || 0) + diff;
+              }
             }
           } else {
-            // Tarjeta estándar (clase o bloque)
-            const needed = el.offsetHeight + 4;
-            if (needed > franjaHeights[fIdx]) {
-              franjaHeights[fIdx] = needed;
+            const noteTa = el.querySelector(".slot-note-textarea");
+            if (noteTa) {
+              const needed = 24 + Math.max(28, noteTa.scrollHeight) + 16;
+              if (needed > franjaHeights[fIdx]) {
+                franjaHeights[fIdx] = needed;
+              }
             }
-          }
-        } else if (el.dataset.spanType === "mie_tarde") {
-          // Spans franjas 7 y 8
-          const needed = el.offsetHeight + 4;
-          const combined = franjaHeights[7] + (franjaHeights[8] || 0);
-          if (needed > combined) {
-            const diff = needed - combined;
-            franjaHeights[8] = (franjaHeights[8] || 0) + diff;
           }
         }
       });
@@ -5621,11 +5639,13 @@
 
         if (!isSpan) {
           if (sub === "lectura") {
+            const lectH = Math.max(Math.round(15 * scale) - 4, 26);
             el.style.top = fTop + "px";
-            el.style.height = "26px";
+            el.style.height = lectH + "px";
           } else if (sub === "recreo") {
-            el.style.top = (fTop + 28) + "px";
-            el.style.height = Math.max(fHeight - 32, 22) + "px";
+            const lectOffset = Math.max(Math.round(15 * scale), 28);
+            el.style.top = (fTop + lectOffset) + "px";
+            el.style.height = Math.max(fHeight - lectOffset - 4, 30) + "px";
           } else {
             el.style.top = fTop + "px";
             el.style.height = (fHeight - 4) + "px";
@@ -5638,7 +5658,7 @@
         } else if (el.dataset.spanType === "viernes") {
           const top1 = franjaTops[1] || 0;
           const endFranja = Math.min(6, numFranjas - 1);
-          const bottom = franjaTops[endFranja] || (fTop + fHeight);
+          const bottom = franjaTops[endFranja] + franjaHeights[endFranja];
           el.style.top = top1 + "px";
           el.style.height = Math.max(bottom - top1 - 4, 120) + "px";
         }
@@ -5670,6 +5690,11 @@
 
       // 9. Actualizar indicador de hora en vivo
       updateLiveCurrentTime();
+
+      // 10. Restaurar posición de scroll si hubo desplazamiento espurio
+      if (prevScrollTop > 0 && Math.abs(wrap.scrollTop - prevScrollTop) > 1) {
+        wrap.scrollTop = prevScrollTop;
+      }
     }
 
     window.addEventListener("resize", () => {
@@ -5866,7 +5891,7 @@
               contentArea.value = session.actividades || "";
               contentArea.oninput = (e) => {
                 onInlineEdit(school, slot.course, weekIndex, "actividades", e.target.value);
-                autoResizeTextarea(e.target, 35);
+                autoResizeTextarea(e.target, 95);
                 syncWeekFranjaHeights();
               };
 
@@ -6052,13 +6077,15 @@
       wrap.appendChild(bodyGrid);
       container.appendChild(wrap);
 
-      // Sincronizar alturas de todas las franjas horarias y auto-expandir textos
-      requestAnimationFrame(() => {
-        syncWeekFranjaHeights();
-      });
-      setTimeout(() => {
-        syncWeekFranjaHeights();
-      }, 60);
+      // Listener pasivo de scroll para registrar siempre la posición exacta del usuario en la semana
+      wrap.addEventListener("scroll", () => {
+        if (!state.viewScrollPositions) state.viewScrollPositions = {};
+        state.viewScrollPositions.semana = wrap.scrollTop;
+      }, { passive: true });
+
+      // Sincronizar alturas de todas las franjas horarias y auto-expandir textos síncronamente
+      // de forma que el scrollHeight esté listo antes de que restoreViewScroll() actúe
+      syncWeekFranjaHeights();
     }
     /* EDICIÓN DIRECTA EN LA TARJETA (INLINE AUTO-SAVE) */
     let saveTimeout = null;
@@ -10438,9 +10465,9 @@
             const localLastUpdated = state.lastUpdated || 0;
             const cloudLastUpdated = cloudData.lastUpdated || 0;
 
-            if (localLastUpdated > cloudLastUpdated + 1500) {
-              console.log("[CloudDB] Datos locales más recientes que la nube. Subiendo a la nube...");
-              this.saveNow();
+            if (localLastUpdated >= cloudLastUpdated) {
+              // El cambio proviene de esta misma sesión local o la nube no es más reciente:
+              // no sobreescribir ni re-renderizar la vista para evitar saltos de pantalla
               this.isInitialized = true;
               this.updateBadge('synced', '🟢 Nube Activa');
               return;
