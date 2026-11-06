@@ -4396,6 +4396,487 @@
       border-color: #cbd5e1;
       box-shadow: 0 2px 6px rgba(0,0,0,0.06);
     }
+
+    /* ========================================================
+       VISTA REPLICAR CLASES: ESTILOS DE AGILIDAD MÁXIMA
+       ======================================================== */
+    .replicate-container {
+      padding: 16px 20px 60px;
+      max-width: 1600px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .replicate-active-banner {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+      padding: 12px 18px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      animation: fadeInBanner 0.2s ease-out;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    @keyframes fadeInBanner {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .replicate-banner-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .replicate-banner-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 12px;
+      width: fit-content;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .replicate-source-info {
+      font-size: 13.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .replicate-tema-pill {
+      background: #ffffff;
+      color: #1e3a8a;
+      padding: 2px 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 12.5px;
+      max-width: 450px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: inline-block;
+    }
+
+    .replicate-instructions {
+      font-size: 12px;
+      color: #bfdbfe;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-cancel-replica {
+      background: #ffffff;
+      color: #dc2626;
+      border: 1px solid #ffffff;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+    .btn-cancel-replica:hover {
+      background: #fef2f2;
+      border-color: #fca5a5;
+      transform: translateY(-1px);
+    }
+
+    .replicate-idle-banner {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-left: 4px solid #3b82f6;
+      border-radius: 8px;
+      padding: 10px 16px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12.5px;
+      color: #475569;
+    }
+
+    .replicate-level-section {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      margin-bottom: 18px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+
+    .replicate-level-header {
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .replicate-level-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .replicate-level-tag {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #0f172a;
+      background: #e2e8f0;
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+
+    .replicate-level-info {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .btn-batch-level-replicate {
+      background: #ecfdf5;
+      color: #059669;
+      border: 1px solid #a7f3d0;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+    .btn-batch-level-replicate:hover {
+      background: #d1fae5;
+      border-color: #34d399;
+      transform: translateY(-0.5px);
+    }
+
+    .replicate-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+      padding: 14px;
+    }
+
+    .replicate-card {
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+      transition: all 0.15s ease;
+      min-height: 180px;
+    }
+
+    .replicate-card.ribarroja {
+      border-top: 3.5px solid var(--ribarroja-primary, #dc2626);
+    }
+    .replicate-card.manises {
+      border-top: 3.5px solid var(--manises-primary, #2563eb);
+    }
+
+    .replicate-card.is-source {
+      border-color: #2563eb !important;
+      background: #eff6ff !important;
+      box-shadow: 0 0 0 2px rgba(37,99,235,0.25);
+    }
+
+    .replicate-card.stamp-target-empty {
+      border: 2px dashed #10b981;
+      background: #f0fdf4;
+      cursor: pointer;
+    }
+    .replicate-card.stamp-target-empty:hover {
+      border-color: #059669;
+      background: #dcfce7;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.18);
+    }
+
+    .replicate-card.stamp-target-content {
+      border: 2px solid #f59e0b;
+      cursor: pointer;
+    }
+    .replicate-card.stamp-target-content:hover {
+      border-color: #d97706;
+      background: #fffbeb;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.18);
+    }
+
+    .replicate-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .replicate-card-school-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .replicate-card-school-badge.ribarroja {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .replicate-card-school-badge.manises {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .replicate-card-course {
+      font-size: 13px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .btn-replicate-copy {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #0f172a;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.12s ease;
+      flex-shrink: 0;
+    }
+    .btn-replicate-copy:hover {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+      transform: scale(1.03);
+    }
+
+    .replicate-card-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .replicate-session-num {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #64748b;
+    }
+
+    .replicate-tema-text {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.35;
+    }
+
+    .replicate-actividades-preview {
+      font-size: 11px;
+      color: #475569;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      background: #f8fafc;
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid #f1f5f9;
+    }
+
+    .replicate-card-meta {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: auto;
+      padding-top: 4px;
+    }
+
+    .replicate-meta-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .replicate-meta-badge.aviso {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .replicate-meta-badge.educamos {
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+    .replicate-meta-badge.prep {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .replicate-stamp-action-bar {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .btn-stamp-paste-action {
+      width: 100%;
+      padding: 7px 10px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      border: none;
+    }
+    .btn-stamp-paste-action.empty {
+      background: #10b981;
+      color: #ffffff;
+      box-shadow: 0 1px 3px rgba(16, 185, 129, 0.25);
+    }
+    .btn-stamp-paste-action.empty:hover {
+      background: #059669;
+      transform: translateY(-1px);
+    }
+    .btn-stamp-paste-action.content {
+      background: #f59e0b;
+      color: #ffffff;
+      box-shadow: 0 1px 3px rgba(245, 158, 11, 0.25);
+    }
+    .btn-stamp-paste-action.content:hover {
+      background: #d97706;
+      transform: translateY(-1px);
+    }
+
+    .replicate-filter-pills {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      background: #f1f5f9;
+      padding: 2px;
+      border-radius: 6px;
+    }
+    .replicate-pill-btn {
+      background: transparent;
+      border: none;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.12s ease;
+      white-space: nowrap;
+    }
+    .replicate-pill-btn:hover {
+      color: #0f172a;
+    }
+    .replicate-pill-btn.active {
+      background: #ffffff;
+      color: #2563eb;
+      font-weight: 700;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+
+    .replicate-mode-tabs {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      background: #f1f5f9;
+      padding: 2px;
+      border-radius: 6px;
+    }
+    .rep-mode-btn {
+      background: transparent;
+      border: none;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+    .rep-mode-btn.active {
+      background: #ffffff;
+      color: #0f172a;
+      font-weight: 700;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+
+    .freeday-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+    .freeday-item-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.12s ease;
+    }
+    .freeday-item-btn:hover {
+      border-color: #2563eb;
+      background: #f0f7ff;
+      transform: translateY(-1px);
+    }
+    .freeday-item-title {
+      font-weight: 700;
+      font-size: 12.5px;
+      color: #0f172a;
+    }
+    .freeday-item-desc {
+      font-size: 11px;
+      color: #64748b;
+    }
+
   </style>
 </head>
 <body>
@@ -4418,10 +4899,8 @@
       <div class="toolbar-center">
         <div class="view-pills">
           <button class="pill-btn active" id="tab-semana" onclick="switchView('semana')">📅 Semana</button>
-          <button class="pill-btn" id="tab-clases" onclick="switchView('clases')">📑 Vista Clases</button>
           <button class="pill-btn" id="tab-matriz" onclick="switchView('matriz')">📊 Todos los Grupos</button>
-          <button class="pill-btn" id="tab-dia" onclick="switchView('dia')">☀️ Día</button>
-          <button class="pill-btn" id="tab-mes" onclick="switchView('mes')">🗓️ Mes</button>
+          <button class="pill-btn" id="tab-replicar" onclick="switchView('replicar')" title="Replicar clases y temarios ágilmente entre grupos, niveles y colegios">👯 Replicar Clases</button>
         </div>
       </div>
 
@@ -4478,17 +4957,7 @@
           </div>
         </div>
 
-        <!-- 2. Vista Clases -->
-        <div id="toolbar-course-nav" class="view-toolbar-group" style="display: none;">
-          <span class="toolbar-inline-label">Curso:</span>
-          <select class="course-select-compact" id="toolbar-course-select" onchange="onCourseSelectToolbarChange(this.value)">
-            <!-- Opciones pobladas dinámicamente -->
-          </select>
-          <button class="btn-today-compact" onclick="scrollToCurrentWeekInClasses()" title="Desplazarse a la semana actual">📍 Semana actual</button>
-          <span class="toolbar-stat-pill">44 semanas</span>
-        </div>
-
-        <!-- 3. Vista Matriz (Todos los Grupos) -->
+        <!-- 2. Vista Matriz (Todos los Grupos) -->
         <div id="toolbar-matrix-nav" class="view-toolbar-group" style="display: none;">
           <div class="matrix-school-tabs">
             <button class="matrix-school-btn active ribarroja" id="matrix-btn-ribarroja" onclick="setMatrixSchool('ribarroja')">
@@ -4510,24 +4979,44 @@
           <span class="toolbar-stat-pill">44 semanas</span>
         </div>
 
-        <!-- 4. Vista Día -->
-        <div id="toolbar-day-nav" class="view-toolbar-group" style="display: none;">
-          <button class="nav-btn-icon" onclick="changeDay(-1)" title="Día anterior">◀</button>
-          <input type="date" id="toolbar-day-input" class="day-date-input-compact" onchange="onDayDateChange(this.value)">
-          <button class="nav-btn-icon" onclick="changeDay(1)" title="Día siguiente">▶</button>
-          <button class="btn-today-compact" onclick="goToTodayDay()">📍 Hoy</button>
-        </div>
-
-        <!-- 5. Vista Mes -->
-        <div id="toolbar-month-nav" class="view-toolbar-group" style="display: none;">
-          <button class="nav-btn-icon" onclick="changeMonth(-1)" title="Mes anterior">◀</button>
-          <select class="course-select-compact" id="toolbar-month-select" onchange="onMonthSelectChange(this.value)" title="Ir a otro mes">
-            <!-- Opciones pobladas por JS -->
+        <!-- 3. Vista Replicar Clases -->
+        <div id="toolbar-replicar-nav" class="view-toolbar-group" style="display: none; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <button class="nav-btn-icon" onclick="navigateReplicatePrev()" title="Semana anterior">◀</button>
+          <select class="week-select-compact" id="replicate-week-select" onchange="onReplicateWeekSelectChange(this.value)">
+            <!-- Poblado dinámicamente -->
           </select>
-          <button class="nav-btn-icon" onclick="changeMonth(1)" title="Mes siguiente">▶</button>
-          <button class="btn-today-compact" onclick="goToTodayMonth()">📍 Hoy</button>
+          <button class="nav-btn-icon" onclick="navigateReplicateNext()" title="Semana siguiente">▶</button>
+          <div class="week-direct-shortcuts">
+            <button type="button" class="week-shortcut-btn current-week" id="btnRepGoCur" onclick="goToReplicateCurrentWeek()" title="Ir a la semana actual">📍 Actual</button>
+            <button type="button" class="week-shortcut-btn next-week" id="btnRepGoNext" onclick="goToReplicateNextWeek()" title="Ir a la próxima semana">⏩ Próxima</button>
+          </div>
+
+          <div class="toolbar-divider"></div>
+
+          <div class="replicate-filter-pills" id="replicateLevelFilterPills">
+            <button type="button" class="replicate-pill-btn active" data-level="all" onclick="setReplicateLevelFilter('all')">Todos</button>
+            <button type="button" class="replicate-pill-btn" data-level="1º ESO" onclick="setReplicateLevelFilter('1º ESO')">1º ESO</button>
+            <button type="button" class="replicate-pill-btn" data-level="2º ESO" onclick="setReplicateLevelFilter('2º ESO')">2º ESO</button>
+            <button type="button" class="replicate-pill-btn" data-level="3º ESO" onclick="setReplicateLevelFilter('3º ESO')">3º ESO</button>
+            <button type="button" class="replicate-pill-btn" data-level="4º ESO" onclick="setReplicateLevelFilter('4º ESO')">4º ESO</button>
+            <button type="button" class="replicate-pill-btn" data-level="1º BAC" onclick="setReplicateLevelFilter('1º BAC')">1º BAC</button>
+          </div>
+
+          <div class="toolbar-divider"></div>
+
+          <div class="matrix-school-tabs">
+            <button type="button" class="matrix-school-btn active ambos" id="rep-school-ambos" onclick="setReplicateSchoolFilter('ambos')">🏫 Ambos</button>
+            <button type="button" class="matrix-school-btn ribarroja" id="rep-school-ribarroja" onclick="setReplicateSchoolFilter('ribarroja')">🔴 Ribarroja</button>
+            <button type="button" class="matrix-school-btn manises" id="rep-school-manises" onclick="setReplicateSchoolFilter('manises')">🔵 Manises</button>
+          </div>
+
+          <div class="toolbar-divider"></div>
+
+          <div class="replicate-mode-tabs">
+            <button type="button" class="rep-mode-btn active" id="rep-mode-week" onclick="setReplicateMode('week')" title="Vista agrupada por niveles en la semana activa">📅 Por Semana</button>
+            <button type="button" class="rep-mode-btn" id="rep-mode-matrix" onclick="setReplicateMode('matrix')" title="Vista de matriz con todas las semanas">📊 Todo el Año</button>
+          </div>
         </div>
-      </div>
     </div>
   </header>
 
@@ -4633,6 +5122,90 @@
         <div style="display: flex; gap: 8px;">
           <button class="btn-modal-large btn-primary" onclick="closeSlotNotesModal()">Listo / Cerrar</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- MODAL: CONFIRMACIÓN COPIAR A NIVEL DIFERENTE -->
+  <div class="modal-overlay" id="replicate-level-modal" style="display: none;" onclick="closeModalOnOutside(event, 'replicate-level-modal')">
+    <div class="modal-box-large" style="max-width: 520px;">
+      <div class="modal-header-large" style="border-bottom: 1px solid #fed7aa; background: #fff7ed;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 22px;">⚠️</span>
+          <div class="modal-title-large" style="color: #9a3412;">¿Copiar a un nivel diferente?</div>
+        </div>
+        <button class="modal-btn-close" onclick="closeReplicateLevelModal()" title="Cerrar ventana (Esc)">✕</button>
+      </div>
+      <div class="modal-body-large" id="replicate-level-body" style="padding: 20px; font-size: 13.5px; line-height: 1.55; color: #334155;">
+        <!-- Rellenado dinámicamente -->
+      </div>
+      <div class="modal-footer-large" style="display: flex; justify-content: flex-end; gap: 10px; background: #fff7ed; border-top: 1px solid #fed7aa; padding: 12px 20px;">
+        <button type="button" class="btn-modal-action secondary" onclick="closeReplicateLevelModal()">Cancelar</button>
+        <button type="button" class="btn-modal-action" id="btn-replicate-level-confirm" style="background: #ea580c; color: #ffffff;" onclick="confirmReplicateDifferentLevel()">Aceptar y Continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: OPCIONES AL PEGAR EN CLASE CON CONTENIDO -->
+  <div class="modal-overlay" id="replicate-conflict-modal" style="display: none;" onclick="closeModalOnOutside(event, 'replicate-conflict-modal')">
+    <div class="modal-box-large" style="max-width: 640px; max-height: 92vh;">
+      <div class="modal-header-large" style="border-bottom: 1px solid #fed7aa; background: #fffbeb;">
+        <div style="display: flex; flex-direction: column; gap: 3px;">
+          <div class="modal-title-large" style="color: #b45309; display: flex; align-items: center; gap: 8px;">
+            <span>⚠️</span> Esta clase ya tiene contenido
+          </div>
+          <div id="replicate-conflict-subtitle" style="font-size: 11.5px; color: #78350f; font-weight: 600;"></div>
+        </div>
+        <button class="modal-btn-close" onclick="closeReplicateConflictModal()" title="Cerrar ventana (Esc)">✕</button>
+      </div>
+      <div class="modal-body-large" id="replicate-conflict-body" style="padding: 16px 20px; gap: 14px; overflow-y: auto;">
+        <!-- Previsualización y opciones interactivas -->
+      </div>
+      <div class="modal-footer-large" style="display: flex; justify-content: flex-end; gap: 10px; padding: 12px 20px;">
+        <button type="button" class="btn-modal-action secondary" onclick="closeReplicateConflictModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ELEGIR DÍA/SEMANA LIBRE PARA MOVER CLASE ACTUAL -->
+  <div class="modal-overlay" id="replicate-freeday-modal" style="display: none;" onclick="closeModalOnOutside(event, 'replicate-freeday-modal')">
+    <div class="modal-box-large" style="max-width: 580px; max-height: 88vh;">
+      <div class="modal-header-large" style="border-bottom: 1px solid #bfdbfe; background: #eff6ff;">
+        <div style="display: flex; flex-direction: column; gap: 3px;">
+          <div class="modal-title-large" style="color: #1e40af; display: flex; align-items: center; gap: 8px;">
+            <span>📅</span> Seleccionar Día/Semana Libre
+          </div>
+          <div id="replicate-freeday-subtitle" style="font-size: 11.5px; color: #1e3a8a; font-weight: 600;"></div>
+        </div>
+        <button class="modal-btn-close" onclick="closeReplicateFreeDayModal()" title="Cerrar ventana (Esc)">✕</button>
+      </div>
+      <div class="modal-body-large" id="replicate-freeday-body" style="padding: 16px 20px; gap: 10px; overflow-y: auto;">
+        <!-- Lista de semanas libres para este grupo -->
+      </div>
+      <div class="modal-footer-large" style="display: flex; justify-content: space-between; padding: 12px 20px;">
+        <button type="button" class="btn-modal-action secondary" onclick="backToReplicateConflictModal()">◀ Volver a Opciones</button>
+        <button type="button" class="btn-modal-action secondary" onclick="closeReplicateFreeDayModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: AVISO ANTES DE DESPLAZAR SI SE PIERDE ALGUNA CLASE -->
+  <div class="modal-overlay" id="replicate-loss-warning-modal" style="display: none;" onclick="closeModalOnOutside(event, 'replicate-loss-warning-modal')">
+    <div class="modal-box-large" style="max-width: 540px;">
+      <div class="modal-header-large" style="border-bottom: 1px solid #fecaca; background: #fef2f2;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 22px;">🛑</span>
+          <div class="modal-title-large" style="color: #991b1b;">Aviso: Riesgo de Pérdida de Clase</div>
+        </div>
+        <button class="modal-btn-close" onclick="closeReplicateLossWarningModal()" title="Cerrar ventana (Esc)">✕</button>
+      </div>
+      <div class="modal-body-large" id="replicate-loss-warning-body" style="padding: 20px; font-size: 13.5px; line-height: 1.55; color: #334155;">
+        <!-- Detalles de la clase que se perdería -->
+      </div>
+      <div class="modal-footer-large" style="display: flex; justify-content: flex-end; gap: 10px; background: #fef2f2; border-top: 1px solid #fecaca; padding: 12px 20px;">
+        <button type="button" class="btn-modal-action secondary" onclick="closeReplicateLossWarningModal()">Cancelar</button>
+        <button type="button" class="btn-modal-action danger" id="btn-replicate-loss-confirm" onclick="confirmReplicateLossAndProceed()">Aceptar y Desplazar (Guardar en Reserva)</button>
       </div>
     </div>
   </div>
@@ -5020,7 +5593,10 @@
       sessionTemplates: JSON.parse(JSON.stringify(DEFAULT_SESSION_TEMPLATES)),
       reserveSessions: [],
       blockSelection: { active: false, startW: null, endW: null },
-      viewScrollPositions: { semana: 0, clases: null, matriz: null, dia: 0, mes: 0 }
+      viewScrollPositions: { semana: 0, clases: null, matriz: null, dia: 0, mes: 0, replicar: 0 },
+      replicateLevelFilter: "all",
+      replicateSchoolFilter: "ambos",
+      replicateMode: "week"
     };
 
     let activeModalTarget = null; // { weekIndex, school, course }
@@ -5033,7 +5609,7 @@
           const parsed = JSON.parse(saved);
           state.weeks = parsed.weeks || JSON.parse(JSON.stringify(RAW_DATASET.weeks));
           state.holidays = Object.assign({}, DEFAULT_HOLIDAYS, parsed.holidays || {});
-          state.currentView = (parsed.currentView && parsed.currentView !== "agenda") ? parsed.currentView : "semana";
+          state.currentView = (parsed.currentView && !["agenda", "clases", "dia", "mes"].includes(parsed.currentView)) ? parsed.currentView : "semana";
           state.currentWeekIndex = parsed.currentWeekIndex !== undefined ? parsed.currentWeekIndex : 3;
           state.selectedCourse = parsed.selectedCourse || "3º ESO - B";
           state.selectedCourseSchool = parsed.selectedCourseSchool || "ribarroja";
@@ -5161,6 +5737,1101 @@
       updateUndoRedoButtons();
       renderCurrentView();
       showToast("↪️ Cambio rehecho");
+    }
+
+    
+    /* ========================================================
+       SISTEMA DE RÉPLICA ÁGIL DE CLASES (MULTI-GRUPO Y MULTI-NIVEL)
+       ======================================================== */
+
+    window._replicateClipboard = null;
+    window._pendingReplicateTarget = null;
+    window._pendingReplicateConflict = null;
+    window._pendingReplicateLoss = null;
+
+    // Cargar portapapeles persistente si existe
+    try {
+      const savedClip = localStorage.getItem('planner_replicate_clipboard');
+      if (savedClip) window._replicateClipboard = JSON.parse(savedClip);
+    } catch(err) {}
+
+    function getCourseLevel(course) {
+      if (!course) return "1º ESO";
+      if (course.includes("1º ESO")) return "1º ESO";
+      if (course.includes("2º ESO")) return "2º ESO";
+      if (course.includes("3º ESO")) return "3º ESO";
+      if (course.includes("4º ESO")) return "4º ESO";
+      if (course.includes("BACH") || course.includes("BAC")) return "1º BAC";
+      return course;
+    }
+
+    function cloneSessionForReplication(source) {
+      if (!source) return createEmptySession();
+      return {
+        tema: source.tema || '',
+        sesion: source.sesion || '',
+        actividades: source.actividades || '',
+        avisos: source.avisos || '',
+        educamos: source.educamos || '',
+        preparada: !!source.preparada,
+        avisoDado: false,
+        educamosDado: false
+      };
+    }
+
+    function copyClassForReplication(school, course, weekIdx, e) {
+      if (e) e.stopPropagation();
+      const week = state.weeks[weekIdx];
+      const session = week && week[school] && week[school][course];
+      if (!session || (!session.tema && !session.actividades && !session.avisos && !session.educamos && session.sesion === "No Clase")) {
+        showToast("⚠️ Esta sesión está vacía y no tiene contenido para replicar");
+        return;
+      }
+
+      const level = getCourseLevel(course);
+      window._replicateClipboard = {
+        tema: session.tema || '',
+        sesion: session.sesion || '',
+        actividades: session.actividades || '',
+        avisos: session.avisos || '',
+        educamos: session.educamos || '',
+        preparada: !!session.preparada,
+        sourceSchool: school,
+        sourceCourse: course,
+        sourceWeekIdx: weekIdx,
+        sourceLevel: level
+      };
+
+      try {
+        localStorage.setItem('planner_replicate_clipboard', JSON.stringify(window._replicateClipboard));
+      } catch(err) {}
+
+      const schoolText = school === 'ribarroja' ? 'Riba-roja' : 'Manises';
+      showToast(`📋 Clase copiada para replicar: ${formatCourseName(course)} (${schoolText}) · Sem. ${weekIdx + 1}`);
+      renderCurrentView();
+    }
+
+    function clearReplicateClipboard() {
+      window._replicateClipboard = null;
+      try {
+        localStorage.removeItem('planner_replicate_clipboard');
+      } catch(err) {}
+      showToast("Réplica finalizada");
+      renderCurrentView();
+    }
+
+    function triggerReplicateTo(targetSchool, targetCourse, targetWeekIdx) {
+      const clip = window._replicateClipboard;
+      if (!clip) {
+        showToast("⚠️ Primero pulsa en '📋 Copiar' en alguna clase para activar la réplica");
+        return;
+      }
+
+      // 1. Mismo slot de origen
+      if (clip.sourceSchool === targetSchool && clip.sourceCourse === targetCourse && clip.sourceWeekIdx === targetWeekIdx) {
+        showToast("ℹ️ Esta es la clase de origen que tienes copiada");
+        return;
+      }
+
+      // 2. Comprobación de nivel cruzado (ej: 1º ESO a 2º ESO)
+      const targetLevel = getCourseLevel(targetCourse);
+      if (clip.sourceLevel !== targetLevel) {
+        openDifferentLevelConfirmModal(clip, targetSchool, targetCourse, targetWeekIdx);
+        return;
+      }
+
+      // 3. Mismo nivel -> Proceder
+      proceedWithReplicateTarget(clip, targetSchool, targetCourse, targetWeekIdx);
+    }
+
+    function openDifferentLevelConfirmModal(clip, targetSchool, targetCourse, targetWeekIdx) {
+      window._pendingReplicateTarget = { clip, targetSchool, targetCourse, targetWeekIdx };
+      const modal = document.getElementById("replicate-level-modal");
+      const body = document.getElementById("replicate-level-body");
+      if (!modal || !body) return;
+
+      const sourceSchoolText = clip.sourceSchool === 'ribarroja' ? '🔴 Riba-roja' : '🔵 Manises';
+      const targetSchoolText = targetSchool === 'ribarroja' ? '🔴 Riba-roja' : '🔵 Manises';
+      const targetLevel = getCourseLevel(targetCourse);
+
+      body.innerHTML = `
+        <div style="background:#fff7ed; border:1px solid #fed7aa; padding:12px 14px; border-radius:8px; margin-bottom:16px;">
+          <div style="font-weight:700; color:#9a3412; font-size:14px; margin-bottom:4px;">⚠️ Aviso de cambio de nivel educativo</div>
+          <div style="color:#78350f;">Estás a punto de replicar una clase entre dos niveles escolares diferentes.</div>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr auto 1fr; align-items:center; gap:12px; margin-bottom:16px;">
+          <div style="padding:12px; background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:8px;">
+            <div style="font-size:10px; font-weight:800; color:#64748b; text-transform:uppercase;">NIVEL ORIGEN (${clip.sourceLevel})</div>
+            <div style="font-size:13.5px; font-weight:800; color:#0f172a; margin:3px 0;">${clip.sourceCourse}</div>
+            <div style="font-size:11px; color:#64748b;">${sourceSchoolText} · Sem. ${clip.sourceWeekIdx + 1}</div>
+            <div style="font-size:12px; font-weight:700; color:#2563eb; margin-top:6px; background:#eff6ff; padding:4px 8px; border-radius:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+              "${escapeHTML(clip.tema || 'Sin título')}"
+            </div>
+          </div>
+          <div style="font-size:24px; color:#94a3b8; font-weight:900;">➔</div>
+          <div style="padding:12px; background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:8px;">
+            <div style="font-size:10px; font-weight:800; color:#ea580c; text-transform:uppercase;">NIVEL DESTINO (${targetLevel})</div>
+            <div style="font-size:13.5px; font-weight:800; color:#0f172a; margin:3px 0;">${targetCourse}</div>
+            <div style="font-size:11px; color:#64748b;">${targetSchoolText} · Sem. ${targetWeekIdx + 1}</div>
+          </div>
+        </div>
+        <div style="font-size:13px; color:#475569; line-height:1.5;">
+          ¿Deseas continuar y pegar el contenido en <strong>${formatCourseName(targetCourse)} (${targetLevel})</strong>?
+        </div>
+      `;
+
+      modal.style.display = "flex";
+    }
+
+    function closeReplicateLevelModal() {
+      const modal = document.getElementById("replicate-level-modal");
+      if (modal) modal.style.display = "none";
+      window._pendingReplicateTarget = null;
+    }
+
+    function confirmReplicateDifferentLevel() {
+      const target = window._pendingReplicateTarget;
+      closeReplicateLevelModal();
+      if (target) {
+        proceedWithReplicateTarget(target.clip, target.targetSchool, target.targetCourse, target.targetWeekIdx);
+      }
+    }
+
+    function proceedWithReplicateTarget(clip, targetSchool, targetCourse, targetWeekIdx) {
+      const targetWeek = state.weeks[targetWeekIdx];
+      const targetSession = targetWeek && targetWeek[targetSchool] && targetWeek[targetSchool][targetCourse];
+      const hasContent = hasSessionContent(targetSession);
+
+      if (!hasContent) {
+        applyDirectPaste(clip, targetSchool, targetCourse, targetWeekIdx);
+      } else {
+        openReplicateConflictModal(clip, targetSchool, targetCourse, targetWeekIdx);
+      }
+    }
+
+    function applyDirectPaste(clip, targetSchool, targetCourse, targetWeekIdx) {
+      if (!state.weeks[targetWeekIdx][targetSchool]) state.weeks[targetWeekIdx][targetSchool] = {};
+      state.weeks[targetWeekIdx][targetSchool][targetCourse] = cloneSessionForReplication(clip);
+      saveState(true, true);
+      const schoolText = targetSchool === 'ribarroja' ? 'Riba-roja' : 'Manises';
+      showToast(`✓ Clase replicada en ${formatCourseName(targetCourse)} (${schoolText}) · Sem. ${targetWeekIdx + 1}`);
+      renderCurrentView();
+    }
+
+    function openReplicateConflictModal(clip, targetSchool, targetCourse, targetWeekIdx) {
+      window._pendingReplicateConflict = { clip, targetSchool, targetCourse, targetWeekIdx };
+      const modal = document.getElementById("replicate-conflict-modal");
+      const subtitle = document.getElementById("replicate-conflict-subtitle");
+      const body = document.getElementById("replicate-conflict-body");
+      if (!modal || !body) return;
+
+      const targetWeek = state.weeks[targetWeekIdx];
+      const targetSession = targetWeek[targetSchool][targetCourse];
+      const targetSchoolText = targetSchool === 'ribarroja' ? '🔴 Riba-roja' : '🔵 Manises';
+
+      if (subtitle) {
+        subtitle.innerHTML = `${targetSchoolText} · <strong>${formatCourseName(targetCourse)}</strong> · <strong>${targetWeek.num_sem}</strong> (${targetWeek.rango})`;
+      }
+
+      // Evaluar huecos libres para cascada
+      const emptyFwd = findEmptySlotInCourse(targetSchool, targetCourse, targetWeekIdx + 1, 1);
+      const isFwdSafe = (emptyFwd !== -1);
+      const lastWeekNum = state.weeks[state.weeks.length - 1].num_sem;
+
+      const emptyBwd = findEmptySlotInCourse(targetSchool, targetCourse, targetWeekIdx - 1, -1);
+      const isBwdSafe = (emptyBwd !== -1);
+
+      body.innerHTML = `
+        <div class="move-preview-container">
+          <div class="move-preview-card" style="border-left: 3px solid #f59e0b;">
+            <div class="move-preview-label" style="color: #b45309;">⚠️ Clase actual existente en este grupo (${targetWeek.num_sem})</div>
+            <div class="move-preview-title">${escapeHTML(targetSession.tema || '(Sin título)')}</div>
+            <div class="move-preview-body">${escapeHTML(targetSession.actividades || '(Sin actividades)')}</div>
+          </div>
+          <div class="move-preview-card" style="border-left: 3px solid #2563eb;">
+            <div class="move-preview-label" style="color: #1d4ed8;">📋 Clase copiada para pegar</div>
+            <div class="move-preview-title">${escapeHTML(clip.tema || '(Sin título)')}</div>
+            <div class="move-preview-body">${escapeHTML(clip.actividades || '(Sin actividades)')}</div>
+          </div>
+        </div>
+
+        <div style="font-size: 13px; font-weight: 700; color: #0f172a; margin-top: 4px;">
+          Elige cómo deseas organizar esta clase:
+        </div>
+
+        <div class="move-options-list">
+          <!-- OPCIÓN 1: CASCADA HACIA ADELANTE -->
+          <div class="move-option-card ${isFwdSafe ? 'safe' : 'warning'}" onclick="handleReplicateConflictOption('cascade_forward')">
+            <div class="move-opt-icon">⏩</div>
+            <div class="move-opt-content">
+              <div class="move-opt-header">
+                <span class="move-opt-name">1. Insertar y desplazar hacia adelante en cascada</span>
+                <span class="move-pill-tag ${isFwdSafe ? 'safe' : 'warn'}">${isFwdSafe ? `✓ Hueco libre en Sem. ${emptyFwd + 1}` : '⚠️ Requiere aviso'}</span>
+              </div>
+              <div class="move-opt-desc">
+                Inserta la réplica aquí y desplaza la clase actual y las siguientes hacia adelante (+1 semana).
+                ${!isFwdSafe ? `<br><strong style="color:#b45309;">Aviso: No hay semanas libres; la última clase (${lastWeekNum}) desbordaría y se pedirá confirmación.</strong>` : ''}
+              </div>
+            </div>
+          </div>
+
+          <!-- OPCIÓN 2: CASCADA HACIA ATRÁS -->
+          <div class="move-option-card ${isBwdSafe ? 'safe' : 'warning'}" onclick="handleReplicateConflictOption('cascade_backward')">
+            <div class="move-opt-icon">⏪</div>
+            <div class="move-opt-content">
+              <div class="move-opt-header">
+                <span class="move-opt-name">2. Insertar y desplazar hacia atrás en cascada</span>
+                <span class="move-pill-tag ${isBwdSafe ? 'safe' : 'warn'}">${isBwdSafe ? `✓ Hueco libre en Sem. ${emptyBwd + 1}` : '⚠️ Requiere aviso'}</span>
+              </div>
+              <div class="move-opt-desc">
+                Inserta la réplica aquí y desplaza la clase actual y las anteriores hacia atrás (-1 semana).
+                ${!isBwdSafe ? `<br><strong style="color:#b45309;">Aviso: No hay semanas libres previas; la clase de Semana 1 desbordaría y se pedirá confirmación.</strong>` : ''}
+              </div>
+            </div>
+          </div>
+
+          <!-- OPCIÓN 3: SOBREESCRIBIR -->
+          <div class="move-option-card danger" onclick="handleReplicateConflictOption('overwrite')">
+            <div class="move-opt-icon">📋</div>
+            <div class="move-opt-content">
+              <div class="move-opt-header">
+                <span class="move-opt-name">3. Sobreescribir el contenido de la clase</span>
+                <span class="move-pill-tag danger">⚠️ Reemplaza contenido</span>
+              </div>
+              <div class="move-opt-desc">
+                Sustituye directamente la clase actual por la réplica. (La clase anterior se guardará automáticamente en tu Cajón de Reserva).
+              </div>
+            </div>
+          </div>
+
+          <!-- OPCIÓN 4: ELEGIR DÍA LIBRE -->
+          <div class="move-option-card safe" onclick="handleReplicateConflictOption('choose_freeday')">
+            <div class="move-opt-icon">📅</div>
+            <div class="move-opt-content">
+              <div class="move-opt-header">
+                <span class="move-opt-name">4. Elegir un día libre donde mover la clase actual</span>
+                <span class="move-pill-tag safe">✓ Reubicar clase previa</span>
+              </div>
+              <div class="move-opt-desc">
+                Abre una lista de las semanas libres de ${formatCourseName(targetCourse)} para mover la clase actual allí y pegar la réplica aquí.
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      modal.style.display = "flex";
+    }
+
+    function closeReplicateConflictModal() {
+      const modal = document.getElementById("replicate-conflict-modal");
+      if (modal) modal.style.display = "none";
+    }
+
+    function handleReplicateConflictOption(action) {
+      const pending = window._pendingReplicateConflict;
+      if (!pending) return;
+      const { clip, targetSchool, targetCourse, targetWeekIdx } = pending;
+
+      if (action === "cascade_forward") {
+        const emptyFwd = findEmptySlotInCourse(targetSchool, targetCourse, targetWeekIdx + 1, 1);
+        if (emptyFwd !== -1) {
+          // Seguro: desplazar en cascada hasta el hueco libre
+          for (let w = emptyFwd; w > targetWeekIdx; w--) {
+            if (!state.weeks[w][targetSchool]) state.weeks[w][targetSchool] = {};
+            state.weeks[w][targetSchool][targetCourse] = cloneSessionForReplication(state.weeks[w - 1][targetSchool][targetCourse]);
+          }
+          state.weeks[targetWeekIdx][targetSchool][targetCourse] = cloneSessionForReplication(clip);
+          closeReplicateConflictModal();
+          saveState(true, true);
+          showToast(`✓ Insertada y clases desplazadas hacia adelante (+1) hasta Sem. ${emptyFwd + 1}`);
+          renderCurrentView();
+        } else {
+          // Riesgo de pérdida: aviso antes de continuar
+          closeReplicateConflictModal();
+          promptReplicateLossWarning('forward', targetSchool, targetCourse, targetWeekIdx, clip);
+        }
+      } else if (action === "cascade_backward") {
+        const emptyBwd = findEmptySlotInCourse(targetSchool, targetCourse, targetWeekIdx - 1, -1);
+        if (emptyBwd !== -1) {
+          // Seguro: desplazar en cascada hacia atrás hasta el hueco libre
+          for (let w = emptyBwd; w < targetWeekIdx; w++) {
+            if (!state.weeks[w][targetSchool]) state.weeks[w][targetSchool] = {};
+            state.weeks[w][targetSchool][targetCourse] = cloneSessionForReplication(state.weeks[w + 1][targetSchool][targetCourse]);
+          }
+          state.weeks[targetWeekIdx][targetSchool][targetCourse] = cloneSessionForReplication(clip);
+          closeReplicateConflictModal();
+          saveState(true, true);
+          showToast(`✓ Insertada y clases desplazadas hacia atrás (-1) hasta Sem. ${emptyBwd + 1}`);
+          renderCurrentView();
+        } else {
+          // Riesgo de pérdida hacia atrás: aviso antes de continuar
+          closeReplicateConflictModal();
+          promptReplicateLossWarning('backward', targetSchool, targetCourse, targetWeekIdx, clip);
+        }
+      } else if (action === "overwrite") {
+        const oldSession = state.weeks[targetWeekIdx][targetSchool][targetCourse];
+        addSessionToReserve(targetSchool, targetCourse, targetWeekIdx, oldSession, "Sobreescrita al replicar clase");
+        state.weeks[targetWeekIdx][targetSchool][targetCourse] = cloneSessionForReplication(clip);
+        closeReplicateConflictModal();
+        saveState(true, true);
+        showToast(`✓ Clase sobreescrita en ${formatCourseName(targetCourse)} · Sem. ${targetWeekIdx + 1}`);
+        renderCurrentView();
+      } else if (action === "choose_freeday") {
+        closeReplicateConflictModal();
+        openReplicateChooseFreeDayModal(clip, targetSchool, targetCourse, targetWeekIdx);
+      }
+    }
+
+    function promptReplicateLossWarning(direction, school, course, targetWeekIdx, clip) {
+      window._pendingReplicateLoss = { direction, school, course, targetWeekIdx, clip };
+      const modal = document.getElementById("replicate-loss-warning-modal");
+      const body = document.getElementById("replicate-loss-warning-body");
+      if (!modal || !body) return;
+
+      const isFwd = (direction === 'forward');
+      const lostWIdx = isFwd ? (state.weeks.length - 1) : 0;
+      const lostWeek = state.weeks[lostWIdx];
+      const lostSession = (lostWeek[school] && lostWeek[school][course]) || {};
+
+      body.innerHTML = `
+        <div style="background:#fef2f2; border:1px solid #fecaca; padding:12px 14px; border-radius:8px; margin-bottom:14px;">
+          <div style="font-weight:700; color:#991b1b; font-size:14px; margin-bottom:4px;">
+            ⚠️ Aviso antes de proceder: Desbordamiento de clases
+          </div>
+          <div style="color:#7f1d1d;">
+            Al desplazar todas las clases ${isFwd ? 'hacia adelante (+1)' : 'hacia atrás (-1)'}, no hay huecos libres disponibles y la clase de <strong>${lostWeek.num_sem}</strong> se saldría del calendario escolar.
+          </div>
+        </div>
+
+        <div style="padding:12px; background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:8px; margin-bottom:14px;">
+          <div style="font-size:10px; font-weight:800; color:#64748b; text-transform:uppercase;">CLASE AFECTADA QUE SE SALDRÍA (${lostWeek.num_sem} · ${lostWeek.rango}):</div>
+          <div style="font-size:13.5px; font-weight:800; color:#0f172a; margin:4px 0;">"${escapeHTML(lostSession.tema || '(Sin título)')}"</div>
+          <div style="font-size:11.5px; color:#475569;">${escapeHTML((lostSession.actividades || '').substring(0, 110))}...</div>
+        </div>
+
+        <div style="font-size:13px; color:#334155; line-height:1.5;">
+          <strong>Para que no pierdas ningún dato:</strong> Si aceptas continuar, esta clase se guardará automáticamente en tu <strong>Cajón de Reserva</strong> (accesible desde la barra superior).<br><br>
+          ¿Deseas <strong>Aceptar</strong> y desplazar las clases, o prefieres <strong>Cancelar</strong>?
+        </div>
+      `;
+
+      modal.style.display = "flex";
+    }
+
+    function closeReplicateLossWarningModal() {
+      const modal = document.getElementById("replicate-loss-warning-modal");
+      if (modal) modal.style.display = "none";
+      window._pendingReplicateLoss = null;
+    }
+
+    function confirmReplicateLossAndProceed() {
+      const lossData = window._pendingReplicateLoss;
+      closeReplicateLossWarningModal();
+      if (!lossData) return;
+
+      const { direction, school, course, targetWeekIdx, clip } = lossData;
+      const isFwd = (direction === 'forward');
+
+      if (isFwd) {
+        const lastW = state.weeks.length - 1;
+        const lostSession = state.weeks[lastW][school] && state.weeks[lastW][school][course];
+        if (hasSessionContent(lostSession)) {
+          addSessionToReserve(school, course, lastW, lostSession, "Desplazada al final de curso al replicar clase");
+        }
+        for (let w = lastW; w > targetWeekIdx; w--) {
+          if (!state.weeks[w][school]) state.weeks[w][school] = {};
+          state.weeks[w][school][course] = cloneSessionForReplication(state.weeks[w - 1][school][course]);
+        }
+        state.weeks[targetWeekIdx][school][course] = cloneSessionForReplication(clip);
+        saveState(true, true);
+        showToast("✓ Clases desplazadas hacia adelante (+1). Última clase guardada en Reserva");
+      } else {
+        const lostSession = state.weeks[0][school] && state.weeks[0][school][course];
+        if (hasSessionContent(lostSession)) {
+          addSessionToReserve(school, course, 0, lostSession, "Desplazada hacia atrás al replicar clase");
+        }
+        for (let w = 0; w < targetWeekIdx; w++) {
+          if (!state.weeks[w][school]) state.weeks[w][school] = {};
+          state.weeks[w][school][course] = cloneSessionForReplication(state.weeks[w + 1][school][course]);
+        }
+        state.weeks[targetWeekIdx][school][course] = cloneSessionForReplication(clip);
+        saveState(true, true);
+        showToast("✓ Clases desplazadas hacia atrás (-1). Clase de Semana 1 guardada en Reserva");
+      }
+
+      renderCurrentView();
+    }
+
+    function openReplicateChooseFreeDayModal(clip, targetSchool, targetCourse, targetWeekIdx) {
+      window._pendingReplicateFreeDay = { clip, targetSchool, targetCourse, targetWeekIdx };
+      const modal = document.getElementById("replicate-freeday-modal");
+      const subtitle = document.getElementById("replicate-freeday-subtitle");
+      const body = document.getElementById("replicate-freeday-body");
+      if (!modal || !body) return;
+
+      const schoolText = targetSchool === 'ribarroja' ? '🔴 Riba-roja' : '🔵 Manises';
+      if (subtitle) {
+        subtitle.innerHTML = `${schoolText} · <strong>${formatCourseName(targetCourse)}</strong>`;
+      }
+
+      // Buscar todas las semanas libres en este curso
+      const freeWeeks = [];
+      state.weeks.forEach((w, wIdx) => {
+        if (wIdx === targetWeekIdx) return;
+        const s = w[targetSchool] && w[targetSchool][targetCourse];
+        if (!hasSessionContent(s)) {
+          freeWeeks.push({ week: w, weekIdx: wIdx });
+        }
+      });
+
+      const targetSession = state.weeks[targetWeekIdx][targetSchool][targetCourse];
+
+      if (freeWeeks.length === 0) {
+        body.innerHTML = `
+          <div style="background:#fffbeb; border:1px solid #fed7aa; padding:16px; border-radius:8px; color:#78350f; text-align:center;">
+            <div style="font-size:22px; margin-bottom:6px;">📭</div>
+            <div style="font-weight:700; margin-bottom:4px;">No hay semanas libres en este grupo</div>
+            <div style="font-size:12px;">Todas las 44 semanas de ${formatCourseName(targetCourse)} ya tienen clases programadas. Puedes utilizar las opciones de desplazamiento en cascada o sobreescribir.</div>
+          </div>
+        `;
+      } else {
+        let listHtml = `
+          <div style="font-size:12.5px; color:#475569; margin-bottom:8px;">
+            Selecciona la semana libre donde deseas trasladar la clase previa (<em>"${escapeHTML(targetSession.tema || 'Clase previa')}"</em>):
+          </div>
+          <div class="freeday-list">
+        `;
+        freeWeeks.forEach(({ week, weekIdx }) => {
+          const mesText = formatMonthName(week.mes);
+          listHtml += `
+            <div class="freeday-item-btn" onclick="executeReplicateMoveToFreeDay(${weekIdx})">
+              <div>
+                <div class="freeday-item-title">${week.num_sem} · ${week.rango}</div>
+                <div class="freeday-item-desc">${mesText} · ${week.trimestre} ${week.tipo_sem ? '· ' + escapeHTML(week.tipo_sem) : ''}</div>
+              </div>
+              <button type="button" class="btn-tool-compact" style="background:#2563eb; color:#ffffff; font-weight:700; border:none; padding:5px 10px;">
+                Mover aquí ➔
+              </button>
+            </div>
+          `;
+        });
+        listHtml += `</div>`;
+        body.innerHTML = listHtml;
+      }
+
+      modal.style.display = "flex";
+    }
+
+    function closeReplicateFreeDayModal() {
+      const modal = document.getElementById("replicate-freeday-modal");
+      if (modal) modal.style.display = "none";
+      window._pendingReplicateFreeDay = null;
+    }
+
+    function backToReplicateConflictModal() {
+      closeReplicateFreeDayModal();
+      const pending = window._pendingReplicateConflict;
+      if (pending) {
+        openReplicateConflictModal(pending.clip, pending.targetSchool, pending.targetCourse, pending.targetWeekIdx);
+      }
+    }
+
+    function executeReplicateMoveToFreeDay(chosenFreeWeekIdx) {
+      const pending = window._pendingReplicateFreeDay;
+      closeReplicateFreeDayModal();
+      if (!pending) return;
+
+      const { clip, targetSchool, targetCourse, targetWeekIdx } = pending;
+      const targetSession = state.weeks[targetWeekIdx][targetSchool][targetCourse];
+
+      // 1. Mover clase existente a la semana libre seleccionada
+      if (!state.weeks[chosenFreeWeekIdx][targetSchool]) state.weeks[chosenFreeWeekIdx][targetSchool] = {};
+      state.weeks[chosenFreeWeekIdx][targetSchool][targetCourse] = cloneSessionForReplication(targetSession);
+
+      // 2. Insertar réplica en el target
+      state.weeks[targetWeekIdx][targetSchool][targetCourse] = cloneSessionForReplication(clip);
+
+      saveState(true, true);
+      showToast(`✓ Clase previa movida a Semana ${chosenFreeWeekIdx + 1} y réplica colocada en Semana ${targetWeekIdx + 1}`);
+      renderCurrentView();
+    }
+
+    function batchReplicateToLevel(levelId, weekIndex) {
+      const clip = window._replicateClipboard;
+      if (!clip) return;
+
+      const week = state.weeks[weekIndex];
+      const courses = [];
+      const schoolFilter = state.replicateSchoolFilter || 'ambos';
+
+      // Identificar todos los cursos de este nivel
+      const allCourses = [
+        ...RAW_DATASET.courses_ribarroja.map(c => ({ school: "ribarroja", course: c })),
+        ...RAW_DATASET.courses_manises.map(c => ({ school: "manises", course: c }))
+      ];
+
+      allCourses.forEach(({ school, course }) => {
+        if (schoolFilter !== 'ambos' && school !== schoolFilter) return;
+        if (getCourseLevel(course) === levelId) {
+          // No replicar sobre la misma fuente
+          if (!(clip.sourceSchool === school && clip.sourceCourse === course && clip.sourceWeekIdx === weekIndex)) {
+            courses.push({ school, course });
+          }
+        }
+      });
+
+      if (courses.length === 0) {
+        showToast("ℹ️ No hay otros cursos disponibles en este nivel para la selección actual");
+        return;
+      }
+
+      // Comprobar si alguno tiene contenido
+      const occupied = courses.filter(({ school, course }) => {
+        const s = week[school] && week[school][course];
+        return hasSessionContent(s);
+      });
+
+      if (occupied.length > 0) {
+        if (!confirm(`Hay ${occupied.length} grupo(s) de ${levelId} que ya tienen contenido en esta semana. ¿Deseas sobreescribir todos ellos con la clase copiada?`)) {
+          showToast("ℹ️ Cancelado. Puedes hacer clic grupo a grupo para decidir cómo desplazar cada clase.");
+          return;
+        }
+      }
+
+      courses.forEach(({ school, course }) => {
+        if (!week[school]) week[school] = {};
+        const cur = week[school][course];
+        if (hasSessionContent(cur)) {
+          addSessionToReserve(school, course, weekIndex, cur, "Sobreescrita en réplica masiva de nivel");
+        }
+        week[school][course] = cloneSessionForReplication(clip);
+      });
+
+      saveState(true, true);
+      showToast(`⚡ ¡Réplica completada en todos los grupos de ${levelId}!`);
+      renderCurrentView();
+    }
+
+    /* RENDERIZADO: VISTA REPLICAR CLASES */
+    function renderReplicateView(container) {
+      const mode = state.replicateMode || 'week';
+      if (mode === 'matrix') {
+        renderReplicateMatrixView(container);
+        return;
+      }
+
+      const weekIndex = state.currentWeekIndex;
+      const week = state.weeks[weekIndex];
+      if (!week) return;
+
+      const clip = window._replicateClipboard;
+      const schoolFilter = state.replicateSchoolFilter || 'ambos';
+      const levelFilter = state.replicateLevelFilter || 'all';
+
+      const wrap = document.createElement("div");
+      wrap.className = "replicate-container";
+
+      // 1. Banner superior de réplica activa
+      if (clip) {
+        const sourceSchoolText = clip.sourceSchool === 'ribarroja' ? '🔴 Riba-roja' : '🔵 Manises';
+        const banner = document.createElement("div");
+        banner.className = "replicate-active-banner";
+        banner.innerHTML = `
+          <div class="replicate-banner-left">
+            <span class="replicate-banner-badge">📋 MODO REPLICAR CLASE ACTIVO</span>
+            <div class="replicate-source-info">
+              <span>Origen: <strong>${escapeHTML(formatCourseName(clip.sourceCourse))}</strong> (${sourceSchoolText}) · <strong>Semana ${clip.sourceWeekIdx + 1}</strong></span>
+              ${clip.tema ? `<span class="replicate-tema-pill" title="${escapeHTML(clip.tema)}">${escapeHTML(clip.tema)}</span>` : '<span class="replicate-tema-pill">(Sin título)</span>'}
+              <span style="font-size: 11px; opacity: 0.9;">(${clip.sourceLevel})</span>
+            </div>
+            <div class="replicate-instructions">
+              👉 Haz clic en cualquier clase para replicar este temario. La réplica permanece activa para seguir pegando en más grupos.
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button type="button" class="btn-cancel-replica" onclick="clearReplicateClipboard()" title="Finalizar replicación (Esc)">✕ Finalizar réplica (Esc)</button>
+          </div>
+        `;
+        wrap.appendChild(banner);
+      } else {
+        const idleBanner = document.createElement("div");
+        idleBanner.className = "replicate-idle-banner";
+        idleBanner.innerHTML = `
+          <span style="font-size: 22px;">⚡</span>
+          <div>
+            <strong>Herramienta Ágil de Réplica de Clases:</strong> Pulsa el botón <strong>📋 Copiar</strong> en cualquier clase para copiar su temario completo. Luego podrás hacer clic en otras clases (del mismo nivel, de otro nivel o de otro colegio) para replicarla al instante.
+          </div>
+        `;
+        wrap.appendChild(idleBanner);
+      }
+
+      // 2. Definición de niveles y grupos
+      const levels = [
+        {
+          id: "1º ESO",
+          title: "1º ESO",
+          courses: [
+            { school: "ribarroja", course: "1º ESO - A" },
+            { school: "ribarroja", course: "1º ESO - B" },
+            { school: "manises", course: "1º ESO - A" },
+            { school: "manises", course: "1º ESO - B" }
+          ]
+        },
+        {
+          id: "2º ESO",
+          title: "2º ESO",
+          courses: [
+            { school: "ribarroja", course: "2º ESO - A" },
+            { school: "ribarroja", course: "2º ESO - B" },
+            { school: "manises", course: "2º ESO - A" },
+            { school: "manises", course: "2º ESO - B" }
+          ]
+        },
+        {
+          id: "3º ESO",
+          title: "3º ESO",
+          courses: [
+            { school: "ribarroja", course: "3º ESO - A" },
+            { school: "ribarroja", course: "3º ESO - B" },
+            { school: "manises", course: "3º ESO - A" },
+            { school: "manises", course: "3º ESO - B" }
+          ]
+        },
+        {
+          id: "4º ESO",
+          title: "4º ESO",
+          courses: [
+            { school: "ribarroja", course: "4º ESO - A" },
+            { school: "ribarroja", course: "4º ESO - B" },
+            { school: "manises", course: "4º ESO - A" },
+            { school: "manises", course: "4º ESO - B" }
+          ]
+        },
+        {
+          id: "1º BAC",
+          title: "1º BACHILLERATO",
+          courses: [
+            { school: "ribarroja", course: "1º BACHILLERATO" }
+          ]
+        }
+      ];
+
+      const visibleLevels = levels.filter(lvl => {
+        if (levelFilter === 'all') return true;
+        return lvl.id === levelFilter || lvl.title === levelFilter;
+      });
+
+      visibleLevels.forEach(lvl => {
+        const visibleCourses = lvl.courses.filter(item => {
+          if (schoolFilter === 'ambos') return true;
+          return item.school === schoolFilter;
+        });
+
+        if (visibleCourses.length === 0) return;
+
+        const secEl = document.createElement("div");
+        secEl.className = "replicate-level-section";
+
+        const contentCount = visibleCourses.filter(c => {
+          const s = week[c.school] && week[c.school][c.course];
+          return hasSessionContent(s);
+        }).length;
+
+        const headEl = document.createElement("div");
+        headEl.className = "replicate-level-header";
+
+        let batchBtnHtml = "";
+        if (clip) {
+          batchBtnHtml = `
+            <button type="button" class="btn-batch-level-replicate" onclick="batchReplicateToLevel('${lvl.id}', ${weekIndex})" title="Replicar la clase copiada a todos los grupos de ${lvl.title} en esta semana">
+              ⚡ Replicar a todos los ${lvl.id}
+            </button>
+          `;
+        }
+
+        headEl.innerHTML = `
+          <div class="replicate-level-title-wrap">
+            <span class="replicate-level-tag">🎓 ${lvl.title}</span>
+            <span class="replicate-level-info">${visibleCourses.length} grupos · ${contentCount} con temario asignado en Sem. ${weekIndex + 1}</span>
+          </div>
+          <div>${batchBtnHtml}</div>
+        `;
+        secEl.appendChild(headEl);
+
+        const gridEl = document.createElement("div");
+        gridEl.className = "replicate-cards-grid";
+
+        visibleCourses.forEach(({ school, course }) => {
+          const session = (week[school] && week[school][course]) || {};
+          const hasContent = hasSessionContent(session);
+          const isSource = clip && (clip.sourceSchool === school && clip.sourceCourse === course && clip.sourceWeekIdx === weekIndex);
+          const schoolTag = school === "ribarroja" ? "🔴 Riba-roja" : "🔵 Manises";
+
+          const card = document.createElement("div");
+          let cardClasses = `replicate-card ${school}`;
+          if (isSource) cardClasses += " is-source";
+          else if (clip) {
+            if (!hasContent) cardClasses += " stamp-target-empty";
+            else cardClasses += " stamp-target-content";
+          }
+          card.className = cardClasses;
+
+          if (clip && !isSource) {
+            card.onclick = (e) => {
+              if (e.target.closest('.btn-replicate-copy')) return;
+              triggerReplicateTo(school, course, weekIndex);
+            };
+          }
+
+          const topEl = document.createElement("div");
+          topEl.className = "replicate-card-top";
+          topEl.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span class="replicate-card-school-badge ${school}">${schoolTag}</span>
+              <span class="replicate-card-course">${escapeHTML(formatCourseName(course))}</span>
+            </div>
+            <button type="button" class="btn-replicate-copy" onclick="copyClassForReplication('${school}', '${course}', ${weekIndex}, event)" title="Copiar clase completa (título, contenido, avisos, educamos)">
+              📋 Copiar
+            </button>
+          `;
+          card.appendChild(topEl);
+
+          const bodyEl = document.createElement("div");
+          bodyEl.className = "replicate-card-body";
+
+          if (hasContent) {
+            const temaTitle = session.tema ? escapeHTML(session.tema) : '<span style="color:#94a3b8; font-style:italic;">(Sin título)</span>';
+            const actPreview = session.actividades ? escapeHTML(session.actividades) : '';
+            const sesNum = session.sesion ? escapeHTML(session.sesion) : '';
+
+            bodyEl.innerHTML = `
+              ${sesNum ? `<div class="replicate-session-num">${sesNum}</div>` : ''}
+              <div class="replicate-tema-text">${temaTitle}</div>
+              ${actPreview ? `<div class="replicate-actividades-preview">${actPreview}</div>` : '<div style="font-size:11px; color:#94a3b8; font-style:italic;">(Sin actividades detalladas)</div>'}
+              <div class="replicate-card-meta">
+                ${session.avisos && session.avisos.trim() ? `<span class="replicate-meta-badge aviso" title="${escapeHTML(session.avisos)}">📢 Aviso</span>` : ''}
+                ${session.educamos && session.educamos.trim() ? `<span class="replicate-meta-badge educamos" title="${escapeHTML(session.educamos)}">✉️ Educamos</span>` : ''}
+                ${session.preparada ? `<span class="replicate-meta-badge prep">✓ Lista</span>` : ''}
+              </div>
+            `;
+          } else {
+            bodyEl.innerHTML = `
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:18px 0; color:#94a3b8; font-size:12px; gap:4px;">
+                <span style="font-size:20px; opacity:0.6;">📭</span>
+                <span>Semana libre / Sin clase</span>
+              </div>
+            `;
+          }
+          card.appendChild(bodyEl);
+
+          if (clip) {
+            const actionWrap = document.createElement("div");
+            actionWrap.className = "replicate-stamp-action-bar";
+
+            if (isSource) {
+              actionWrap.innerHTML = `
+                <div style="text-align:center; font-size:11px; font-weight:700; color:#2563eb; background:#dbeafe; padding:4px 8px; border-radius:5px;">
+                  📌 Origen copiado
+                </div>
+              `;
+            } else if (!hasContent) {
+              actionWrap.innerHTML = `
+                <button type="button" class="btn-stamp-paste-action empty" onclick="triggerReplicateTo('${school}', '${course}', ${weekIndex}); event.stopPropagation();">
+                  📥 Pegar réplica aquí (vacío)
+                </button>
+              `;
+            } else {
+              actionWrap.innerHTML = `
+                <button type="button" class="btn-stamp-paste-action content" onclick="triggerReplicateTo('${school}', '${course}', ${weekIndex}); event.stopPropagation();">
+                  📥 Pegar aquí (reorganizar/sustituir)
+                </button>
+              `;
+            }
+            card.appendChild(actionWrap);
+          }
+
+          gridEl.appendChild(card);
+        });
+
+        secEl.appendChild(gridEl);
+        wrap.appendChild(secEl);
+      });
+
+      container.appendChild(wrap);
+    }
+
+    /* MODO MATRIZ DE REPLICACIÓN ANUAL (VISTA COMPLETA 44 SEMANAS) */
+    function renderReplicateMatrixView(container) {
+      const activeSchool = state.replicateSchoolFilter || "ambos";
+      const levelFilter = state.replicateLevelFilter || "all";
+      const currentWeekIdx = findTodayWeekIndex();
+      const clip = window._replicateClipboard;
+
+      let coursesList = [];
+      if (activeSchool === "ribarroja") {
+        coursesList = RAW_DATASET.courses_ribarroja.map(c => ({ school: "ribarroja", course: c }));
+      } else if (activeSchool === "manises") {
+        coursesList = RAW_DATASET.courses_manises.map(c => ({ school: "manises", course: c }));
+      } else {
+        coursesList = [
+          ...RAW_DATASET.courses_ribarroja.map(c => ({ school: "ribarroja", course: c })),
+          ...RAW_DATASET.courses_manises.map(c => ({ school: "manises", course: c }))
+        ];
+      }
+
+      if (levelFilter !== 'all') {
+        coursesList = coursesList.filter(item => getCourseLevel(item.course) === levelFilter);
+      }
+
+      const wrap = document.createElement("div");
+      wrap.className = "matrix-view-wrapper";
+
+      if (clip) {
+        const banner = document.createElement("div");
+        banner.className = "replicate-active-banner";
+        banner.style.margin = "12px 16px 0";
+        banner.innerHTML = `
+          <div class="replicate-banner-left">
+            <span class="replicate-banner-badge">📋 MODO REPLICAR CLASE ACTIVO</span>
+            <div class="replicate-source-info">
+              <span>Origen: <strong>${escapeHTML(formatCourseName(clip.sourceCourse))}</strong> · <strong>Semana ${clip.sourceWeekIdx + 1}</strong>: "${escapeHTML(clip.tema || 'Sin título')}"</span>
+            </div>
+            <div class="replicate-instructions">👉 Haz clic en cualquier casilla de la matriz para replicar la clase.</div>
+          </div>
+          <button type="button" class="btn-cancel-replica" onclick="clearReplicateClipboard()">✕ Finalizar réplica (Esc)</button>
+        `;
+        wrap.appendChild(banner);
+      }
+
+      const tableWrap = document.createElement("div");
+      tableWrap.className = "matrix-table-container";
+
+      const table = document.createElement("table");
+      table.className = "matrix-table";
+
+      const thead = document.createElement("thead");
+      const headRow = document.createElement("tr");
+
+      const cornerTh = document.createElement("th");
+      cornerTh.className = "matrix-th-corner";
+      cornerTh.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;">
+          <span style="font-size: 11px; font-weight: 900; color: #0f172a;">SEMANA</span>
+          <span style="font-size: 9px; font-weight: 700; color: #64748b;">Fechas y Mes</span>
+        </div>
+      `;
+      headRow.appendChild(cornerTh);
+
+      coursesList.forEach(({ school, course }) => {
+        const th = document.createElement("th");
+        th.className = `matrix-th-course ${school}`;
+        const level = getCourseLevel(course);
+        const schoolTag = school === "ribarroja" ? "🔴 Ribarroja" : "🔵 Manises";
+        th.innerHTML = `
+          <div class="matrix-th-content">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
+              <span class="head-badge ${school}" style="font-size: 9px;">${schoolTag}</span>
+              <span style="font-size: 9px; font-weight: 700; color: #64748b;">${level}</span>
+            </div>
+            <div class="matrix-course-name">${escapeHTML(formatCourseName(course))}</div>
+          </div>
+        `;
+        headRow.appendChild(th);
+      });
+      thead.appendChild(headRow);
+      table.appendChild(thead);
+
+      const tbody = document.createElement("tbody");
+
+      state.weeks.forEach((week, wIdx) => {
+        const tr = document.createElement("tr");
+        tr.id = `rep-matrix-row-${wIdx}`;
+        const isCurrentWeek = (wIdx === currentWeekIdx);
+        tr.className = "matrix-row" + (isCurrentWeek ? " is-current-week" : "");
+
+        const tdWeek = document.createElement("td");
+        tdWeek.className = "matrix-td-week" + (isCurrentWeek ? " is-current-week" : "");
+        const mesText = formatMonthName(week.mes);
+
+        tdWeek.innerHTML = `
+          <div class="matrix-week-info">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 2px;">
+              <span class="matrix-week-num">${week.num_sem}</span>
+              ${isCurrentWeek ? `<span class="badge-today-pill" style="font-size: 8.5px; padding: 1px 4px;">📍 HOY</span>` : ''}
+            </div>
+            <div class="matrix-week-rango">${week.rango}</div>
+            <div class="matrix-week-mes">${mesText}</div>
+          </div>
+        `;
+        tr.appendChild(tdWeek);
+
+        coursesList.forEach(({ school, course }) => {
+          const td = document.createElement("td");
+          td.className = "matrix-td-session";
+          const session = (week[school] && week[school][course]) ? week[school][course] : null;
+          const hasContent = hasSessionContent(session);
+          const isSource = clip && (clip.sourceSchool === school && clip.sourceCourse === course && clip.sourceWeekIdx === wIdx);
+
+          if (clip) {
+            td.style.cursor = "pointer";
+            if (isSource) td.style.background = "#eff6ff";
+            else if (!hasContent) td.style.background = "#f0fdf4";
+            else td.style.background = "#fffbeb";
+
+            td.onclick = (e) => {
+              if (e.target.closest('.btn-replicate-copy')) return;
+              triggerReplicateTo(school, course, wIdx);
+            };
+          }
+
+          if (hasContent) {
+            const cardEl = document.createElement("div");
+            cardEl.className = "matrix-session-card";
+            cardEl.innerHTML = `
+              <div class="matrix-card-top">
+                <span class="matrix-session-badge">${escapeHTML(session.sesion || 'Clase')}</span>
+                <button type="button" class="card-btn btn-replicate-copy" onclick="copyClassForReplication('${school}', '${course}', ${wIdx}, event)" title="Copiar clase completa">📋 Copiar</button>
+              </div>
+              <div class="matrix-card-tema">${escapeHTML(session.tema || '(Sin título)')}</div>
+              <div class="matrix-card-act">${escapeHTML((session.actividades || '').substring(0, 70))}</div>
+            `;
+            td.appendChild(cardEl);
+          } else {
+            td.innerHTML = `
+              <div class="matrix-session-empty blank" style="font-size:11px; color:#94a3b8;">
+                <span>${clip ? '📥 Pegar aquí' : '+ Libre'}</span>
+              </div>
+            `;
+          }
+
+          tr.appendChild(td);
+        });
+
+        tbody.appendChild(tr);
+      });
+
+      table.appendChild(tbody);
+      tableWrap.appendChild(table);
+      wrap.appendChild(tableWrap);
+      container.appendChild(wrap);
+    }
+
+    /* CONTROLADORES Y SELECTORES DE LA VISTA REPLICAR */
+    function populateReplicateWeekSelector() {
+      const select = document.getElementById("replicate-week-select");
+      if (!select) return;
+      select.innerHTML = "";
+      state.weeks.forEach((w, idx) => {
+        const opt = document.createElement("option");
+        opt.value = idx;
+        const mesText = formatMonthName(w.mes);
+        opt.textContent = `${w.num_sem} · ${w.rango} (${mesText})`;
+        select.appendChild(opt);
+      });
+      select.value = state.currentWeekIndex;
+      updateReplicateWeekShortcuts();
+    }
+
+    function updateReplicateWeekShortcuts() {
+      const currentIdx = findTodayWeekIndex();
+      const nextIdx = Math.min(state.weeks.length - 1, currentIdx + 1);
+      const btnCur = document.getElementById('btnRepGoCur');
+      const btnNext = document.getElementById('btnRepGoNext');
+      if (btnCur) {
+        if (state.currentWeekIndex === currentIdx) btnCur.classList.add('is-active-view');
+        else btnCur.classList.remove('is-active-view');
+      }
+      if (btnNext) {
+        if (state.currentWeekIndex === nextIdx) btnNext.classList.add('is-active-view');
+        else btnNext.classList.remove('is-active-view');
+      }
+    }
+
+    function updateReplicateToolbarButtons() {
+      // Nivel activo
+      const activeLvl = state.replicateLevelFilter || 'all';
+      document.querySelectorAll('#replicateLevelFilterPills .replicate-pill-btn').forEach(btn => {
+        if (btn.dataset.level === activeLvl) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+
+      // Colegio activo
+      const activeSchool = state.replicateSchoolFilter || 'ambos';
+      ['ambos', 'ribarroja', 'manises'].forEach(s => {
+        const btn = document.getElementById(`rep-school-${s}`);
+        if (btn) {
+          if (s === activeSchool) btn.classList.add('active');
+          else btn.classList.remove('active');
+        }
+      });
+
+      // Modo activo
+      const activeMode = state.replicateMode || 'week';
+      const btnWeek = document.getElementById('rep-mode-week');
+      const btnMatrix = document.getElementById('rep-mode-matrix');
+      if (btnWeek) btnWeek.classList.toggle('active', activeMode === 'week');
+      if (btnMatrix) btnMatrix.classList.toggle('active', activeMode === 'matrix');
+    }
+
+    function onReplicateWeekSelectChange(val) {
+      state.currentWeekIndex = parseInt(val, 10);
+      updateReplicateWeekShortcuts();
+      renderCurrentView();
+    }
+
+    function navigateReplicatePrev() {
+      if (state.currentWeekIndex > 0) {
+        state.currentWeekIndex--;
+        const select = document.getElementById("replicate-week-select");
+        if (select) select.value = state.currentWeekIndex;
+        updateReplicateWeekShortcuts();
+        renderCurrentView();
+      }
+    }
+
+    function navigateReplicateNext() {
+      if (state.currentWeekIndex < state.weeks.length - 1) {
+        state.currentWeekIndex++;
+        const select = document.getElementById("replicate-week-select");
+        if (select) select.value = state.currentWeekIndex;
+        updateReplicateWeekShortcuts();
+        renderCurrentView();
+      }
+    }
+
+    function goToReplicateCurrentWeek() {
+      state.currentWeekIndex = findTodayWeekIndex();
+      const select = document.getElementById("replicate-week-select");
+      if (select) select.value = state.currentWeekIndex;
+      updateReplicateWeekShortcuts();
+      renderCurrentView();
+    }
+
+    function goToReplicateNextWeek() {
+      state.currentWeekIndex = Math.min(state.weeks.length - 1, findTodayWeekIndex() + 1);
+      const select = document.getElementById("replicate-week-select");
+      if (select) select.value = state.currentWeekIndex;
+      updateReplicateWeekShortcuts();
+      renderCurrentView();
+    }
+
+    function setReplicateLevelFilter(level) {
+      state.replicateLevelFilter = level;
+      updateReplicateToolbarButtons();
+      renderCurrentView();
+    }
+
+    function setReplicateSchoolFilter(school) {
+      state.replicateSchoolFilter = school;
+      updateReplicateToolbarButtons();
+      renderCurrentView();
+    }
+
+    function setReplicateMode(mode) {
+      state.replicateMode = mode;
+      updateReplicateToolbarButtons();
+      renderCurrentView();
     }
 
     window.addEventListener("keydown", (e) => {
@@ -5871,6 +7542,7 @@
                   ${isCurrentlyActive ? `<span class="current-badge-pill">AHORA</span>` : ''}
                 </div>
                 <div class="card-top-actions">
+                  <button class="card-btn" title="Replicar esta clase completa a otros grupos/niveles (👯)" onclick="copyClassForReplication('${school}', '${slot.course}', ${weekIndex}, event); switchView('replicar');">👯</button>
                   <button class="card-btn" title="Copiar contenido limpio" onclick="copySessionPureText('${school}', '${slot.course}', ${weekIndex}, event)">📋</button>
                   <button class="card-btn" title="Cargar desde Temario Maestro" onclick="openTemarioQuickPopover(this, '${school}', '${slot.course}', ${weekIndex}, event)">📚</button>
                   <button class="card-btn" title="Insertar plantillas o bloques de clase" onclick="openTemplatesPopover(this, '${school}', '${slot.course}', ${weekIndex}, event)">🪄</button>
@@ -8337,7 +10009,8 @@
             </button>
           </div>
           <div class="comp-header-actions">
-            <button class="card-btn" title="Copiar texto limpio" onclick="copySessionPureText('${school}', '${course}', ${wIdx}, event)">📋</button>
+            <button class="card-btn" title="Replicar esta clase completa (👯)" onclick="copyClassForReplication('${school}', '${course}', ${wIdx}, event); switchView('replicar');">👯</button>
+                  <button class="card-btn" title="Copiar texto limpio" onclick="copySessionPureText('${school}', '${course}', ${wIdx}, event)">📋</button>
             <button class="card-btn" title="Insertar plantillas o bloques de clase" onclick="openTemplatesPopover(this, '${school}', '${course}', ${wIdx}, event)">🪄</button>
             <button class="card-btn" title="Editar en pantalla grande y cómoda" onclick="openLargeEditModal('${school}', '${course}', ${wIdx}, event)">✏️</button>
           </div>
@@ -9659,42 +11332,28 @@
     /* NAVEGACIÓN Y VISTAS (CON PRESERVACIÓN EXACTA DE SCROLL) */
     function updateToolbarForView(view) {
       const weekNav = document.getElementById("toolbar-week-nav");
-      const courseNav = document.getElementById("toolbar-course-nav");
       const matrixNav = document.getElementById("toolbar-matrix-nav");
-      const dayNav = document.getElementById("toolbar-day-nav");
-      const monthNav = document.getElementById("toolbar-month-nav");
+      const repNav = document.getElementById("toolbar-replicar-nav");
 
       if (weekNav) weekNav.style.display = "none";
-      if (courseNav) courseNav.style.display = "none";
       if (matrixNav) matrixNav.style.display = "none";
-      if (dayNav) dayNav.style.display = "none";
-      if (monthNav) monthNav.style.display = "none";
+      if (repNav) repNav.style.display = "none";
 
       if (view === "semana") {
         if (weekNav) weekNav.style.display = "inline-flex";
         updateZoomLabel();
         updateWeekSelectInfo();
-      } else if (view === "clases") {
-        if (courseNav) {
-          courseNav.style.display = "inline-flex";
-          populateCourseSelector();
-        }
       } else if (view === "matriz") {
         if (matrixNav) {
           matrixNav.style.display = "inline-flex";
           updateMatrixToolbarSchoolButtons();
           updateZoomLabel();
         }
-      } else if (view === "dia") {
-        if (dayNav) {
-          dayNav.style.display = "inline-flex";
-          const input = document.getElementById("toolbar-day-input");
-          if (input) input.value = state.selectedDate || "2026-09-24";
-        }
-      } else if (view === "mes") {
-        if (monthNav) {
-          monthNav.style.display = "inline-flex";
-          populateMonthSelector();
+      } else if (view === "replicar") {
+        if (repNav) {
+          repNav.style.display = "inline-flex";
+          populateReplicateWeekSelector();
+          updateReplicateToolbarButtons();
         }
       } else {
         if (weekNav) weekNav.style.display = "inline-flex";
@@ -9806,7 +11465,7 @@
     }
 
     function switchView(view) {
-      if (view === "agenda") view = "semana"; // Agenda retirada
+      if (["agenda", "clases", "dia", "mes"].includes(view)) view = "semana";
       saveCurrentViewScroll();
       state.currentView = view;
       document.querySelectorAll(".pill-btn").forEach(b => b.classList.remove("active"));
@@ -9830,10 +11489,8 @@
       }
 
       if (state.currentView === "semana") renderWeekView(container);
-      else if (state.currentView === "clases") renderClassesView(container);
       else if (state.currentView === "matriz") renderMatrixView(container);
-      else if (state.currentView === "dia") renderDayView(container);
-      else if (state.currentView === "mes") renderMonthView(container);
+      else if (state.currentView === "replicar") renderReplicateView(container);
       else {
         state.currentView = "semana";
         renderWeekView(container);
@@ -10362,6 +12019,11 @@
         closeTemplatesPopover();
         closeTemplateManagerModal();
         closeSlotNotesModal();
+        closeReplicateLevelModal();
+        closeReplicateConflictModal();
+        closeReplicateFreeDayModal();
+        closeReplicateLossWarningModal();
+        if (window._replicateClipboard) clearReplicateClipboard();
       } else if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
         const modal = document.getElementById("large-edit-modal");
         if (modal && modal.style.display === "flex") {
