@@ -4877,6 +4877,387 @@
       color: #64748b;
     }
 
+
+    /* ========================================================
+       VISTA CALENDARIO ESCOLAR (DÍAS LECTIVOS / NO LECTIVOS)
+       ======================================================== */
+    .calendar-view-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 16px 20px 60px;
+      width: 100%;
+    }
+
+    .calendar-metrics-banner {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .cal-metric-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px 18px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cal-metric-card.ribarroja {
+      border-left: 4px solid var(--ribarroja-primary, #dc2626);
+    }
+    .cal-metric-card.manises {
+      border-left: 4px solid var(--manises-primary, #2563eb);
+    }
+
+    .cal-metric-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .cal-metric-school {
+      font-size: 13.5px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cal-metric-school.ribarroja { color: #991b1b; }
+    .cal-metric-school.manises { color: #1e40af; }
+
+    .cal-metric-days-info {
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .cal-metric-stats-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .cal-stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .cal-stat-num {
+      font-size: 20px;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1;
+    }
+    .cal-stat-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .cal-metric-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .cal-metric-chip {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .cal-metric-chip.lectivo { background: #dcfce7; color: #166534; }
+    .cal-metric-chip.festivo { background: #fee2e2; color: #991b1b; }
+    .cal-metric-chip.extra { background: #fef3c7; color: #92400e; }
+    .cal-metric-chip.groups { background: #f1f5f9; color: #334155; }
+
+    .cal-grid-wrapper {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      overflow: hidden;
+    }
+
+    .cal-grid-header {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: center;
+    }
+    .cal-grid-th {
+      padding: 10px 4px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #475569;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .cal-grid-th .th-sub {
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 8px;
+    }
+    .cal-grid-th.ribarroja .th-sub { background: #fee2e2; color: #991b1b; }
+    .cal-grid-th.manises .th-sub { background: #dbeafe; color: #1e40af; }
+    .cal-grid-th.viernes .th-sub { background: #f1f5f9; color: #475569; }
+    .cal-grid-th.weekend .th-sub { background: #f8fafc; color: #94a3b8; }
+
+    .cal-grid-body {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 1px;
+      background: #e2e8f0;
+    }
+
+    .cal-cell {
+      background: #ffffff;
+      min-height: 155px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+      transition: background 0.12s ease, box-shadow 0.12s ease;
+      cursor: pointer;
+    }
+    .cal-cell:hover {
+      background: #f8faff;
+      box-shadow: inset 0 0 0 1.5px #2563eb;
+      z-index: 2;
+    }
+    .cal-cell.other-month {
+      background: #fafafa;
+      opacity: 0.45;
+    }
+    .cal-cell.is-today {
+      background: #eff6ff;
+    }
+    .cal-cell.weekend {
+      background: #fafafa;
+    }
+
+    .cal-cell-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+    }
+    .cal-day-num {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #0f172a;
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+    .cal-cell.is-today .cal-day-num {
+      background: #2563eb;
+      color: #ffffff;
+    }
+    .cal-week-pill {
+      font-size: 9px;
+      font-weight: 700;
+      color: #64748b;
+      background: #f1f5f9;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+    .cal-btn-add {
+      background: transparent;
+      border: none;
+      font-size: 11px;
+      color: #94a3b8;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.12s ease;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+    .cal-cell:hover .cal-btn-add {
+      opacity: 1;
+    }
+    .cal-btn-add:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .cal-school-block {
+      border-radius: 6px;
+      padding: 5px 7px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-size: 10.5px;
+      border: 1px solid transparent;
+      transition: transform 0.1s ease;
+    }
+    .cal-school-block.ribarroja {
+      background: #fef2f2;
+      border-color: #fecaca;
+      border-left: 3.5px solid #dc2626;
+    }
+    .cal-school-block.manises {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      border-left: 3.5px solid #2563eb;
+    }
+    .cal-school-block.viernes-block {
+      background: #f8fafc;
+      border-color: #e2e8f0;
+      border-left: 3px solid #64748b;
+    }
+    .cal-school-block.weekend-block {
+      background: #f8fafc;
+      border-color: #f1f5f9;
+      color: #94a3b8;
+    }
+
+    .cal-school-status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+    }
+    .cal-school-name {
+      font-weight: 800;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .cal-school-name.ribarroja { color: #991b1b; }
+    .cal-school-name.manises { color: #1e40af; }
+
+    .cal-status-tag {
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+    .cal-status-tag.lectivo { background: #dcfce7; color: #166534; }
+    .cal-status-tag.festivo { background: #fee2e2; color: #991b1b; }
+    .cal-status-tag.vacaciones { background: #cffafe; color: #155e75; }
+    .cal-status-tag.extra { background: #fef3c7; color: #92400e; }
+    .cal-status-tag.inusual { background: #f3e8ff; color: #6b21a8; }
+    .cal-status-tag.eval { background: #ffedd5; color: #9a3412; }
+
+    .cal-groups-row {
+      display: flex;
+      gap: 3px;
+      flex-wrap: wrap;
+    }
+    .cal-group-chip {
+      font-size: 8.5px;
+      font-weight: 700;
+      padding: 1px 4px;
+      border-radius: 3px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+    }
+    .cal-group-chip.suspended {
+      background: #fee2e2;
+      border-color: #fca5a5;
+      color: #b91c1c;
+      text-decoration: line-through;
+    }
+
+    .cal-event-banner {
+      background: #fef3c7;
+      border: 1px solid #fde68a;
+      border-radius: 5px;
+      padding: 4px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 10px;
+    }
+    .cal-event-banner.festivo {
+      background: #fee2e2;
+      border-color: #fca5a5;
+      color: #991b1b;
+    }
+    .cal-event-banner.vacaciones {
+      background: #cffafe;
+      border-color: #a5f3fc;
+      color: #155e75;
+    }
+    .cal-event-banner.extraescolar {
+      background: #fef3c7;
+      border-color: #fde68a;
+      color: #92400e;
+    }
+    .cal-event-banner.inusual {
+      background: #f3e8ff;
+      border-color: #e9d5ff;
+      color: #6b21a8;
+    }
+    .cal-event-banner.evaluacion {
+      background: #ffedd5;
+      border-color: #fed7aa;
+      color: #9a3412;
+    }
+
+    .cal-event-title {
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cal-event-notes {
+      font-size: 9.5px;
+      color: #475569;
+      line-height: 1.25;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Vista Lista Detallada */
+    .cal-list-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .cal-list-row {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: grid;
+      grid-template-columns: 140px 1fr 1fr 1fr auto;
+      gap: 14px;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+    .cal-list-row:hover {
+      border-color: #2563eb;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+      transform: translateY(-1px);
+    }
+
   </style>
 </head>
 <body>
@@ -4901,6 +5282,7 @@
           <button class="pill-btn active" id="tab-semana" onclick="switchView('semana')">📅 Semana</button>
           <button class="pill-btn" id="tab-matriz" onclick="switchView('matriz')">📊 Todos los Grupos</button>
           <button class="pill-btn" id="tab-replicar" onclick="switchView('replicar')" title="Replicar clases y temarios ágilmente entre grupos, niveles y colegios">👯 Replicar Clases</button>
+          <button class="pill-btn" id="tab-calendario" onclick="switchView('calendario')" title="Días lectivos, festivos y eventos escolares por colegio">🗓️ Calendario Escolar</button>
         </div>
       </div>
 
@@ -5016,7 +5398,47 @@
             <button type="button" class="rep-mode-btn active" id="rep-mode-week" onclick="setReplicateMode('week')" title="Vista agrupada por niveles en la semana activa">📅 Por Semana</button>
             <button type="button" class="rep-mode-btn" id="rep-mode-matrix" onclick="setReplicateMode('matrix')" title="Vista de matriz con todas las semanas">📊 Todo el Año</button>
           </div>
+        
+        <!-- 4. Vista Calendario Escolar (Días lectivos / no lectivos) -->
+        <div id="toolbar-calendar-nav" class="view-toolbar-group" style="display: none; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <button class="nav-btn-icon" onclick="changeCalendarMonth(-1)" title="Mes anterior">◀</button>
+          <select class="course-select-compact" id="toolbar-calendar-month-select" onchange="onCalendarMonthSelectChange(this.value)" title="Ir a otro mes">
+            <!-- Opciones pobladas por JS -->
+          </select>
+          <button class="nav-btn-icon" onclick="changeCalendarMonth(1)" title="Mes siguiente">▶</button>
+          <button class="btn-today-compact" onclick="goToTodayCalendarMonth()">📍 Mes Actual</button>
+
+          <div class="toolbar-divider"></div>
+
+          <div class="replicate-filter-pills" id="calFilterPills">
+            <button type="button" class="replicate-pill-btn active" data-filter="all" onclick="setCalendarFilter('all')">Todos</button>
+            <button type="button" class="replicate-pill-btn" data-filter="lectivos" onclick="setCalendarFilter('lectivos')">🟢 Lectivos</button>
+            <button type="button" class="replicate-pill-btn" data-filter="no_lectivos" onclick="setCalendarFilter('no_lectivos')">🔴 Festivos</button>
+            <button type="button" class="replicate-pill-btn" data-filter="especiales" onclick="setCalendarFilter('especiales')">🟡 Extraescolares/Inusuales</button>
+          </div>
+
+          <div class="toolbar-divider"></div>
+
+          <div class="matrix-school-tabs">
+            <button type="button" class="matrix-school-btn active ambos" id="cal-school-ambos" onclick="setCalendarSchoolFilter('ambos')">🏫 Ambos</button>
+            <button type="button" class="matrix-school-btn ribarroja" id="cal-school-ribarroja" onclick="setCalendarSchoolFilter('ribarroja')">🔴 Riba-roja</button>
+            <button type="button" class="matrix-school-btn manises" id="cal-school-manises" onclick="setCalendarSchoolFilter('manises')">🔵 Manises</button>
+          </div>
+
+          <div class="toolbar-divider"></div>
+
+          <div class="replicate-mode-tabs">
+            <button type="button" class="rep-mode-btn active" id="cal-mode-grid" onclick="setCalendarMode('grid')" title="Vista cuadrícula mensual">📅 Cuadrícula</button>
+            <button type="button" class="rep-mode-btn" id="cal-mode-list" onclick="setCalendarMode('list')" title="Vista lista detallada del mes">📋 Lista Detallada</button>
+          </div>
+
+          <div class="toolbar-divider"></div>
+
+          <button type="button" class="btn-tool-compact" style="background: #2563eb; color: #ffffff; font-weight: 700; border: none; padding: 4px 10px;" onclick="openCalendarDayModal(null)" title="Añadir un evento, festivo o nota escolar">
+            ➕ Añadir Evento
+          </button>
         </div>
+      </div>
     </div>
   </header>
 
@@ -5186,6 +5608,107 @@
       <div class="modal-footer-large" style="display: flex; justify-content: space-between; padding: 12px 20px;">
         <button type="button" class="btn-modal-action secondary" onclick="backToReplicateConflictModal()">◀ Volver a Opciones</button>
         <button type="button" class="btn-modal-action secondary" onclick="closeReplicateFreeDayModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- MODAL: EDITAR DÍA Y EVENTO ESCOLAR (CALENDARIO LECTIVO) -->
+  <div class="modal-overlay" id="calendar-day-modal" style="display: none;" onclick="closeModalOnOutside(event, 'calendar-day-modal')">
+    <div class="modal-box-large" style="max-width: 600px; max-height: 92vh;">
+      <div class="modal-header-large" style="border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+        <div style="display: flex; flex-direction: column; gap: 3px;">
+          <div class="modal-title-large" id="cal-modal-title" style="display: flex; align-items: center; gap: 8px; color: #0f172a;">
+            <span>🗓️</span> <span id="cal-modal-date-text">Configurar Día Escolar</span>
+          </div>
+          <div id="cal-modal-subtitle" style="font-size: 11.5px; color: #64748b; font-weight: 600;"></div>
+        </div>
+        <button class="modal-btn-close" onclick="closeCalendarDayModal()" title="Cerrar ventana (Esc)">✕</button>
+      </div>
+
+      <div class="modal-body-large" style="padding: 18px 20px; gap: 14px; overflow-y: auto;">
+        <!-- Selector de fecha (si se abre sin fecha prefijada) -->
+        <div class="form-group-large" id="cal-modal-date-input-group" style="display: none;">
+          <label class="form-label-large">📅 Fecha:</label>
+          <input type="date" id="cal-modal-date-input" class="form-input-large" onchange="onCalendarModalDateChange(this.value)">
+        </div>
+
+        <!-- Colegio afectado -->
+        <div class="form-group-large">
+          <label class="form-label-large">🏫 Colegio afectado:</label>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;" id="calModalSchoolBtns">
+            <button type="button" class="matrix-school-btn active ambos" id="cal-modal-btn-ambos" onclick="selectCalendarModalSchool('ambos')">🏫 Ambos</button>
+            <button type="button" class="matrix-school-btn ribarroja" id="cal-modal-btn-ribarroja" onclick="selectCalendarModalSchool('ribarroja')">🔴 Riba-roja</button>
+            <button type="button" class="matrix-school-btn manises" id="cal-modal-btn-manises" onclick="selectCalendarModalSchool('manises')">🔵 Manises</button>
+          </div>
+        </div>
+
+        <!-- Tipo de día / situación -->
+        <div class="form-group-large">
+          <label class="form-label-large">📌 Tipo de día / Situación:</label>
+          <select id="cal-modal-type-select" class="form-input-large" onchange="onCalendarModalTypeChange(this.value)">
+            <option value="lectivo">🟢 Día Lectivo Normal (con clases habituales)</option>
+            <option value="festivo">🔴 Festivo Local / Autonómico / Nacional</option>
+            <option value="vacaciones">🏖️ Periodo Vacacional (Navidad, Pascua, Fallas...)</option>
+            <option value="extraescolar">🟡 Actividad Extraescolar / Excursión / Salida</option>
+            <option value="inusual">🟣 Situación Inusual (Huelga, Claustro, Celebración...)</option>
+            <option value="evaluacion">🟠 Evaluaciones / Exámenes</option>
+            <option value="no_lectivo">⚪ Día No Lectivo de Centro</option>
+          </select>
+        </div>
+
+        <!-- Título / Motivo del evento -->
+        <div class="form-group-large">
+          <label class="form-label-large">🏷️ Título / Motivo del evento o situación:</label>
+          <input type="text" id="cal-modal-title-input" class="form-input-large" placeholder="Ej: Festivo local, Excursión a la Albufera, Claustro...">
+        </div>
+
+        <!-- ¿Se imparten clases con los grupos habituales? -->
+        <div class="form-group-large" style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 12px;">
+          <label class="form-label-large" style="margin-bottom: 8px; font-weight: 800; color: #0f172a;">
+            👥 ¿Se imparten clases con los grupos de este día?
+          </label>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+              <input type="radio" name="cal-held-radio" id="cal-held-yes" value="yes" checked onchange="onCalendarHeldRadioChange(this.value)">
+              <span><strong>✓ Sí</strong>, se imparten todas las clases habituales</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+              <input type="radio" name="cal-held-radio" id="cal-held-no" value="no" onchange="onCalendarHeldRadioChange(this.value)">
+              <span><strong>✕ No</strong>, se suspenden todas las clases de este colegio</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+              <input type="radio" name="cal-held-radio" id="cal-held-partial" value="partial" onchange="onCalendarHeldRadioChange(this.value)">
+              <span><strong>⚠️ Parcial</strong>: solo se suspenden ciertos grupos</span>
+            </label>
+          </div>
+
+          <!-- Grupos afectados cuando es parcial -->
+          <div id="cal-modal-partial-groups-wrap" style="display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #cbd5e1;">
+            <div style="font-size: 11.5px; font-weight: 700; color: #64748b; margin-bottom: 6px;">
+              Marca los grupos que NO tendrán clase (se suspenden):
+            </div>
+            <div id="cal-modal-groups-checkboxes" style="display: flex; flex-wrap: wrap; gap: 6px;">
+              <!-- Poblado dinámicamente -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Comentarios y notas adicionales -->
+        <div class="form-group-large">
+          <label class="form-label-large">📝 Comentarios / Indicaciones para este día:</label>
+          <textarea id="cal-modal-notes-input" class="form-textarea-large" style="min-height: 80px;" placeholder="Escribe aquí cualquier detalle: horarios especiales, alumnos afectados, autorizaciones, tareas..."></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer-large" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: #f8fafc; border-top: 1px solid #e2e8f0;">
+        <button type="button" class="btn-modal-large btn-danger" id="btn-cal-modal-delete" onclick="deleteCalendarDayModal()" style="display: none;">
+          🗑️ Restablecer Día
+        </button>
+        <div style="display: flex; gap: 8px; margin-left: auto;">
+          <button type="button" class="btn-modal-large btn-secondary" onclick="closeCalendarDayModal()">Cancelar</button>
+          <button type="button" class="btn-modal-large btn-primary" onclick="saveCalendarDayModal()">💾 Guardar Cambios</button>
+        </div>
       </div>
     </div>
   </div>
@@ -5596,7 +6119,12 @@
       viewScrollPositions: { semana: 0, clases: null, matriz: null, dia: 0, mes: 0, replicar: 0 },
       replicateLevelFilter: "all",
       replicateSchoolFilter: "ambos",
-      replicateMode: "week"
+      replicateMode: "week",
+      calendarEvents: {},
+      calendarMonth: "2026-09",
+      calendarFilter: "all",
+      calendarSchoolFilter: "ambos",
+      calendarMode: "grid"
     };
 
     let activeModalTarget = null; // { weekIndex, school, course }
@@ -5661,6 +6189,7 @@
       return JSON.stringify({
         weeks: state.weeks,
         holidays: state.holidays || {},
+        calendarEvents: state.calendarEvents || {},
         temarioOverrides: state.temarioOverrides || {},
         temarioEdits: state.temarioEdits || {},
         sessionTemplates: state.sessionTemplates || [],
@@ -6128,6 +6657,7 @@
     function confirmReplicateLossAndProceed() {
       const lossData = window._pendingReplicateLoss;
       closeReplicateLossWarningModal();
+        closeCalendarDayModal();
       if (!lossData) return;
 
       const { direction, school, course, targetWeekIdx, clip } = lossData;
@@ -6834,6 +7364,968 @@
       renderCurrentView();
     }
 
+    
+    /* ========================================================
+       DATOS POR DEFECTO: CALENDARIO ESCOLAR (COMUNITAT VALENCIANA)
+       ======================================================== */
+    const DEFAULT_CALENDAR_EVENTS = {
+      "2026-09-08": {
+        school: "ambos",
+        type: "lectivo",
+        title: "Inicio del Curso Escolar 2026-2027",
+        notes: "Comienzo oficial de las clases ordinarias",
+        classesHeld: true
+      },
+      "2026-09-14": {
+        school: "ribarroja",
+        type: "festivo",
+        title: "Festivo Local Riba-roja (Santíssim Crist dels Afligits)",
+        notes: "Fiesta local en Riba-roja de Túria. Sin clases.",
+        classesHeld: false,
+        suspendedGroups: ["3º ESO - B", "1º ESO - A", "4º ESO - B", "3º ESO - A"]
+      },
+      "2026-10-09": {
+        school: "ambos",
+        type: "festivo",
+        title: "Día de la Comunitat Valenciana",
+        notes: "Festivo autonómico en toda la Comunidad Valenciana.",
+        classesHeld: false
+      },
+      "2026-10-12": {
+        school: "ambos",
+        type: "festivo",
+        title: "Fiesta Nacional de España (Hispanidad)",
+        notes: "Festivo nacional. Sin clases en ambos colegios.",
+        classesHeld: false,
+        suspendedGroups: ["3º ESO - B", "1º ESO - A", "4º ESO - B", "3º ESO - A"]
+      },
+      "2026-11-01": {
+        school: "ambos",
+        type: "festivo",
+        title: "Día de Todos los Santos",
+        notes: "Festivo nacional (Domingo).",
+        classesHeld: false
+      },
+      "2026-12-06": {
+        school: "ambos",
+        type: "festivo",
+        title: "Día de la Constitución Española",
+        notes: "Festivo nacional (Domingo).",
+        classesHeld: false
+      },
+      "2026-12-07": {
+        school: "ambos",
+        type: "no_lectivo",
+        title: "Día no lectivo / Puente de la Constitución",
+        notes: "Día no lectivo establecido en calendario escolar.",
+        classesHeld: false,
+        suspendedGroups: ["3º ESO - B", "1º ESO - A", "4º ESO - B", "3º ESO - A"]
+      },
+      "2026-12-08": {
+        school: "ambos",
+        type: "festivo",
+        title: "Inmaculada Concepción",
+        notes: "Festivo nacional.",
+        classesHeld: false,
+        suspendedGroups: ["4º ESO - A", "4º ESO - B", "2º ESO - A", "3º ESO - A"]
+      },
+      "2026-12-23": { school: "ambos", type: "vacaciones", title: "Vacaciones de Navidad", notes: "Inicio vacaciones de Navidad", classesHeld: false },
+      "2026-12-24": { school: "ambos", type: "vacaciones", title: "Nochebuena (Vacaciones)", notes: "Vacaciones de Navidad", classesHeld: false },
+      "2026-12-25": { school: "ambos", type: "festivo", title: "Navidad", notes: "Festivo nacional", classesHeld: false },
+      "2026-12-28": { school: "ambos", type: "vacaciones", title: "Vacaciones de Navidad", notes: "Vacaciones escolares", classesHeld: false },
+      "2026-12-29": { school: "ambos", type: "vacaciones", title: "Vacaciones de Navidad", notes: "Vacaciones escolares", classesHeld: false },
+      "2026-12-30": { school: "ambos", type: "vacaciones", title: "Vacaciones de Navidad", notes: "Vacaciones escolares", classesHeld: false },
+      "2026-12-31": { school: "ambos", type: "vacaciones", title: "Nochevieja (Vacaciones)", notes: "Vacaciones escolares", classesHeld: false },
+      "2027-01-01": { school: "ambos", type: "festivo", title: "Año Nuevo", notes: "Festivo nacional", classesHeld: false },
+      "2027-01-04": { school: "ambos", type: "vacaciones", title: "Vacaciones de Navidad", notes: "Vacaciones escolares", classesHeld: false },
+      "2027-01-05": { school: "ambos", type: "vacaciones", title: "Víspera de Reyes (Vacaciones)", notes: "Vacaciones escolares", classesHeld: false },
+      "2027-01-06": { school: "ambos", type: "festivo", title: "Epifanía del Señor / Reyes", notes: "Festivo nacional", classesHeld: false },
+      "2027-01-22": { school: "manises", type: "festivo", title: "San Vicente Mártir", notes: "Festivo local", classesHeld: false },
+      "2027-03-15": { school: "ambos", type: "vacaciones", title: "Semana de Fallas", notes: "Semana fallera", classesHeld: false },
+      "2027-03-16": { school: "ambos", type: "vacaciones", title: "Semana de Fallas (Plantà)", notes: "Semana fallera", classesHeld: false },
+      "2027-03-17": { school: "ribarroja", type: "festivo", title: "Fallas Riba-roja", notes: "Festivo de Fallas", classesHeld: false },
+      "2027-03-18": { school: "manises", type: "festivo", title: "Fallas Manises", notes: "Festivo de Fallas", classesHeld: false },
+      "2027-03-19": { school: "ambos", type: "festivo", title: "San José / Día del Padre (Cremà)", notes: "Festivo de la Comunitat Valenciana", classesHeld: false },
+      "2027-03-29": { school: "ambos", type: "vacaciones", title: "Vacaciones de Pascua", notes: "Semana Santa", classesHeld: false },
+      "2027-03-30": { school: "ambos", type: "vacaciones", title: "Vacaciones de Pascua", notes: "Semana Santa", classesHeld: false },
+      "2027-03-31": { school: "ambos", type: "vacaciones", title: "Vacaciones de Pascua", notes: "Semana Santa", classesHeld: false },
+      "2027-04-01": { school: "ambos", type: "festivo", title: "Jueves Santo", notes: "Semana Santa", classesHeld: false },
+      "2027-04-02": { school: "ambos", type: "festivo", title: "Viernes Santo", notes: "Festivo nacional", classesHeld: false },
+      "2027-04-05": { school: "ribarroja", type: "festivo", title: "Lunes de Pascua (Riba-roja)", notes: "Festivo local", classesHeld: false },
+      "2027-04-06": { school: "ambos", type: "vacaciones", title: "Vacaciones de Pascua", notes: "Semana de Pascua", classesHeld: false },
+      "2027-04-07": { school: "ambos", type: "vacaciones", title: "Vacaciones de Pascua", notes: "Semana de Pascua", classesHeld: false },
+      "2027-04-08": { school: "ambos", type: "vacaciones", title: "Vacaciones de Pascua", notes: "Semana de Pascua", classesHeld: false },
+      "2027-04-09": { school: "ambos", type: "vacaciones", title: "Vacaciones de Pascua", notes: "Semana de Pascua", classesHeld: false },
+      "2027-04-12": { school: "ambos", type: "festivo", title: "San Vicente Ferrer", notes: "Festivo escolar autonómico", classesHeld: false },
+      "2027-05-01": { school: "ambos", type: "festivo", title: "Fiesta del Trabajo", notes: "Festivo nacional", classesHeld: false },
+      "2027-06-18": { school: "ambos", type: "lectivo", title: "Último Día Lectivo del Curso", notes: "Fin de las clases ordinarias", classesHeld: true },
+      "2027-06-24": { school: "ambos", type: "festivo", title: "San Juan", notes: "Festivo autonómico", classesHeld: false }
+    };
+
+    const CALENDAR_MONTHS_EXTENDED = [
+      { key: "2026-09", name: "Septiembre 2026", year: 2026, month: 9 },
+      { key: "2026-10", name: "Octubre 2026", year: 2026, month: 10 },
+      { key: "2026-11", name: "Noviembre 2026", year: 2026, month: 11 },
+      { key: "2026-12", name: "Diciembre 2026", year: 2026, month: 12 },
+      { key: "2027-01", name: "Enero 2027", year: 2027, month: 1 },
+      { key: "2027-02", name: "Febrero 2027", year: 2027, month: 2 },
+      { key: "2027-03", name: "Marzo 2027", year: 2027, month: 3 },
+      { key: "2027-04", name: "Abril 2027", year: 2027, month: 4 },
+      { key: "2027-05", name: "Mayo 2027", year: 2027, month: 5 },
+      { key: "2027-06", name: "Junio 2027", year: 2027, month: 6 },
+      { key: "2027-07", name: "Julio 2027", year: 2027, month: 7 }
+    ];
+
+    function getRegularScheduleForDayOfWeek(dayOfWeek) {
+      // 0 = Domingo, 1 = Lunes, 2 = Martes, 3 = Miércoles, 4 = Jueves, 5 = Viernes, 6 = Sábado
+      if (dayOfWeek === 1) { // Lunes
+        return {
+          ribarroja: { active: true, label: "Lunes Riba-roja", groups: ["3º ESO - B", "1º ESO - A", "4º ESO - B", "3º ESO - A"] },
+          manises: { active: false, label: "Sin jornada en Manises", groups: [] }
+        };
+      } else if (dayOfWeek === 2) { // Martes
+        return {
+          ribarroja: { active: false, label: "Sin jornada en Riba-roja", groups: [] },
+          manises: { active: true, label: "Martes Manises", groups: ["4º ESO - A", "4º ESO - B", "2º ESO - A", "3º ESO - A"] }
+        };
+      } else if (dayOfWeek === 3) { // Miércoles
+        return {
+          ribarroja: { active: true, label: "Miércoles Riba-roja", groups: ["2º ESO - A", "2º ESO - B", "1º ESO - B", "4º ESO - A", "1º BACHILLERATO"] },
+          manises: { active: false, label: "Sin jornada en Manises", groups: [] }
+        };
+      } else if (dayOfWeek === 4) { // Jueves
+        return {
+          ribarroja: { active: false, label: "Sin jornada en Riba-roja", groups: [] },
+          manises: { active: true, label: "Jueves Manises", groups: ["2º ESO - B", "1º ESO - B", "1º ESO - A", "3º ESO - B"] }
+        };
+      } else if (dayOfWeek === 5) { // Viernes
+        return {
+          ribarroja: { active: false, label: "Viernes Planificación", groups: [] },
+          manises: { active: false, label: "Viernes Planificación", groups: [] }
+        };
+      } else { // Fin de semana
+        return {
+          ribarroja: { active: false, label: "Fin de semana", groups: [] },
+          manises: { active: false, label: "Fin de semana", groups: [] }
+        };
+      }
+    }
+
+    function getDayCalendarInfo(dateStr) {
+      if (!state.calendarEvents) state.calendarEvents = Object.assign({}, DEFAULT_CALENDAR_EVENTS);
+
+      const [y, m, d] = dateStr.split("-").map(Number);
+      const dateObj = new Date(y, m - 1, d);
+      const dayOfWeek = dateObj.getDay();
+
+      const regular = getRegularScheduleForDayOfWeek(dayOfWeek);
+      const custom = state.calendarEvents[dateStr] || null;
+      const isDefaultHoliday = !!(state.holidays && state.holidays[dateStr]);
+
+      let riba = {
+        isTeachingDay: regular.ribarroja.active,
+        isLectivo: regular.ribarroja.active,
+        statusType: regular.ribarroja.active ? "lectivo" : "normal",
+        statusText: regular.ribarroja.active ? "Lectivo" : "Sin jornada",
+        heldGroups: [...regular.ribarroja.groups],
+        suspendedGroups: []
+      };
+
+      let mani = {
+        isTeachingDay: regular.manises.active,
+        isLectivo: regular.manises.active,
+        statusType: regular.manises.active ? "lectivo" : "normal",
+        statusText: regular.manises.active ? "Lectivo" : "Sin jornada",
+        heldGroups: [...regular.manises.groups],
+        suspendedGroups: []
+      };
+
+      // Si es festivo por defecto o vacaciones
+      if (isDefaultHoliday && !custom) {
+        if (riba.isTeachingDay) {
+          riba.isLectivo = false;
+          riba.statusType = "festivo";
+          riba.statusText = "Festivo";
+          riba.suspendedGroups = [...riba.heldGroups];
+          riba.heldGroups = [];
+        }
+        if (mani.isTeachingDay) {
+          mani.isLectivo = false;
+          mani.statusType = "festivo";
+          mani.statusText = "Festivo";
+          mani.suspendedGroups = [...mani.heldGroups];
+          mani.heldGroups = [];
+        }
+      }
+
+      // Si hay evento personalizado
+      if (custom) {
+        const appSchool = custom.school || "ambos";
+        const cType = custom.type || "lectivo";
+        const cTitle = custom.title || "";
+        const cNotes = custom.notes || "";
+        const cHeld = custom.classesHeld !== undefined ? custom.classesHeld : true;
+        const cSuspended = Array.isArray(custom.suspendedGroups) ? custom.suspendedGroups : [];
+
+        // Aplicar a Riba-roja
+        if (appSchool === "ribarroja" || appSchool === "ambos") {
+          riba.statusType = cType;
+          if (cType === "festivo" || cType === "vacaciones" || cType === "no_lectivo") {
+            riba.isLectivo = false;
+            riba.statusText = cType === "vacaciones" ? "Vacaciones" : "Festivo";
+            riba.suspendedGroups = [...regular.ribarroja.groups];
+            riba.heldGroups = [];
+          } else if (cType === "extraescolar") {
+            riba.statusText = "Extraescolar";
+            if (cHeld === false) {
+              riba.suspendedGroups = [...regular.ribarroja.groups];
+              riba.heldGroups = [];
+            } else if (cHeld === "partial") {
+              riba.suspendedGroups = cSuspended.filter(g => regular.ribarroja.groups.includes(g));
+              riba.heldGroups = regular.ribarroja.groups.filter(g => !cSuspended.includes(g));
+            }
+          } else if (cType === "inusual") {
+            riba.statusText = "Inusual";
+            if (cHeld === false) {
+              riba.suspendedGroups = [...regular.ribarroja.groups];
+              riba.heldGroups = [];
+            } else if (cHeld === "partial") {
+              riba.suspendedGroups = cSuspended.filter(g => regular.ribarroja.groups.includes(g));
+              riba.heldGroups = regular.ribarroja.groups.filter(g => !cSuspended.includes(g));
+            }
+          } else if (cType === "evaluacion") {
+            riba.statusText = "Exámenes";
+          }
+        }
+
+        // Aplicar a Manises
+        if (appSchool === "manises" || appSchool === "ambos") {
+          mani.statusType = cType;
+          if (cType === "festivo" || cType === "vacaciones" || cType === "no_lectivo") {
+            mani.isLectivo = false;
+            mani.statusText = cType === "vacaciones" ? "Vacaciones" : "Festivo";
+            mani.suspendedGroups = [...regular.manises.groups];
+            mani.heldGroups = [];
+          } else if (cType === "extraescolar") {
+            mani.statusText = "Extraescolar";
+            if (cHeld === false) {
+              mani.suspendedGroups = [...regular.manises.groups];
+              mani.heldGroups = [];
+            } else if (cHeld === "partial") {
+              mani.suspendedGroups = cSuspended.filter(g => regular.manises.groups.includes(g));
+              mani.heldGroups = regular.manises.groups.filter(g => !cSuspended.includes(g));
+            }
+          } else if (cType === "inusual") {
+            mani.statusText = "Inusual";
+            if (cHeld === false) {
+              mani.suspendedGroups = [...regular.manises.groups];
+              mani.heldGroups = [];
+            } else if (cHeld === "partial") {
+              mani.suspendedGroups = cSuspended.filter(g => regular.manises.groups.includes(g));
+              mani.heldGroups = regular.manises.groups.filter(g => !cSuspended.includes(g));
+            }
+          } else if (cType === "evaluacion") {
+            mani.statusText = "Exámenes";
+          }
+        }
+      }
+
+      // Encontrar número de semana escolar
+      let weekNum = "";
+      if (state.weeks && state.weeks.length) {
+        const found = state.weeks.find(w => {
+          if (!w.date_start) return false;
+          const s = new Date(w.date_start);
+          const e = new Date(s);
+          e.setDate(e.getDate() + 6);
+          return dateObj >= s && dateObj <= e;
+        });
+        if (found) weekNum = found.num_sem;
+      }
+
+      return {
+        dateStr,
+        dayOfMonth: d,
+        dayOfWeek,
+        dateObj,
+        weekNum,
+        regular,
+        custom,
+        ribarroja: riba,
+        manises: mani
+      };
+    }
+
+    /* RENDERIZADO PRINCIPAL: VISTA CALENDARIO ESCOLAR */
+    function renderCalendarView(container) {
+      if (!state.calendarMonth) {
+        state.calendarMonth = "2026-09";
+      }
+
+      const wrap = document.createElement("div");
+      wrap.className = "calendar-view-container";
+
+      const curMonthKey = state.calendarMonth;
+      const monthObj = CALENDAR_MONTHS_EXTENDED.find(m => m.key === curMonthKey) || CALENDAR_MONTHS_EXTENDED[0];
+      const { year, month } = monthObj;
+
+      // Días del mes actual
+      const daysInMonth = new Date(year, month, 0).getDate();
+      const monthDays = [];
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dStr = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        monthDays.push(getDayCalendarInfo(dStr));
+      }
+
+      // 1. Estadísticas mensuales del mes
+      const ribaTeachingDays = monthDays.filter(d => d.ribarroja.isTeachingDay && d.ribarroja.isLectivo).length;
+      const ribaHolidays = monthDays.filter(d => d.ribarroja.isTeachingDay && !d.ribarroja.isLectivo).length;
+      const ribaExtras = monthDays.filter(d => d.ribarroja.isTeachingDay && (d.ribarroja.statusType === 'extraescolar' || d.ribarroja.statusType === 'inusual')).length;
+      const ribaTotalClasses = monthDays.reduce((acc, d) => acc + d.ribarroja.heldGroups.length, 0);
+
+      const maniTeachingDays = monthDays.filter(d => d.manises.isTeachingDay && d.manises.isLectivo).length;
+      const maniHolidays = monthDays.filter(d => d.manises.isTeachingDay && !d.manises.isLectivo).length;
+      const maniExtras = monthDays.filter(d => d.manises.isTeachingDay && (d.manises.statusType === 'extraescolar' || d.manises.statusType === 'inusual')).length;
+      const maniTotalClasses = monthDays.reduce((acc, d) => acc + d.manises.heldGroups.length, 0);
+
+      // Banner de Métricas
+      const metricsBanner = document.createElement("div");
+      metricsBanner.className = "calendar-metrics-banner";
+      metricsBanner.innerHTML = `
+        <div class="cal-metric-card ribarroja">
+          <div class="cal-metric-header">
+            <span class="cal-metric-school ribarroja">🔴 Colegio Riba-roja</span>
+            <span class="cal-metric-days-info">Lunes y Miércoles</span>
+          </div>
+          <div class="cal-metric-stats-row">
+            <div class="cal-stat-item">
+              <span class="cal-stat-num" style="color: #991b1b;">${ribaTeachingDays}</span>
+              <span class="cal-stat-label">Días Lectivos</span>
+            </div>
+            <div class="cal-stat-item">
+              <span class="cal-stat-num" style="color: #dc2626;">${ribaTotalClasses}</span>
+              <span class="cal-stat-label">Clases Totales</span>
+            </div>
+            <div class="cal-stat-item">
+              <span class="cal-stat-num" style="color: #64748b;">${ribaHolidays}</span>
+              <span class="cal-stat-label">Festivos/No lect.</span>
+            </div>
+            ${ribaExtras > 0 ? `
+            <div class="cal-stat-item">
+              <span class="cal-stat-num" style="color: #d97706;">${ribaExtras}</span>
+              <span class="cal-stat-label">Extraescolares</span>
+            </div>` : ''}
+          </div>
+          <div class="cal-metric-chips">
+            <span class="cal-metric-chip groups">👥 9 grupos (1º a 4º ESO + 1º BAC)</span>
+            ${ribaHolidays > 0 ? `<span class="cal-metric-chip festivo">⚠️ ${ribaHolidays} jornadas con clases suspendidas</span>` : `<span class="cal-metric-chip lectivo">✓ Mes 100% lectivo</span>`}
+          </div>
+        </div>
+
+        <div class="cal-metric-card manises">
+          <div class="cal-metric-header">
+            <span class="cal-metric-school manises">🔵 Colegio Manises</span>
+            <span class="cal-metric-days-info">Martes y Jueves</span>
+          </div>
+          <div class="cal-metric-stats-row">
+            <div class="cal-stat-item">
+              <span class="cal-stat-num" style="color: #1e40af;">${maniTeachingDays}</span>
+              <span class="cal-stat-label">Días Lectivos</span>
+            </div>
+            <div class="cal-stat-item">
+              <span class="cal-stat-num" style="color: #2563eb;">${maniTotalClasses}</span>
+              <span class="cal-stat-label">Clases Totales</span>
+            </div>
+            <div class="cal-stat-item">
+              <span class="cal-stat-num" style="color: #64748b;">${maniHolidays}</span>
+              <span class="cal-stat-label">Festivos/No lect.</span>
+            </div>
+            ${maniExtras > 0 ? `
+            <div class="cal-stat-item">
+              <span class="cal-stat-num" style="color: #d97706;">${maniExtras}</span>
+              <span class="cal-stat-label">Extraescolares</span>
+            </div>` : ''}
+          </div>
+          <div class="cal-metric-chips">
+            <span class="cal-metric-chip groups">👥 8 grupos (1º a 4º ESO)</span>
+            ${maniHolidays > 0 ? `<span class="cal-metric-chip festivo">⚠️ ${maniHolidays} jornadas con clases suspendidas</span>` : `<span class="cal-metric-chip lectivo">✓ Mes 100% lectivo</span>`}
+          </div>
+        </div>
+      `;
+      wrap.appendChild(metricsBanner);
+
+      // 2. Vista Grilla o Lista
+      const mode = state.calendarMode || 'grid';
+      if (mode === 'list') {
+        renderCalendarListView(wrap, monthDays);
+      } else {
+        renderCalendarGridView(wrap, year, month, monthDays);
+      }
+
+      container.appendChild(wrap);
+    }
+
+    /* RENDER CUADRÍCULA MENSUAL */
+    function renderCalendarGridView(container, year, month, monthDays) {
+      const calWrapper = document.createElement("div");
+      calWrapper.className = "cal-grid-wrapper";
+
+      // Cabecera de días de la semana
+      const gridHeader = document.createElement("div");
+      gridHeader.className = "cal-grid-header";
+      gridHeader.innerHTML = `
+        <div class="cal-grid-th ribarroja">
+          <span>LUNES</span>
+          <span class="th-sub">🔴 Riba-roja</span>
+        </div>
+        <div class="cal-grid-th manises">
+          <span>MARTES</span>
+          <span class="th-sub">🔵 Manises</span>
+        </div>
+        <div class="cal-grid-th ribarroja">
+          <span>MIÉRCOLES</span>
+          <span class="th-sub">🔴 Riba-roja</span>
+        </div>
+        <div class="cal-grid-th manises">
+          <span>JUEVES</span>
+          <span class="th-sub">🔵 Manises</span>
+        </div>
+        <div class="cal-grid-th viernes">
+          <span>VIERNES</span>
+          <span class="th-sub">☕ Planificación</span>
+        </div>
+        <div class="cal-grid-th weekend">
+          <span>SÁBADO</span>
+          <span class="th-sub">Fin de semana</span>
+        </div>
+        <div class="cal-grid-th weekend">
+          <span>DOMINGO</span>
+          <span class="th-sub">Fin de semana</span>
+        </div>
+      `;
+      calWrapper.appendChild(gridHeader);
+
+      const gridBody = document.createElement("div");
+      gridBody.className = "cal-grid-body";
+
+      // Determinar primer día de la semana (1 = Lunes, ..., 7 = Domingo)
+      const firstDayWeekday = new Date(year, month - 1, 1).getDay();
+      const colStart = (firstDayWeekday === 0) ? 7 : firstDayWeekday;
+
+      // Celdas de relleno del mes anterior
+      const prevMonthDaysCount = new Date(year, month - 1, 0).getDate();
+      for (let p = colStart - 1; p >= 1; p--) {
+        const dNum = prevMonthDaysCount - p + 1;
+        const cell = document.createElement("div");
+        cell.className = "cal-cell other-month";
+        cell.innerHTML = `
+          <div class="cal-cell-top">
+            <span class="cal-day-num" style="opacity:0.4;">${dNum}</span>
+          </div>
+        `;
+        gridBody.appendChild(cell);
+      }
+
+      // Días del mes
+      const todayStr = getNowInfo().todayStr;
+      const schoolFilter = state.calendarSchoolFilter || 'ambos';
+      const typeFilter = state.calendarFilter || 'all';
+
+      monthDays.forEach(dayInfo => {
+        const { dateStr, dayOfMonth, dayOfWeek, weekNum, ribarroja, manises, custom } = dayInfo;
+        const isToday = (dateStr === todayStr);
+        const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+
+        // Filtro de tipo
+        let matchFilter = true;
+        if (typeFilter === 'lectivos') {
+          matchFilter = (ribarroja.isTeachingDay && ribarroja.isLectivo) || (manises.isTeachingDay && manises.isLectivo);
+        } else if (typeFilter === 'no_lectivos') {
+          matchFilter = (ribarroja.isTeachingDay && !ribarroja.isLectivo) || (manises.isTeachingDay && !manises.isLectivo) || (custom && (custom.type === 'festivo' || custom.type === 'vacaciones' || custom.type === 'no_lectivo'));
+        } else if (typeFilter === 'especiales') {
+          matchFilter = custom && (custom.type === 'extraescolar' || custom.type === 'inusual' || custom.type === 'evaluacion');
+        }
+
+        const cell = document.createElement("div");
+        let cellClasses = "cal-cell";
+        if (isToday) cellClasses += " is-today";
+        if (isWeekend) cellClasses += " weekend";
+        if (!matchFilter) cellClasses += " other-month";
+        cell.className = cellClasses;
+
+        cell.onclick = (e) => {
+          openCalendarDayModal(dateStr);
+        };
+
+        // Top de la celda
+        let topHtml = `
+          <div class="cal-cell-top">
+            <span class="cal-day-num">${dayOfMonth}</span>
+            <div style="display: flex; align-items: center; gap: 4px;">
+              ${weekNum ? `<span class="cal-week-pill">${weekNum}</span>` : ''}
+              <button type="button" class="cal-btn-add" title="Modificar o añadir evento para este día">✏️</button>
+            </div>
+          </div>
+        `;
+
+        let bodyHtml = "";
+
+        // Si hay evento destacado / custom
+        if (custom && custom.title) {
+          const typeClass = custom.type || 'festivo';
+          let icon = "📌";
+          if (typeClass === 'festivo') icon = "🎉";
+          else if (typeClass === 'vacaciones') icon = "🏖️";
+          else if (typeClass === 'extraescolar') icon = "🚌";
+          else if (typeClass === 'inusual') icon = "⚠️";
+          else if (typeClass === 'evaluacion') icon = "📝";
+
+          bodyHtml += `
+            <div class="cal-event-banner ${typeClass}">
+              <div class="cal-event-title">${icon} ${escapeHTML(custom.title)}</div>
+              ${custom.notes ? `<div class="cal-event-notes">${escapeHTML(custom.notes)}</div>` : ''}
+            </div>
+          `;
+        }
+
+        // Bloque Riba-roja (si aplica filtro y día)
+        if ((schoolFilter === 'ambos' || schoolFilter === 'ribarroja') && (dayOfWeek === 1 || dayOfWeek === 3 || (custom && custom.school === 'ribarroja'))) {
+          const rPillClass = ribarroja.isLectivo ? 'lectivo' : (ribarroja.statusType || 'festivo');
+          let groupChipsHtml = "";
+          if (ribarroja.heldGroups.length > 0) {
+            groupChipsHtml = ribarroja.heldGroups.map(g => `<span class="cal-group-chip">${escapeHTML(g.replace("º ESO", "").replace("BACHILLERATO", "BAC"))}</span>`).join("");
+          }
+          if (ribarroja.suspendedGroups.length > 0) {
+            groupChipsHtml += ribarroja.suspendedGroups.map(g => `<span class="cal-group-chip suspended" title="Clase suspendida">🚫 ${escapeHTML(g.replace("º ESO", "").replace("BACHILLERATO", "BAC"))}</span>`).join("");
+          }
+
+          bodyHtml += `
+            <div class="cal-school-block ribarroja">
+              <div class="cal-school-status-row">
+                <span class="cal-school-name ribarroja">🔴 Riba-roja</span>
+                <span class="cal-status-tag ${rPillClass}">${ribarroja.statusText}</span>
+              </div>
+              <div class="cal-groups-row">${groupChipsHtml}</div>
+            </div>
+          `;
+        }
+
+        // Bloque Manises (si aplica filtro y día)
+        if ((schoolFilter === 'ambos' || schoolFilter === 'manises') && (dayOfWeek === 2 || dayOfWeek === 4 || (custom && custom.school === 'manises'))) {
+          const mPillClass = manises.isLectivo ? 'lectivo' : (manises.statusType || 'festivo');
+          let groupChipsHtml = "";
+          if (manises.heldGroups.length > 0) {
+            groupChipsHtml = manises.heldGroups.map(g => `<span class="cal-group-chip">${escapeHTML(g.replace("º ESO", "").replace("BACHILLERATO", "BAC"))}</span>`).join("");
+          }
+          if (manises.suspendedGroups.length > 0) {
+            groupChipsHtml += manises.suspendedGroups.map(g => `<span class="cal-group-chip suspended" title="Clase suspendida">🚫 ${escapeHTML(g.replace("º ESO", "").replace("BACHILLERATO", "BAC"))}</span>`).join("");
+          }
+
+          bodyHtml += `
+            <div class="cal-school-block manises">
+              <div class="cal-school-status-row">
+                <span class="cal-school-name manises">🔵 Manises</span>
+                <span class="cal-status-tag ${mPillClass}">${manises.statusText}</span>
+              </div>
+              <div class="cal-groups-row">${groupChipsHtml}</div>
+            </div>
+          `;
+        }
+
+        // Viernes de planificación
+        if (dayOfWeek === 5 && !custom) {
+          bodyHtml += `
+            <div class="cal-school-block viernes-block">
+              <div class="cal-school-status-row">
+                <span class="cal-school-name" style="color:#475569;">☕ Planificación</span>
+                <span class="cal-status-tag" style="background:#e2e8f0; color:#475569;">Docente</span>
+              </div>
+            </div>
+          `;
+        }
+
+        // Fin de semana
+        if (isWeekend && !custom) {
+          bodyHtml += `
+            <div style="font-size: 10px; color: #94a3b8; text-align: center; margin-top: auto; padding: 4px;">
+              Descanso
+            </div>
+          `;
+        }
+
+        cell.innerHTML = topHtml + bodyHtml;
+        gridBody.appendChild(cell);
+      });
+
+      // Celdas de relleno para completar la última semana
+      const totalCells = (colStart - 1) + monthDays.length;
+      const remainder = totalCells % 7;
+      if (remainder !== 0) {
+        const nextFill = 7 - remainder;
+        for (let n = 1; n <= nextFill; n++) {
+          const cell = document.createElement("div");
+          cell.className = "cal-cell other-month";
+          cell.innerHTML = `
+            <div class="cal-cell-top">
+              <span class="cal-day-num" style="opacity:0.4;">${n}</span>
+            </div>
+          `;
+          gridBody.appendChild(cell);
+        }
+      }
+
+      calWrapper.appendChild(gridBody);
+      container.appendChild(calWrapper);
+    }
+
+    /* RENDER VISTA LISTA DETALLADA */
+    function renderCalendarListView(container, monthDays) {
+      const listWrap = document.createElement("div");
+      listWrap.className = "cal-list-container";
+
+      const daysOfWeekNames = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+      const schoolFilter = state.calendarSchoolFilter || 'ambos';
+
+      monthDays.forEach(dayInfo => {
+        const { dateStr, dayOfMonth, dayOfWeek, weekNum, ribarroja, manises, custom } = dayInfo;
+        const row = document.createElement("div");
+        row.className = "cal-list-row";
+        row.onclick = () => openCalendarDayModal(dateStr);
+
+        const weekdayName = daysOfWeekNames[dayOfWeek];
+
+        let ribaSnippet = "";
+        if (dayOfWeek === 1 || dayOfWeek === 3 || (custom && custom.school === 'ribarroja')) {
+          ribaSnippet = `
+            <div style="display:flex; flex-direction:column; gap:3px;">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:11px; font-weight:800; color:#991b1b;">🔴 Riba-roja</span>
+                <span class="cal-status-tag ${ribarroja.isLectivo ? 'lectivo' : 'festivo'}">${ribarroja.statusText}</span>
+              </div>
+              <div style="font-size:10px; color:#64748b;">${ribarroja.heldGroups.length} clases · ${ribarroja.suspendedGroups.length} suspendidas</div>
+            </div>
+          `;
+        } else {
+          ribaSnippet = `<span style="font-size:11px; color:#94a3b8;">⚪ Sin clases</span>`;
+        }
+
+        let maniSnippet = "";
+        if (dayOfWeek === 2 || dayOfWeek === 4 || (custom && custom.school === 'manises')) {
+          maniSnippet = `
+            <div style="display:flex; flex-direction:column; gap:3px;">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:11px; font-weight:800; color:#1e40af;">🔵 Manises</span>
+                <span class="cal-status-tag ${manises.isLectivo ? 'lectivo' : 'festivo'}">${manises.statusText}</span>
+              </div>
+              <div style="font-size:10px; color:#64748b;">${manises.heldGroups.length} clases · ${manises.suspendedGroups.length} suspendidas</div>
+            </div>
+          `;
+        } else {
+          maniSnippet = `<span style="font-size:11px; color:#94a3b8;">⚪ Sin clases</span>`;
+        }
+
+        let eventSnippet = "";
+        if (custom) {
+          eventSnippet = `
+            <div>
+              <div style="font-weight:700; font-size:12px; color:#0f172a;">${escapeHTML(custom.title || 'Evento')}</div>
+              <div style="font-size:11px; color:#64748b;">${escapeHTML(custom.notes || '')}</div>
+            </div>
+          `;
+        } else {
+          eventSnippet = `<span style="font-size:11px; color:#94a3b8;">(Jornada habitual)</span>`;
+        }
+
+        row.innerHTML = `
+          <div>
+            <div style="font-size:14px; font-weight:800; color:#0f172a;">${dayOfMonth} ${formatMonthName(state.calendarMonth.split('-')[1])}</div>
+            <div style="font-size:11.5px; font-weight:600; color:#64748b;">${weekdayName} ${weekNum ? `(${weekNum})` : ''}</div>
+          </div>
+          <div>${ribaSnippet}</div>
+          <div>${maniSnippet}</div>
+          <div>${eventSnippet}</div>
+          <button type="button" class="btn-tool-compact" style="border:1px solid #cbd5e1; background:#ffffff;">✏️ Editar</button>
+        `;
+        listWrap.appendChild(row);
+      });
+
+      container.appendChild(listWrap);
+    }
+
+    /* CONTROLADORES Y SELECTORES DE LA VISTA CALENDARIO */
+    function populateCalendarMonthSelector() {
+      const sel = document.getElementById("toolbar-calendar-month-select");
+      if (!sel) return;
+      if (!state.calendarMonth) state.calendarMonth = "2026-09";
+      let html = "";
+      CALENDAR_MONTHS_EXTENDED.forEach(m => {
+        html += `<option value="${m.key}" ${m.key === state.calendarMonth ? 'selected' : ''}>🗓️ ${m.name}</option>`;
+      });
+      sel.innerHTML = html;
+      sel.value = state.calendarMonth;
+    }
+
+    function onCalendarMonthSelectChange(val) {
+      if (!val) return;
+      state.calendarMonth = val;
+      renderCurrentView();
+    }
+
+    function changeCalendarMonth(delta) {
+      if (!state.calendarMonth) state.calendarMonth = "2026-09";
+      const idx = CALENDAR_MONTHS_EXTENDED.findIndex(m => m.key === state.calendarMonth);
+      if (idx !== -1) {
+        const nextIdx = Math.max(0, Math.min(CALENDAR_MONTHS_EXTENDED.length - 1, idx + delta));
+        state.calendarMonth = CALENDAR_MONTHS_EXTENDED[nextIdx].key;
+        populateCalendarMonthSelector();
+        renderCurrentView();
+      }
+    }
+
+    function goToTodayCalendarMonth() {
+      const today = getNowInfo().todayStr;
+      const key = today.substring(0, 7);
+      if (CALENDAR_MONTHS_EXTENDED.some(m => m.key === key)) {
+        state.calendarMonth = key;
+      } else {
+        state.calendarMonth = "2026-09";
+      }
+      populateCalendarMonthSelector();
+      renderCurrentView();
+    }
+
+    function setCalendarFilter(filter) {
+      state.calendarFilter = filter;
+      updateCalendarToolbarButtons();
+      renderCurrentView();
+    }
+
+    function setCalendarSchoolFilter(school) {
+      state.calendarSchoolFilter = school;
+      updateCalendarToolbarButtons();
+      renderCurrentView();
+    }
+
+    function setCalendarMode(mode) {
+      state.calendarMode = mode;
+      updateCalendarToolbarButtons();
+      renderCurrentView();
+    }
+
+    function updateCalendarToolbarButtons() {
+      // Filtro activo
+      const activeFilter = state.calendarFilter || 'all';
+      document.querySelectorAll('#calFilterPills .replicate-pill-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.filter === activeFilter);
+      });
+
+      // Colegio activo
+      const activeSchool = state.calendarSchoolFilter || 'ambos';
+      ['ambos', 'ribarroja', 'manises'].forEach(s => {
+        const b = document.getElementById(`cal-school-${s}`);
+        if (b) b.classList.toggle('active', s === activeSchool);
+      });
+
+      // Modo activo
+      const activeMode = state.calendarMode || 'grid';
+      const bGrid = document.getElementById('cal-mode-grid');
+      const bList = document.getElementById('cal-mode-list');
+      if (bGrid) bGrid.classList.toggle('active', activeMode === 'grid');
+      if (bList) bList.classList.toggle('active', activeMode === 'list');
+    }
+
+    /* MODAL DE DÍA Y EVENTO ESCOLAR */
+    let activeCalendarModalDate = null;
+    let activeCalendarModalSchool = "ambos";
+
+    function openCalendarDayModal(dateStr) {
+      const modal = document.getElementById("calendar-day-modal");
+      if (!modal) return;
+
+      if (!dateStr) {
+        dateStr = `${state.calendarMonth || '2026-09'}-01`;
+        document.getElementById("cal-modal-date-input-group").style.display = "block";
+      } else {
+        document.getElementById("cal-modal-date-input-group").style.display = "none";
+      }
+      activeCalendarModalDate = dateStr;
+
+      const dateInput = document.getElementById("cal-modal-date-input");
+      if (dateInput) dateInput.value = dateStr;
+
+      onCalendarModalDateChange(dateStr);
+      modal.style.display = "flex";
+    }
+
+    function onCalendarModalDateChange(dateStr) {
+      if (!dateStr) return;
+      activeCalendarModalDate = dateStr;
+
+      const info = getDayCalendarInfo(dateStr);
+      const daysOfWeekNames = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+      const weekdayName = daysOfWeekNames[info.dayOfWeek];
+
+      const titleEl = document.getElementById("cal-modal-date-text");
+      const subEl = document.getElementById("cal-modal-subtitle");
+      if (titleEl) titleEl.textContent = `${weekdayName}, ${info.dayOfMonth} de ${formatMonthName(dateStr.split('-')[1])} de ${dateStr.split('-')[0]}`;
+      if (subEl) subEl.textContent = info.weekNum ? `${info.weekNum} · Calendario Oficial` : "Jornada Escolar";
+
+      const custom = info.custom || {};
+      activeCalendarModalSchool = custom.school || "ambos";
+      selectCalendarModalSchool(activeCalendarModalSchool);
+
+      const typeSelect = document.getElementById("cal-modal-type-select");
+      if (typeSelect) typeSelect.value = custom.type || (info.ribarroja.isTeachingDay || info.manises.isTeachingDay ? "lectivo" : "no_lectivo");
+
+      const titleInput = document.getElementById("cal-modal-title-input");
+      if (titleInput) titleInput.value = custom.title || "";
+
+      const notesInput = document.getElementById("cal-modal-notes-input");
+      if (notesInput) notesInput.value = custom.notes || "";
+
+      // Radios de clases
+      const cHeld = custom.classesHeld !== undefined ? custom.classesHeld : true;
+      if (cHeld === true) document.getElementById("cal-held-yes").checked = true;
+      else if (cHeld === false) document.getElementById("cal-held-no").checked = true;
+      else if (cHeld === "partial") document.getElementById("cal-held-partial").checked = true;
+
+      // Checkboxes de grupos para el día
+      renderCalendarModalGroupCheckboxes(info, custom.suspendedGroups || []);
+      onCalendarHeldRadioChange(cHeld === "partial" ? "partial" : (cHeld === false ? "no" : "yes"));
+
+      // Botón de eliminar
+      const btnDelete = document.getElementById("btn-cal-modal-delete");
+      if (btnDelete) btnDelete.style.display = (info.custom) ? "inline-flex" : "none";
+    }
+
+    function selectCalendarModalSchool(school) {
+      activeCalendarModalSchool = school;
+      ['ambos', 'ribarroja', 'manises'].forEach(s => {
+        const btn = document.getElementById(`cal-modal-btn-${s}`);
+        if (btn) btn.classList.toggle('active', s === school);
+      });
+      if (activeCalendarModalDate) {
+        const info = getDayCalendarInfo(activeCalendarModalDate);
+        renderCalendarModalGroupCheckboxes(info, (info.custom && info.custom.suspendedGroups) || []);
+      }
+    }
+
+    function onCalendarModalTypeChange(val) {
+      const titleInput = document.getElementById("cal-modal-title-input");
+      if (titleInput && !titleInput.value) {
+        if (val === 'festivo') titleInput.value = "Festivo Local / Escolar";
+        else if (val === 'vacaciones') titleInput.value = "Vacaciones Escolares";
+        else if (val === 'extraescolar') titleInput.value = "Actividad Extraescolar";
+        else if (val === 'inusual') titleInput.value = "Jornada Especial";
+        else if (val === 'evaluacion') titleInput.value = "Sesiones de Evaluación";
+      }
+
+      if (val === 'festivo' || val === 'vacaciones' || val === 'no_lectivo') {
+        document.getElementById("cal-held-no").checked = true;
+        onCalendarHeldRadioChange("no");
+      }
+    }
+
+    function onCalendarHeldRadioChange(val) {
+      const wrap = document.getElementById("cal-modal-partial-groups-wrap");
+      if (wrap) wrap.style.display = (val === 'partial') ? "block" : "none";
+    }
+
+    function renderCalendarModalGroupCheckboxes(dayInfo, preSuspended = []) {
+      const container = document.getElementById("cal-modal-groups-checkboxes");
+      if (!container) return;
+      container.innerHTML = "";
+
+      let candidateGroups = [];
+      if (activeCalendarModalSchool === 'ribarroja' || activeCalendarModalSchool === 'ambos') {
+        candidateGroups.push(...dayInfo.regular.ribarroja.groups.map(g => ({ school: 'ribarroja', name: g })));
+      }
+      if (activeCalendarModalSchool === 'manises' || activeCalendarModalSchool === 'ambos') {
+        candidateGroups.push(...dayInfo.regular.manises.groups.map(g => ({ school: 'manises', name: g })));
+      }
+
+      if (candidateGroups.length === 0) {
+        container.innerHTML = `<span style="font-size:11px; color:#94a3b8;">No hay clases regulares programadas en este día de la semana.</span>`;
+        return;
+      }
+
+      candidateGroups.forEach(({ school, name }) => {
+        const isChecked = preSuspended.includes(name);
+        const label = document.createElement("label");
+        label.style.display = "inline-flex";
+        label.style.alignItems = "center";
+        label.style.gap = "4px";
+        label.style.fontSize = "11.5px";
+        label.style.padding = "3px 8px";
+        label.style.background = "#ffffff";
+        label.style.border = "1px solid #cbd5e1";
+        label.style.borderRadius = "4px";
+        label.style.cursor = "pointer";
+
+        const schoolDot = school === 'ribarroja' ? '🔴' : '🔵';
+        label.innerHTML = `
+          <input type="checkbox" class="cal-group-check" value="${escapeHTML(name)}" ${isChecked ? 'checked' : ''}>
+          <span>${schoolDot} ${escapeHTML(name)}</span>
+        `;
+        container.appendChild(label);
+      });
+    }
+
+    function closeCalendarDayModal() {
+      const modal = document.getElementById("calendar-day-modal");
+      if (modal) modal.style.display = "none";
+      activeCalendarModalDate = null;
+    }
+
+    function saveCalendarDayModal() {
+      if (!activeCalendarModalDate) return;
+
+      const type = document.getElementById("cal-modal-type-select").value;
+      const title = document.getElementById("cal-modal-title-input").value.trim();
+      const notes = document.getElementById("cal-modal-notes-input").value.trim();
+
+      let classesHeld = true;
+      if (document.getElementById("cal-held-no").checked) classesHeld = false;
+      else if (document.getElementById("cal-held-partial").checked) classesHeld = "partial";
+
+      const suspended = [];
+      if (classesHeld === "partial") {
+        document.querySelectorAll(".cal-group-check:checked").forEach(cb => {
+          suspended.push(cb.value);
+        });
+      }
+
+      if (!state.calendarEvents) state.calendarEvents = Object.assign({}, DEFAULT_CALENDAR_EVENTS);
+
+      state.calendarEvents[activeCalendarModalDate] = {
+        school: activeCalendarModalSchool,
+        type: type,
+        title: title || (type === 'festivo' ? 'Festivo Escolar' : (type === 'extraescolar' ? 'Actividad Extraescolar' : 'Día Modificado')),
+        notes: notes,
+        classesHeld: classesHeld,
+        suspendedGroups: suspended
+      };
+
+      saveState(true, true);
+      closeCalendarDayModal();
+      showToast("✓ Configuración del día guardada");
+      renderCurrentView();
+    }
+
+    function deleteCalendarDayModal() {
+      if (!activeCalendarModalDate) return;
+      if (!confirm("¿Deseas restablecer este día y eliminar los comentarios y eventos personalizados?")) return;
+
+      if (state.calendarEvents && state.calendarEvents[activeCalendarModalDate]) {
+        delete state.calendarEvents[activeCalendarModalDate];
+      }
+
+      saveState(true, true);
+      closeCalendarDayModal();
+      showToast("✓ Día restablecido a los valores normales");
+      renderCurrentView();
+    }
+
     window.addEventListener("keydown", (e) => {
       const isZ = (e.key === 'z' || e.key === 'Z');
       const isY = (e.key === 'y' || e.key === 'Y');
@@ -6879,6 +8371,11 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
           weeks: state.weeks,
           holidays: state.holidays || {},
+          calendarEvents: state.calendarEvents || {},
+          calendarMonth: state.calendarMonth || "2026-09",
+          calendarFilter: state.calendarFilter || "all",
+          calendarSchoolFilter: state.calendarSchoolFilter || "ambos",
+          calendarMode: state.calendarMode || "grid",
           currentView: state.currentView,
           currentWeekIndex: state.currentWeekIndex,
           selectedCourse: state.selectedCourse,
@@ -11339,6 +12836,9 @@
       if (matrixNav) matrixNav.style.display = "none";
       if (repNav) repNav.style.display = "none";
 
+      const calNav = document.getElementById("toolbar-calendar-nav");
+      if (calNav) calNav.style.display = "none";
+
       if (view === "semana") {
         if (weekNav) weekNav.style.display = "inline-flex";
         updateZoomLabel();
@@ -11354,6 +12854,12 @@
           repNav.style.display = "inline-flex";
           populateReplicateWeekSelector();
           updateReplicateToolbarButtons();
+        }
+      } else if (view === "calendario") {
+        if (calNav) {
+          calNav.style.display = "inline-flex";
+          populateCalendarMonthSelector();
+          updateCalendarToolbarButtons();
         }
       } else {
         if (weekNav) weekNav.style.display = "inline-flex";
@@ -11491,6 +12997,7 @@
       if (state.currentView === "semana") renderWeekView(container);
       else if (state.currentView === "matriz") renderMatrixView(container);
       else if (state.currentView === "replicar") renderReplicateView(container);
+      else if (state.currentView === "calendario") renderCalendarView(container);
       else {
         state.currentView = "semana";
         renderWeekView(container);
@@ -12141,6 +13648,7 @@
                 state.weeks = cloudData.weeks;
               }
               state.holidays = Object.assign({}, DEFAULT_HOLIDAYS, cloudData.holidays || {});
+              state.calendarEvents = cloudData.calendarEvents || state.calendarEvents || Object.assign({}, DEFAULT_CALENDAR_EVENTS);
               state.temarioOverrides = cloudData.temarioOverrides || {};
               state.temarioEdits = cloudData.temarioEdits || {};
               if (cloudData.reserveSessions && Array.isArray(cloudData.reserveSessions)) {
@@ -12183,6 +13691,7 @@
         return {
           weeks: state.weeks,
           holidays: state.holidays || {},
+          calendarEvents: state.calendarEvents || {},
           temarioOverrides: state.temarioOverrides || {},
           temarioEdits: state.temarioEdits || {},
           reserveSessions: state.reserveSessions || [],
